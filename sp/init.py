@@ -9,6 +9,7 @@ handles tokens: auth is the user's own `gh` login (ADR-0006).
 import datetime
 import json
 import os
+import shutil
 import subprocess
 import sys
 import uuid
@@ -18,6 +19,7 @@ from .frontmatter import emit
 from .index import build_index
 
 DEFAULT_REPO = "samepage-store"
+TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "store-template")
 
 
 class InitError(Exception):
@@ -36,6 +38,14 @@ def _run(cmd, cwd=None, check=True):
     if check and done.returncode != 0:
         raise InitError("%s failed: %s" % (" ".join(cmd[:3]), (done.stderr or done.stdout).strip()[:300]))
     return done
+
+
+def copy_template(path):
+    """Copy store-template/ (README, .gitignore, the index Action) into a new store (WP-11)."""
+    if not os.path.isdir(TEMPLATE_DIR):
+        raise InitError("store template missing at %s; reinstall samepage" % TEMPLATE_DIR)
+    shutil.copytree(TEMPLATE_DIR, path, dirs_exist_ok=True,
+                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"))
 
 
 def scaffold(path, owner, profile, links, rules):
@@ -65,9 +75,7 @@ def scaffold(path, owner, profile, links, rules):
     write("projects/general.md", {"id": str(uuid.uuid4()), "slug": "general", "name": "General", "status": "active",
                                   "type": "other", "one_liner": "Handoffs and decisions that belong to no single project",
                                   "last_verified_at": now, "created_at": now, "updated_at": now, "tags": []})
-    with open(os.path.join(path, "README.md"), "w", encoding="utf-8") as handle:
-        handle.write("# samepage store\n\nYour shared working context for every Claude surface. Private. "
-                     "Edit through samepage (`/sp log`, \"log this\") or by hand, then run `sp check`.\n")
+    copy_template(path)
     ok, message, _ = build_index(path)
     if not ok:
         raise InitError(message)
