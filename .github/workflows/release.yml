@@ -3,6 +3,10 @@ name: release
 on:
   push:
     tags: ["v*"]
+    # A version bump on main releases it: the run tags the commit itself (no tag push needed).
+    # A version already released is skipped.
+    branches: [main]
+    paths: [".claude-plugin/plugin.json", ".github/workflows/release.yml"]
   workflow_dispatch:
     inputs:
       version:
@@ -24,20 +28,27 @@ jobs:
       - name: Tag must match the plugin version
         run: |
           VERSION=$(python -c "import json; print(json.load(open('.claude-plugin/plugin.json'))['version'])")
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then TAG="v${{ inputs.version }}"; else TAG="$GITHUB_REF_NAME"; fi
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then TAG="v${{ inputs.version }}";
+          elif [ "$GITHUB_REF_TYPE" = "branch" ]; then TAG="v$VERSION"; else TAG="$GITHUB_REF_NAME"; fi
           test "v$VERSION" = "$TAG" || { echo "tag $TAG does not match plugin.json version $VERSION"; exit 1; }
           echo "TAG=$TAG" >> "$GITHUB_ENV"
+          if [ "$GITHUB_REF_TYPE" = "branch" ] && git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null; then
+            echo "SKIP=1" >> "$GITHUB_ENV"; echo "$TAG is already released; nothing to do"
+          fi
           python3 scripts/site_data.py --check
       - name: Tests and guardrails
+        if: env.SKIP != '1'
         run: |
           python -m unittest discover -s tests
           python scripts/guardrails.py
       - name: Build samepage.zip and samepage.skill
+        if: env.SKIP != '1'
         run: |
           python scripts/package_skill.py dist/samepage.zip
           cp dist/samepage.zip dist/samepage.skill
           unzip -l dist/samepage.zip
       - name: Publish release
+        if: env.SKIP != '1'
         env:
           GH_TOKEN: ${{ github.token }}
         # On a manual run this also creates the tag on the commit being built.
