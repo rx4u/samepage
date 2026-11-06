@@ -36,10 +36,11 @@ Option A, with these rules.
 - Copilot (B34): the Copilot CLI config is always written; the VS Code user `mcp.json` is written too when its User folder exists.
 - Exit codes: 0 done or nothing to do (a snippet printed for an unverified path counts as done), 1 a config that does not parse or a write that failed, 2 an unknown tool name.
 - `--dry-run` prints every planned change and writes nothing. Setup never prompts, never asks for or stores a token, and never deletes a file.
+- `sp/setup.py` walks `skills/samepage/` in the samepage folder to copy the skill. It is a non-store folder reader and joins the ADR-0015 allow list; it never reads a store.
 - There is no `sp setup chatgpt` (ADR-0019). Claude Code keeps the plugin install; `sp setup claude-code` prints the plugin command.
 
 ## Non-goals
-Windows paths (scope.md), uninstall (the user deletes `~/.samepage/tool` and the `samepage` entries by hand; `sp setup --print` shows where they are), auto-update.
+Windows paths (scope.md), uninstall (the user deletes `~/.samepage/tool` and the `samepage` entries by hand; `sp setup TOOL --dry-run` shows where they are), auto-update.
 
 ## Consequences
 - Gets easier: any coding tool reaches a working boot with `install.sh` and one `sp setup`.

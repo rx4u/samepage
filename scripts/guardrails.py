@@ -10,7 +10,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNTIME_DIRS = ("sp", "hooks", "commands", "skills")
 WALK_ALLOW = {"sp/check.py", "sp/index.py"}
 # Read folders that are not a store (ADR-0015): docs, generated fixtures, a Notion export.
-NON_STORE_READERS = {"sp/schema.py", "sp/fixtures.py", "sp/export.py"}
+# sp/setup.py walks skills/samepage/ to copy the skill (ADR-0020).
+NON_STORE_READERS = {"sp/schema.py", "sp/fixtures.py", "sp/export.py", "sp/setup.py"}
 EXAMPLE_HOSTS = re.compile(r"^https?://([a-z0-9%-]+\.)*example\.(com|org|net)(/|$)")
 # github.com is the store backend (ADR-0002): the user's repos and GitHub's own template page (ADR-0016).
 BACKEND_HOSTS = re.compile(r"^https://github\.com/")
@@ -67,9 +68,21 @@ def main():
                            (".py", ".md", ".json", ".yml", ".yaml", ".sh")):
         if "\u2014" in read(path):
             fail("no em dashes", rel, "contains U+2014")
-    for rel in ("README.md", "SPEC.md", "CLAUDE.md"):
+    for rel in ("README.md", "SPEC.md", "CLAUDE.md", "install.sh"):
         if "\u2014" in read(os.path.join(ROOT, rel)):
             fail("no em dashes", rel, "contains U+2014")
+    # install.sh joins the endpoint and credential scans (ADR-0020).
+    installer = read(os.path.join(ROOT, "install.sh"))
+    if re.search(r"\b(token|secret|password|api_key)\s*=", installer, re.I) or re.search(
+            r"\$\{?[A-Z_]*(TOKEN|SECRET|PASSWORD|API_KEY)", installer):
+        fail("no credential handling (ADR-0006)", "install.sh", "credential variable")
+    for url in re.findall(r"https?://[^\s\"')>,]+", installer):
+        if not EXAMPLE_HOSTS.match(url) and not BACKEND_HOSTS.match(url):
+            fail("no maintainer-hosted endpoints", "install.sh", url)
+    # ChatGPT is left out of v1 (ADR-0019).
+    for rel, path in files(("sp", "skills", "commands", "hooks"), (".py", ".md", ".json", ".sh")):
+        if re.search(r"chatgpt", read(path), re.I):
+            fail("no ChatGPT adapter (ADR-0019)", rel, "mentions ChatGPT")
     for rel, path in files(("skills",), ("SKILL.md",)):
         text = read(path)
         lines = text.count("\n") + 1
