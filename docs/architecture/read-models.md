@@ -182,7 +182,7 @@ Paging conventions, used by every list below:
 - On action: write tools default to `dry_run: true`. A dry run returns the paths, the file text and a `confirm` value (pinned id, pinned time, preview hash). A write call must carry that value; the server rebuilds the change from it and writes only when the rebuilt preview hashes the same (ADR-0007, ADR-0018)
 - Writes: as the mapped write screens, with `tool` / `from_tool` set to the session tool on 1.1 stores
 - Code: `sp/mcp.py`, `sp mcp`
-- Agent call (B26), tool arguments. Each tool runs the command shown; every argument maps to the flag of the same name; `surface` defaults to the session role; write tools also take `dry_run` (boolean, default true) and `confirm` (string). Store reads use the local clone; `boot` pulls exactly as the hook does (3 s budget), writes pull per B9 (B39).
+- Agent call (B26), tool arguments. Each tool runs the command shown; every argument maps to the flag of the same name; `surface` defaults to the session role, except on `rule_add`, where it is the rule's scope and absent means every surface; write tools also take `dry_run` (boolean, default true) and `confirm` (string). Store reads use the local clone; `boot` pulls exactly as the hook does (3 s budget), writes pull per B9 (B39).
 
 | Tool | Command | Arguments (required in bold) |
 |---|---|---|
