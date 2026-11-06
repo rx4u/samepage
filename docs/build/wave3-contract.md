@@ -68,7 +68,7 @@ Behaviour that must match the read models (docs/architecture/read-models.md):
 
 ## Store Action (stream C)
 
-`store-template/.github/workflows/index.yml`: on push to the default branch, skipping commits that only touch `index/` and commits by the Action itself; checkout the store; checkout `rx4u/samepage` (path `.samepage-tool`, ref `main` for now, WP-15 pins a release tag); `python -m sp check .` then `python -m sp index .`; commit and push only `index/` with message `index: rebuild {sha8}`; `timeout-minutes: 3`; `permissions: contents: write`; actions pinned by commit sha (actions/checkout 3d3c42e5aac5ba805825da76410c181273ba90b1 = v7.0.1, actions/setup-python 6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 = v7.1.0). `sp init` copies the template into new stores.
+`store-template/.github/workflows/index.yml`: on push to the default branch, skipping commits that only touch `index/` and commits by the Action itself; checkout the store; checkout `rx4u/samepage` (path `.samepage-tool`, ref `v1.0.0`, pinned at release (WP-15)); `python -m sp check .` then `python -m sp index .`; commit and push only `index/` with message `index: rebuild {sha8}`; `timeout-minutes: 3`; `permissions: contents: write`; actions pinned by commit sha (actions/checkout 3d3c42e5aac5ba805825da76410c181273ba90b1 = v7.0.1, actions/setup-python 6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 = v7.1.0). `sp init` copies the template into new stores.
 
 ## Every stream
 
