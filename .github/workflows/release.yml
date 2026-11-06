@@ -3,6 +3,11 @@ name: release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release, without the v (must match .claude-plugin/plugin.json)"
+        required: true
 
 permissions:
   contents: write
@@ -19,7 +24,9 @@ jobs:
       - name: Tag must match the plugin version
         run: |
           VERSION=$(python -c "import json; print(json.load(open('.claude-plugin/plugin.json'))['version'])")
-          test "v$VERSION" = "$GITHUB_REF_NAME" || { echo "tag $GITHUB_REF_NAME does not match plugin.json version $VERSION"; exit 1; }
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then TAG="v${{ inputs.version }}"; else TAG="$GITHUB_REF_NAME"; fi
+          test "v$VERSION" = "$TAG" || { echo "tag $TAG does not match plugin.json version $VERSION"; exit 1; }
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
       - name: Tests and guardrails
         run: |
           python -m unittest discover -s tests
@@ -33,4 +40,5 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/samepage.zip dist/samepage.skill --title "samepage $GITHUB_REF_NAME" --generate-notes
+        # On a manual run this also creates the tag on the commit being built.
+        run: gh release create "$TAG" dist/samepage.zip dist/samepage.skill --target "$GITHUB_SHA" --title "samepage $TAG" --generate-notes
