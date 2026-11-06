@@ -5,12 +5,12 @@
 #
 # Puts samepage in $SAMEPAGE_HOME/tool (default ~/.samepage/tool) and a shim at ~/.local/bin/sp.
 # Needs git and python3 3.9+. No sudo, no package manager, no shell profile edits, no tokens.
-# SAMEPAGE_REF picks a branch, tag or commit (default main).
+# SAMEPAGE_REF picks a branch, tag or commit (default: the newest v* release tag, else main; B36).
 set -eu
 
 SAMEPAGE_HOME="${SAMEPAGE_HOME:-$HOME/.samepage}"
 REPO="${SAMEPAGE_REPO:-https://github.com/rx4u/samepage.git}"
-REF="${SAMEPAGE_REF:-main}"
+REF="${SAMEPAGE_REF:-}"
 TOOL_DIR="$SAMEPAGE_HOME/tool"
 BIN_DIR="$HOME/.local/bin"
 SHIM="$BIN_DIR/sp"
@@ -34,6 +34,11 @@ else
   git clone -q "$REPO" "$TOOL_DIR" || fail "could not clone $REPO"
   action="installed"
 fi
+if [ -z "$REF" ]; then
+  git -C "$TOOL_DIR" fetch -q --tags origin || fail "could not fetch tags from $REPO"
+  REF=$(git -C "$TOOL_DIR" tag -l 'v*' --sort=-v:refname | head -n 1)
+  [ -n "$REF" ] || REF=main
+fi
 git -C "$TOOL_DIR" fetch -q origin "$REF" || fail "could not fetch $REF from $REPO"
 git -C "$TOOL_DIR" checkout -q --detach FETCH_HEAD || fail "could not check out $REF"
 
@@ -50,7 +55,7 @@ PYTHONPATH="$TOOL_DIR" exec python3 -m sp "\$@"
 SHIM
 chmod 755 "$SHIM"
 
-echo "samepage: $action $(git -C "$TOOL_DIR" rev-parse --short HEAD) in $TOOL_DIR, command at $SHIM"
+echo "samepage: $action $REF ($(git -C "$TOOL_DIR" rev-parse --short HEAD)) in $TOOL_DIR, command at $SHIM"
 case ":$PATH:" in
   *":$BIN_DIR:"*) ;;
   *) echo "samepage: $BIN_DIR is not on your PATH. Add this line to your shell profile: export PATH=\"$BIN_DIR:\$PATH\"" ;;

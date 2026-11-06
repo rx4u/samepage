@@ -1,6 +1,6 @@
 # samepage for every AI: build plan (v1.0 launch scope)
 
-Status: Phases 0 to 2 done and on main (2026-11-06). Phase 3: Claude Code passed, and Gemini CLI, Codex and Copilot CLI configs load (tool-ledger.md); Claude Desktop, claude.ai and Cowork wait for Raja's Mac run. Phase 4: README and plugin 1.1.0 done; release v1.1.0 (notes in docs/release/v1.1.0.md) waits for Phase 3.
+Status: Phases 0 to 2 done and on main (2026-11-06). Phase 3: Claude Code passed, and Gemini CLI, Codex and Copilot CLI configs load (tool-ledger.md); Claude Desktop, claude.ai and Cowork wait for Raja's Mac run. Phase 4: README and plugin 1.1.0 done; v1.1.0 released 2026-11-06 (run by Raja); install.sh now installs the newest release tag. Open: Mac run for the Claude surfaces, About box, landing page.
 Read with `docs/architecture/` (binding) and `CLAUDE.md`.
 
 ## Goal

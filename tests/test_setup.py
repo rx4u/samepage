@@ -227,6 +227,31 @@ class Installer(unittest.TestCase):
         finally:
             shutil.rmtree(tmp)
 
+    def test_default_ref_is_newest_release_tag(self):
+        tmp = tempfile.mkdtemp()
+        try:
+            src = os.path.join(tmp, "src")
+            os.makedirs(src)
+            git = ["git", "-c", "user.name=t", "-c", "user.email=t@example.com"]
+            subprocess.run(["git", "init", "-q", src], check=True)
+            shas = {}
+            for tag in ("v1.2.0", "v1.10.0", None):
+                subprocess.run(git + ["commit", "-q", "--allow-empty", "-m", str(tag)], cwd=src, check=True)
+                if tag:
+                    subprocess.run(git + ["tag", tag], cwd=src, check=True)
+                    shas[tag] = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=src, capture_output=True,
+                                               text=True, check=True).stdout.strip()
+            home = os.path.join(tmp, "home")
+            os.makedirs(home)
+            env = {k: v for k, v in os.environ.items() if k != "SAMEPAGE_REF"}
+            env.update(HOME=home, SAMEPAGE_HOME=os.path.join(home, ".samepage"), SAMEPAGE_REPO=src)
+            done = subprocess.run(["sh", os.path.join(ROOT, "install.sh")], env=env, capture_output=True, text=True,
+                                  timeout=120)
+            self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
+            self.assertIn("installed v1.10.0 (%s)" % shas["v1.10.0"], done.stdout)  # version order, not text order
+        finally:
+            shutil.rmtree(tmp)
+
 
 if __name__ == "__main__":
     unittest.main()

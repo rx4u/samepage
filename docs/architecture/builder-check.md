@@ -45,7 +45,7 @@ Run: 2026-11-06, wave 5 (ADR-0017 to ADR-0020), reader: cold-read subagent given
 | B33 | system-design V/U rule: per cell or per row? | Agent call | Agent call: configs only; skill folders and instruction files are written for every listed path (ADR-0020). |
 | B34 | Copilot: CLI config, VS Code config or both? | Agent call | Agent call: CLI always, VS Code when its User folder exists (ADR-0020). |
 | B35 | Which python3 for the MCP entry; PATH for git in GUI apps; SAMEPAGE_HOME scope | Agent call | Agent call: `sys.executable`; env carries PATH and SAMEPAGE_HOME (ADR-0020). PYTHONPATH replaced by `sp_run.py` (B45). |
-| B36 | ADR-0020 `SAMEPAGE_REF` default `main` runs unreleased code | Agent call | Agent call: keep `main` (same channel as the template pin and the README skill link, ADR-0016; no release exists yet); revisit after the first release (v1.1.0, B46). Flagged to Raja in the Phase 0 report. |
+| B36 | ADR-0020 `SAMEPAGE_REF` default `main` runs unreleased code | Agent call | Agent call: `main` until the first release; since v1.1.0 (2026-11-06) the default is the newest `v*` tag, else `main` (ADR-0020). The README skill link and the template pin still follow `main` (ADR-0016). |
 | B37 | `sp context --tool` takes setup names or codes; `--refresh` folder and tool | Agent call | Agent call: codes only; `--refresh` in `--cwd`, tool kept or inferred from path (read-models.md, Instruction file). |
 | B38 | MCP error mapping | Agent call | Agent call: protocol faults are JSON-RPC errors; child exit other than 0 is `isError: true` (read-models.md). |
 | B39 | targets 1 s p95 vs test at 2 s; does MCP boot pull | Agent call | Agent call: test asserts p95 of 20 calls under 1 s on a store with no remote; boot pulls like the hook; writes pull (B9). |
