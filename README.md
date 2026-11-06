@@ -16,7 +16,7 @@ Claude Code ships it. Claude chat forgets it. samepage fixes that.</p>
 
 You plan in claude.ai chat, build in Claude Code, design in Claude Design and run long tasks in Cowork. Each one starts from zero. Chat doesn't know what you shipped in Code yesterday. Code reopens a decision you settled in chat last week. You paste the same brief into three tabs.
 
-samepage gives every Claude surface one shared working context, stored in a private repo you own:
+samepage gives every Claude surface one shared working context, stored in a private repo you own. Codex, Gemini CLI, Copilot, Cursor and Windsurf can use it too:
 
 | | What it holds | What changes |
 |---|---|---|

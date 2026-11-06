@@ -40,4 +40,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         # On a manual run this also creates the tag on the commit being built.
-        run: gh release create "$TAG" dist/samepage.zip dist/samepage.skill --target "$GITHUB_SHA" --title "samepage $TAG" --generate-notes
+        # Uses docs/release/TAG.md as the release notes when it exists.
+        run: |
+          if [ -f "docs/release/$TAG.md" ]; then NOTES="--notes-file docs/release/$TAG.md"; else NOTES="--generate-notes"; fi
+          gh release create "$TAG" dist/samepage.zip dist/samepage.skill --target "$GITHUB_SHA" --title "samepage $TAG" $NOTES
