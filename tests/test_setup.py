@@ -72,8 +72,8 @@ class Setup(unittest.TestCase):
         self.assertEqual(data["mcpServers"]["other"], OTHER["mcpServers"]["other"])
         entry = data["mcpServers"]["samepage"]
         self.assertEqual(entry["command"], sys.executable)
-        self.assertEqual(entry["args"], ["-m", "sp", "mcp", "--tool", "gemini_cli"])
-        self.assertEqual(entry["env"]["PYTHONPATH"], ROOT)
+        self.assertEqual(entry["args"], [os.path.join(ROOT, "sp_run.py"), "mcp", "--tool", "gemini_cli"])
+        self.assertNotIn("PYTHONPATH", entry["env"])  # Gemini CLI blocks it (B45)
         self.assertIn("PATH", entry["env"])
         self.assertIn('\n    "mcpServers"', read(self.h(".gemini/settings.json")))  # keeps the file's indent
         self.assertEqual(read(self.h(".gemini/settings.json.samepage-backup")), before)
@@ -118,8 +118,8 @@ class Setup(unittest.TestCase):
         self.assertEqual(code, 0, out)
         text = read(self.h(".codex/config.toml"))
         self.assertTrue(text.startswith(user + "\n[mcp_servers.samepage]\n"))
-        self.assertIn('args = ["-m", "sp", "mcp", "--tool", "codex"]', text)
-        self.assertIn("env = { PYTHONPATH = ", text)
+        self.assertIn('"mcp", "--tool", "codex"]', text)
+        self.assertIn("env = { PATH = ", text)
         # An old samepage block with an env subtable, followed by user tables, is replaced whole (B29).
         old = (user + '\n[mcp_servers.samepage]\ncommand = "old"\n\n[mcp_servers.samepage.env]\nX = "1"\n\n'
                '[profiles.work]\nmodel = "o5"\n')
@@ -193,6 +193,15 @@ class Setup(unittest.TestCase):
 
 
 @unittest.skipUnless(shutil.which("git") and shutil.which("sh"), "needs git and sh")
+class Launcher(unittest.TestCase):
+    def test_sp_run_works_without_pythonpath(self):
+        env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+        done = subprocess.run([sys.executable, os.path.join(ROOT, "sp_run.py"), "--help"], env=env,
+                              cwd=tempfile.gettempdir(), capture_output=True, text=True, timeout=30)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertIn("samepage store tools", done.stdout)
+
+
 class Installer(unittest.TestCase):
     def test_install_creates_shim_that_runs_sp(self):
         tmp = tempfile.mkdtemp()

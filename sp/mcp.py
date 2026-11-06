@@ -30,7 +30,7 @@ META_VERSION = "io.modelcontextprotocol/protocolVersion"
 META_SERVER = "io.modelcontextprotocol/serverInfo"
 TTL_MS = 3600000
 CHILD_SECONDS = 60
-FALLBACK_VERSION = "1.0.0"
+FALLBACK_VERSION = "1.1.0"
 
 PARSE_ERROR, INVALID_REQUEST, METHOD_NOT_FOUND, INVALID_PARAMS = -32700, -32600, -32601, -32602
 UNSUPPORTED_VERSION = -32022
@@ -330,6 +330,18 @@ def read_confirm(value):
     return payload
 
 
+PREVIEW_ASK = ("Show the user this preview in full and ask them. Call again with dry_run false and this "
+               "confirm value only after they say yes.")
+
+
+def preview_text(out):
+    """The dry run as the user should see it: the CLI line about re-running with --id and --now is dropped,
+    because an MCP client confirms with the confirm value instead. Clients that show the model only
+    structuredContent (Claude Code does) get this text there too (B44)."""
+    keep = [line for line in out.rstrip("\n").split("\n") if not line.startswith("samepage: to write exactly this")]
+    return "\n".join(keep).rstrip("\n")
+
+
 def _pins(pin_id, now):
     return (["--id", pin_id] if pin_id else []) + ["--now", now]
 
@@ -344,7 +356,9 @@ def call_write(session, tool, args):
         if code != 0:
             return _failure(code, out, err)
         confirm = make_confirm(pin_id, now, out)
-        return _text(out.rstrip("\n") + "\nconfirm: " + confirm, structured={"confirm": confirm})
+        preview = preview_text(out)
+        return _text(preview + "\n" + PREVIEW_ASK + "\nconfirm: " + confirm,
+                     structured={"preview": preview, "ask": PREVIEW_ASK, "confirm": confirm})
     if not args.get("confirm"):
         return _text("samepage: nothing written. A write needs the confirm value from a dry run: call with "
                      "dry_run true, show the user the preview, then call again with its confirm value.",

@@ -17,6 +17,7 @@ from . import context
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SKILL_SOURCE = os.path.join(ROOT, "skills", "samepage")
+LAUNCHER = os.path.join(ROOT, "sp_run.py")
 NAME = "samepage"
 PLUGIN_COMMAND = "/plugin install samepage --marketplace rx4u/samepage"
 AGENT_SKILLS = "~/.agents/skills"
@@ -42,7 +43,9 @@ def tools():
                     "skills": AGENT_SKILLS},
         "gemini": {"code": "gemini_cli", "label": "Gemini CLI",
                    "configs": [{"format": "mcp_servers", "path": "~/.gemini/settings.json", "verified": True}],
-                   "skills": AGENT_SKILLS},
+                   "skills": AGENT_SKILLS,
+                   "note": "Gemini CLI starts MCP servers only in folders you trust. Accept the trust prompt when "
+                           "you open this project in Gemini CLI, then check with: gemini mcp list (B45)."},
         "cursor": {"code": "cursor", "label": "Cursor",
                    "configs": [{"format": "mcp_servers", "path": "~/.cursor/mcp.json", "verified": False}],
                    "skills": AGENT_SKILLS},
@@ -63,10 +66,11 @@ def tools():
 
 
 def server_entry(code):
-    env = {"PYTHONPATH": ROOT, "PATH": os.environ.get("PATH", "/usr/bin:/bin")}
+    # No PYTHONPATH: Gemini CLI refuses it in a server env. sp_run.py finds the package by its own path (B45).
+    env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin")}
     if os.environ.get("SAMEPAGE_HOME"):
         env["SAMEPAGE_HOME"] = os.environ["SAMEPAGE_HOME"]
-    return {"command": sys.executable, "args": ["-m", "sp", "mcp", "--tool", code], "env": env}
+    return {"command": sys.executable, "args": [LAUNCHER, "mcp", "--tool", code], "env": env}
 
 
 def shaped(fmt, entry):

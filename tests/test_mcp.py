@@ -263,7 +263,14 @@ class LegacyTest(Base):
         text = preview["content"][0]["text"]
         self.assertIn("dry run, nothing written", text)
         confirm = text.rsplit("\n", 1)[1][len("confirm: "):]
-        self.assertEqual(preview["structuredContent"], {"confirm": confirm})
+        structured = preview["structuredContent"]
+        self.assertEqual(structured["confirm"], confirm)
+        # B44: clients that pass only structuredContent to the model (Claude Code) still show the preview.
+        self.assertIn("title: Use Postgres", structured["preview"])
+        self.assertIn("dry run, nothing written", structured["preview"])
+        self.assertIn("ask them", structured["ask"])
+        self.assertNotIn("--dry-run", structured["preview"])
+        self.assertNotIn("to write exactly this", text)
         payload = json.loads(base64.urlsafe_b64decode(confirm + "=" * (-len(confirm) % 4)))
         self.assertEqual(sorted(payload), ["hash", "id", "now"])
         self.assertEqual(len(payload["hash"]), 16)

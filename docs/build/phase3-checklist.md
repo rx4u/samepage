@@ -73,6 +73,8 @@ Each one follows the same pattern. Run it in `$HOME/sp-check`, restart the tool,
 | Cursor | `sp setup cursor` (prints a snippet: paste it into ~/.cursor/mcp.json) | .cursor/rules/samepage.mdc |
 | Windsurf | `sp setup windsurf` (prints a snippet: paste it into ~/.codeium/windsurf/mcp_config.json) | .windsurf/rules/samepage.md |
 
+Gemini CLI starts MCP servers only in folders you trust: accept its trust prompt for `sp-check`, then `gemini mcp list` must show samepage as Connected.
+
 The three checks:
 1. Open a new session and type only "hi". Pass: the agent loads samepage on its own (it calls `boot` or runs `sp boot`) because of the instruction file.
 2. "what am I working on?" Pass: the answer uses the test profile.

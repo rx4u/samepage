@@ -32,7 +32,7 @@ Option A, with these rules.
 - `sp setup <tool>` writes only when the config path is listed in system-design.md (Tool adapters) for the current OS. Otherwise it prints the exact snippet and the file it belongs in, and changes nothing.
 - A config is changed only by adding or replacing the `samepage` entry. Before the first change to an existing file, a copy is kept at `FILE.samepage-backup` (never overwritten once it exists). JSON is parsed and written back with the file's own indent (2 when it cannot be told) and its key order; other entries keep their content and order. A JSON file that does not parse (comments, trailing commas) is not touched: the snippet is printed instead (exit 1). TOML (Codex) is edited as text: the samepage block is every line from `[mcp_servers.samepage]` through any `[mcp_servers.samepage.*]` subtable up to the next other table header; it is replaced, or appended when absent, and `env` is written as an inline table (B29).
 - The verified/unverified rule (system-design.md, Tool adapters) applies to MCP configs only. Skill folders and instruction files are new files samepage owns, so they are written for every tool that has a path in the table, verified or not, and every path is printed (B33).
-- The MCP entry runs `sys.executable` (the absolute python3 running setup) with `-m sp mcp --tool CODE`, and its `env` sets `PYTHONPATH` to the samepage folder, `PATH` to the PATH setup ran with (so git is found from GUI apps) and `SAMEPAGE_HOME` when it is set. `SAMEPAGE_HOME` moves the tool folder, the config and the default store together (B35).
+- The MCP entry runs `sys.executable` (the absolute python3 running setup) with `/path/to/samepage/sp_run.py mcp --tool CODE` (a launcher that imports the `sp` package next to it, so no `PYTHONPATH` is needed: Gemini CLI refuses that override, B45), and its `env` sets `PATH` to the PATH setup ran with (so git is found from GUI apps) and `SAMEPAGE_HOME` when it is set. `SAMEPAGE_HOME` moves the tool folder, the config and the default store together (B35).
 - Copilot (B34): the Copilot CLI config is always written; the VS Code user `mcp.json` is written too when its User folder exists.
 - Exit codes: 0 done or nothing to do (a snippet printed for an unverified path counts as done), 1 a config that does not parse or a write that failed, 2 an unknown tool name.
 - `--dry-run` prints every planned change and writes nothing. Setup never prompts, never asks for or stores a token, and never deletes a file.
@@ -48,7 +48,7 @@ Windows paths (scope.md), uninstall (the user deletes `~/.samepage/tool` and the
 - Follow-up tasks: WP-21.
 
 ## Implementation plan
-- Affected paths: install.sh, sp/setup.py, sp/__main__.py, tests/test_setup.py, scripts/guardrails.py (install.sh joins the endpoint, credential and em dash scans), docs/architecture/system-design.md.
+- Affected paths: install.sh, sp_run.py, sp/setup.py, sp/__main__.py, tests/test_setup.py, scripts/guardrails.py (install.sh joins the endpoint, credential and em dash scans), docs/architecture/system-design.md.
 - Pattern to follow: every path a command writes is printed before it is written.
 - Pattern to avoid: editing a config the tool did not document, or one that failed to parse.
 - Config and env changes: `SAMEPAGE_REF` for install.sh.
