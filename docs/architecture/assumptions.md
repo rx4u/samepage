@@ -37,9 +37,11 @@
    - Owner: Raja
 
 ## Accepted risks
-- A2: chat writes through the connector. The tool exists in claude.ai today (create_or_update_file); also covered by the WP-01 spike. Recovery cost if wrong: read-only chat with copyable entries, 1 day.
+- A2: chat writes through the connector. TESTED 2026-11-06 (WP-01): claude.ai chat read SPIKE.md on rx4u/samepage, but the write returned `403 Resource not accessible by integration`. Verified on github.com/settings/installations: the Claude app (used by Claude Code) is installed, the GitHub app behind the claude.ai chat connector is not. INFERRED from a public troubleshooting note (epik-agent/Epik issue 336): chat writes need that connector app installed on the repo owner's account, then a new conversation. Consequence: setup must include that install step, and the US-06 read-only fallback is required. Retest after install.
 - A12: native memory arrives. Recovery cost: reposition on proof, decisions and handoffs; 2 days of README and skill changes.
 - A16: Design reads nothing from the store. Already the v1 design (ADR-0011). Recovery cost: 0.
+- A20 (observed 2026-11-06 on claude.ai/design): a banner reads "Claude Design is moving on December 14. Move your projects to Claude to keep working on them." Standalone Claude Design folds into claude.ai before samepage launches. Consequence: the Design surface will run inside claude.ai, where skills and connectors exist, so A16 may stop holding. ADR-0011 must be revisited once the move lands; v1 keeps the repo-tokens plus handoff design until then.
+- A1 progress 2026-11-06: Claude Design's prompt bar offers "Codebase from GitHub: Connect GitHub" and "Local codebase: Attach". GitHub is not connected on the owner's account; the test needs the owner to approve that OAuth connection.
 - A6, A14: Python and POSIX availability. Recovery cost: a Node or PowerShell hook, 3 days.
 - A11: separate store. Recovery cost: support a `context/` folder inside an existing repo, 2 days.
 - A15: Design bundle contents. Recovery cost: user types the title, 0.5 day.

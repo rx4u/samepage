@@ -180,7 +180,7 @@ Depends on: WP-08, WP-09, WP-11
 Wave: 4
 Depends on: WP-10, WP-12, WP-13, WP-14
 - Why: stars come from the first impression.
-- Do: apply the final name (ADR-0010) and owner (ADR-0013); README with a 60-second demo gif (ship in Code, proposal in chat cites it); "Works with native memory" section; release workflow building the plugin and `samepage.skill`; 5 timed setup tests.
+- Do: apply the final name (ADR-0010) and owner (ADR-0013); README requirements section that states chat and Cowork writes need the claude.ai GitHub connector's app installed on the store owner's account, with the exact install path verified at release time (A2); README with a 60-second demo gif (ship in Code, proposal in chat cites it); "Works with native memory" section; release workflow building the plugin and `samepage.skill`; 5 timed setup tests.
 - Read model: none
 - Targets: Time to first working boot
 - Columns touched: none
