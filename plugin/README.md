@@ -12,7 +12,7 @@ On Claude Code 2.1.275 or later, one step also works: `/plugin install samepage 
 Then run `/sp init` once to create your private store.
 
 ## What it runs
-- The `/sp` commands and the samepage skill. They run the bundled `sp` package with `python3` (Python
+- The `/sp` command (the `sp` skill) and the samepage skill. They run the bundled `sp` package with `python3` (Python
   standard library only, no installs). The plugin ships no hooks: ask "what am I working on?" or run
   `/sp boot` to load your context. The one-line installer on the website can also add a session-start
   entry to your own Claude Code settings, so context loads by itself.

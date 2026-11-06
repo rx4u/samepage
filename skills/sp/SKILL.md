@@ -1,6 +1,8 @@
 ---
+name: sp
 description: "samepage: log ships, decisions and design, hand work between surfaces, pull proof, manage rules, set up and check the store"
 argument-hint: "log | decision | design | handoff | proof | project | rules | brief | init | check | index | boot"
+disable-model-invocation: true
 ---
 
 You are running the samepage command with arguments: `$ARGUMENTS`
