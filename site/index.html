@@ -381,8 +381,8 @@ body{margin:0}
 <div class="sp-chips sp-ed-chips" role="group" aria-label="Pick your tool"><button type="button" data-mcp="0" aria-pressed="true" class="sp-chip-b sp-chip-b-on">Codex</button><button type="button" data-mcp="1" aria-pressed="false" class="sp-chip-b">Gemini CLI</button><button type="button" data-mcp="2" aria-pressed="false" class="sp-chip-b">Copilot</button><button type="button" data-mcp="3" aria-pressed="false" class="sp-chip-b">Cursor</button><button type="button" data-mcp="4" aria-pressed="false" class="sp-chip-b">Windsurf</button><button type="button" data-mcp="5" aria-pressed="false" class="sp-chip-b">Claude Desktop</button></div>
 <div class="sp-mono sp-ed-body">
 <div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">git clone https://github.com/rx4u/samepage ~/.samepage/tool</span></div>
-<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">sh ~/.samepage/tool/install.sh</span></div>
-<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">sp init</span></div>
+<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">SAMEPAGE_NO_START=1 sh ~/.samepage/tool/install.sh</span></div>
+<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">sp init --display-name "Your Name" --headline "What you build"</span></div>
 <div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">sp setup <span class="sp-holo sp-holotext" data-sp="mcp-code">codex</span></span></div>
 <div class="sp-edl sp-note"><span class="sp-c"># <span data-sp="mcp-note">adds the MCP entry and AGENTS.md</span></span></div>
 <div class="sp-edl sp-note"><span class="sp-c"># restart the tool and ask: what am I working on?</span></div>

@@ -83,13 +83,13 @@ Needs `git` and `python3` 3.9 or newer. No sudo.
 **1. Install the `sp` command**
 
 ```bash
-git clone https://github.com/rx4u/samepage "$HOME/.samepage/tool" && sh "$HOME/.samepage/tool/install.sh"
+git clone https://github.com/rx4u/samepage "$HOME/.samepage/tool" && SAMEPAGE_NO_START=1 sh "$HOME/.samepage/tool/install.sh"
 ```
 
 **2. Create your store** (or connect one you have with `sp init --use-existing you/samepage-store`)
 
 ```bash
-sp init
+sp init --display-name "Your Name" --headline "What you build"
 ```
 
 **3. Connect your tool**, from inside a project. Swap `codex` for `gemini`, `copilot`, `cursor`, `windsurf` or `claude-desktop`. Add `--dry-run` to see every change first.
