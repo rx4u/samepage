@@ -44,4 +44,5 @@ Generating or editing design tokens.
 Anthropic documents skills or connectors in Claude Design.
 
 ## More information
+- 2026-11-06: WP-01 A1 passed. Claude Design, with the repo linked and no design system selected, used design/tokens.json from a named branch. Option A holds; the design brief export should name the tokens file path and branch explicitly.
 - 2026-11-06: claude.ai/design shows that standalone Claude Design moves into Claude on 2026-12-14. Revisit this ADR after the move: if Design inside Claude runs skills or connectors, Design gains direct store reads and writes.

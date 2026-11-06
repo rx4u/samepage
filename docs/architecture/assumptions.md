@@ -4,7 +4,7 @@
 | # | Assumption | Category | Impact | Uncertainty | Risk |
 |---|---|---|---|---|---|
 | A3 | Users keep logging after week one when logging is drafted for them and nudged | User behaviour | 5 | 4 | 20 |
-| A1 | Claude Design imports a design system from a linked GitHub repo's W3C tokens file (INFERRED from third-party guides) | Integration | 4 | 4 | 16 |
+| A1 | Claude Design imports a design system from a linked GitHub repo's W3C tokens file (VERIFIED 2026-11-06) | Integration | 4 | 0 | 0 |
 | A4 | Multi-surface builders feel the context gap enough to install a plugin, upload a skill and create a store | Business | 5 | 3 | 15 |
 | A12 | Anthropic does not ship native cross-surface memory that covers projects, ships and handoffs before 2027-03-01 | Business | 4 | 3 | 12 |
 | A17 | A proof-and-handoffs pitch earns stars in a crowded "context OS" category | Business | 4 | 3 | 12 |
@@ -41,7 +41,7 @@
 - A12: native memory arrives. Recovery cost: reposition on proof, decisions and handoffs; 2 days of README and skill changes.
 - A16: Design reads nothing from the store. Already the v1 design (ADR-0011). Recovery cost: 0.
 - A20 (observed 2026-11-06 on claude.ai/design): a banner reads "Claude Design is moving on December 14. Move your projects to Claude to keep working on them." Standalone Claude Design folds into claude.ai before samepage launches. Consequence: the Design surface will run inside claude.ai, where skills and connectors exist, so A16 may stop holding. ADR-0011 must be revisited once the move lands; v1 keeps the repo-tokens plus handoff design until then.
-- A1 progress 2026-11-06: Claude Design's prompt bar offers "Codebase from GitHub: Connect GitHub" and "Local codebase: Attach". GitHub is not connected on the owner's account; the test needs the owner to approve that OAuth connection.
+- A1: PASS 2026-11-06 (WP-01). With rx4u/samepage linked as the codebase and the design system set to None, Claude Design read design/tokens.json on branch spike/wp01 when the prompt named file and branch, and produced a pricing card using exactly those tokens: magenta #C026D3, square corners, paper #F5F5F0. Checked visually from a screenshot. It also read the README on main for copy. Note: the branch had to be named in the prompt; the codebase picker shows no branch choice.
 - A6, A14: Python and POSIX availability. Recovery cost: a Node or PowerShell hook, 3 days.
 - A11: separate store. Recovery cost: support a `context/` folder inside an existing repo, 2 days.
 - A15: Design bundle contents. Recovery cost: user types the title, 0.5 day.
