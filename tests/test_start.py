@@ -88,6 +88,29 @@ class Start(unittest.TestCase):
         self.assertEqual(calls[:2], ["plugin marketplace add rx4u/samepage", "plugin install samepage@samepage"])
         self.assertIn("Claude Code: plugin installed", out)
 
+    def test_claude_settings_get_session_start_entry(self):
+        self.fake_claude()
+        settings = os.path.join(self.home, ".claude", "settings.json")
+        os.makedirs(os.path.dirname(settings))
+        with open(settings, "w", encoding="utf-8") as handle:
+            json.dump({"theme": "dark", "hooks": {"SessionStart": [{"hooks": [{"type": "command",
+                                                                              "command": "echo hi"}]}]}}, handle)
+        self.assertEqual(self.sp("start")[0], 0)
+        with open(settings, encoding="utf-8") as handle:
+            data = json.load(handle)
+        self.assertEqual(data["theme"], "dark")
+        commands = [h["command"] for g in data["hooks"]["SessionStart"] for h in g["hooks"]]
+        self.assertIn("echo hi", commands)
+        ours = [c for c in commands if "session-start.sh" in c]
+        self.assertEqual(len(ours), 1)
+        self.assertTrue(os.path.isfile(ours[0].split('"')[1]))
+        self.assertTrue(os.path.isfile(settings + ".samepage-backup"))
+        code, out = self.sp("start")
+        self.assertIn("already loads samepage", out)
+        with open(settings, encoding="utf-8") as handle:
+            again = json.load(handle)
+        self.assertEqual(again, data)
+
     def test_codex_folder_gets_mcp_entry(self):
         os.makedirs(os.path.join(self.home, ".codex"))
         with open(os.path.join(self.home, ".codex", "config.toml"), "w", encoding="utf-8") as handle:

@@ -61,7 +61,7 @@ def tools():
                            "note": "Skills in Claude Desktop come from your claude.ai account: upload "
                                    "dist/samepage.skill in Customize, Skills."},
         "claude-code": {"code": "claude_code", "label": "Claude Code", "configs": [], "skills": None,
-                        "note": "Claude Code uses the samepage plugin. In Claude Code run: " + PLUGIN_COMMAND},
+                        "note": "for the /sp commands, also install the plugin. In Claude Code run: " + PLUGIN_COMMAND},
     }
 
 
@@ -229,6 +229,66 @@ def skill_step(target, dry_run, out):
     return 0
 
 
+CLAUDE_SETTINGS = "~/.claude/settings.json"
+HOOK_SCRIPT = os.path.join(ROOT, "hooks", "session-start.sh")
+
+
+def claude_hook_entry():
+    return {"type": "command", "command": 'sh "%s"' % HOOK_SCRIPT, "timeout": 3}
+
+
+def _is_ours(hook):
+    return isinstance(hook, dict) and "session-start.sh" in str(hook.get("command", "")) and \
+        "samepage" in str(hook.get("command", ""))
+
+
+def claude_hook_step(dry_run, out):
+    """Load samepage context at every Claude Code session start, from the user's own settings (ADR-0026).
+
+    The plugin ships no hooks, so the installed sp adds one SessionStart entry to ~/.claude/settings.json,
+    keeping every other setting and a .samepage-backup copy of the old file.
+    """
+    path = os.path.expanduser(CLAUDE_SETTINGS)
+    old = _read(path) if os.path.isfile(path) else None
+    try:
+        data = json.loads(old) if old and old.strip() else {}
+        if not isinstance(data, dict):
+            raise ValueError("the top level is not an object")
+        hooks = data.setdefault("hooks", {})
+        groups = hooks.setdefault("SessionStart", [])
+        if not isinstance(hooks, dict) or not isinstance(groups, list):
+            raise ValueError("hooks.SessionStart is not a list")
+    except ValueError as exc:
+        out("samepage: %s not changed (%s). Add a SessionStart hook running: sh \"%s\"" % (CLAUDE_SETTINGS, exc,
+                                                                                          HOOK_SCRIPT))
+        return 1
+    wanted = claude_hook_entry()
+    found = False
+    for group in groups:
+        inner = group.get("hooks", []) if isinstance(group, dict) else []
+        for i, hook in enumerate(inner):
+            if _is_ours(hook):
+                if found:
+                    continue
+                found = True
+                if hook == wanted:
+                    out("samepage: %s already loads samepage at session start" % CLAUDE_SETTINGS)
+                    return 0
+                inner[i] = wanted
+    if not found:
+        groups.append({"hooks": [wanted]})
+    text = json.dumps(data, indent=json_indent(old)) + "\n"
+    if dry_run:
+        out("samepage: would add a session-start entry to %s" % CLAUDE_SETTINGS)
+        return 0
+    if old is not None:
+        _write(path + ".samepage-backup", old)
+    _write(path, text)
+    out("samepage: %s now loads samepage at every session start (backup: settings.json.samepage-backup)"
+        % CLAUDE_SETTINGS)
+    return 0
+
+
 def project_root(cwd):
     try:
         done = subprocess.run(["git", "rev-parse", "--show-toplevel"], cwd=cwd, capture_output=True, text=True,
@@ -264,6 +324,8 @@ def setup(name, cwd, dry_run=False, out=print):
         status = max(status, config_step(cfg, code, dry_run, out))
     if spec.get("skills"):
         status = max(status, skill_step(spec["skills"], dry_run, out))
+    if name == "claude-code":
+        status = max(status, claude_hook_step(dry_run, out))
     status = max(status, context_step(code, cwd, dry_run, out))
     if spec.get("note"):
         out("samepage: " + spec["note"])

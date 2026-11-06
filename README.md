@@ -28,7 +28,7 @@ One line, in a terminal on Mac or Linux. It asks nothing.
 curl -fsSL https://samepage-sigma.vercel.app/install | sh
 ```
 
-It installs the `sp` command in `~/.samepage` (no sudo), makes your private store, and connects every AI tool it finds on the machine: Claude Code (the plugin), Codex, Gemini CLI, Copilot, Cursor, Windsurf and Claude Desktop (a local MCP server). Then open any of them and ask "what am I working on?".
+It installs the `sp` command in `~/.samepage` (no sudo), makes your private store, and connects every AI tool it finds on the machine: Claude Code (the plugin, plus a session-start entry in your Claude Code settings so context loads by itself), Codex, Gemini CLI, Copilot, Cursor, Windsurf and Claude Desktop (a local MCP server). Then open any of them and ask "what am I working on?".
 
 - **Store:** if the GitHub CLI is signed in, your store is a private `samepage-store` repo (an existing one is connected, never overwritten). If not, the store stays on this machine, and running the line again after `gh auth login` puts it on GitHub.
 - **Profile:** your name comes from GitHub or git, with the headline "Building with AI tools". Edit `profile.md` in your store to change either.
@@ -62,7 +62,7 @@ Run these in the Claude Code terminal, one at a time.
 /sp init
 ```
 
-`/sp init` asks your name, headline and up to three working rules, then creates a private `samepage-store` repo. No GitHub CLI? It gives you a one-click link instead and connects the repo you create. Start a new session and your context loads on its own. Say "log this" after you ship something.
+`/sp init` asks your name, headline and up to three working rules, then creates a private `samepage-store` repo. No GitHub CLI? It gives you a one-click link instead and connects the repo you create. Then ask "what am I working on?" (or run `/sp boot`) and Claude loads your context. To have it load by itself at every session start, run `sp setup claude-code` once, or use the one-line install, which does it for you. Say "log this" after you ship something.
 
 > In the Claude desktop app, `/plugin` opens the plugin directory, and samepage is not listed there yet. Use the Claude Code terminal for these commands.
 
@@ -155,7 +155,7 @@ Claude Code loads your context through a plugin. Claude chat surfaces use a skil
 
 | Tool | How it connects | Status |
 |---|---|---|
-| Claude Code | Plugin: context loads at session start, `/sp` commands | Tested |
+| Claude Code | Plugin with `/sp` commands; the one-line install also loads context at session start | Tested |
 | claude.ai chat | Skill plus the GitHub connector | Community-tested |
 | Cowork | Skill plus the GitHub connector | Community-tested |
 | Claude Desktop | Local MCP server (`sp setup claude-desktop`) | Community-tested |

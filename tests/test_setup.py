@@ -161,7 +161,9 @@ class Setup(unittest.TestCase):
         code, out, _ = self.setup_tool("claude-code")
         self.assertEqual(code, 0)
         self.assertIn(setup.PLUGIN_COMMAND, out)
-        self.assertEqual(os.listdir(self.home), [])
+        self.assertEqual(os.listdir(self.home), [".claude"])  # only the session-start entry (ADR-0026)
+        with open(self.h(".claude/settings.json"), encoding="utf-8") as handle:
+            self.assertIn("session-start.sh", handle.read())
         code, out, _ = self.setup_tool("claude-desktop")
         self.assertEqual(code, 0)
         self.assertIn("upload", out)

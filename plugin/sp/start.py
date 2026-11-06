@@ -3,8 +3,9 @@
 1. Store: reuse this machine's config; else connect or create LOGIN/samepage-store with a signed-in
    GitHub CLI; else make a local store. A local store is published later once the GitHub CLI is signed in.
 2. Profile without questions: name from GitHub, git or the login; a plain default headline.
-3. Tools: every tool found on this machine is connected (Claude Code through its own plugin CLI,
-   the others through sp setup's config and skill steps).
+3. Tools: every tool found on this machine is connected (Claude Code through its own plugin CLI plus a
+   session-start entry in ~/.claude/settings.json, ADR-0026; the others through sp setup's config and
+   skill steps).
 No tokens are read or stored; GitHub access is the user's own gh login (ADR-0006).
 """
 import argparse
@@ -144,7 +145,7 @@ def claude_code_step(dry_run, out):
     if dry_run:
         out("samepage: Claude Code: would run claude plugin marketplace add %s and claude plugin install %s"
             % (MARKETPLACE, PLUGIN))
-        return 0
+        return setup.claude_hook_step(dry_run, out)
     added = _run(["claude", "plugin", "marketplace", "add", MARKETPLACE])
     if added.returncode != 0:
         out("samepage: Claude Code: could not add the marketplace: %s"
@@ -160,7 +161,7 @@ def claude_code_step(dry_run, out):
         out("samepage: Claude Code: plugin already installed, updated to the latest")
     else:
         out("samepage: Claude Code: plugin installed")
-    return 0
+    return setup.claude_hook_step(dry_run, out)
 
 
 def tool_step(name, dry_run, out):

@@ -19,7 +19,7 @@ class PluginBundle(unittest.TestCase):
             self.assertEqual(json.load(handle)["plugins"][0]["source"], "./plugin")
 
     def test_nothing_test_only_ships(self):
-        for top in ("tests", "fixtures", "docs", "site", "dist"):
+        for top in ("tests", "fixtures", "docs", "site", "dist", "hooks"):
             self.assertFalse(os.path.exists(os.path.join(ROOT, "plugin", top)), top)
 
 

@@ -4,7 +4,7 @@ description: Reads and writes the user's samepage store, one shared working cont
 license: MIT
 metadata:
   author: Rajaraman Arumugam
-  version: 1.3.1
+  version: 1.3.2
 ---
 
 # samepage
@@ -114,7 +114,7 @@ Also run setup, without being asked, when a boot file's profile says `Your name`
 
 ## boot
 
-- Claude Code: the SessionStart hook already printed the context in a `samepage data` block. Answer from it. If it is missing, run `sp boot --surface code --cwd "$PWD"`.
+- Claude Code: if a `samepage data` block is already in context (the optional session-start entry printed it), answer from it. If not, run boot once before the first task: `/sp boot`, or `sp boot --surface code --cwd "$PWD"`.
 - Other coding agents: call the MCP tool `boot` with the project folder as `project_dir`, or run `sp boot --surface code --cwd "$PWD"`, before the first task.
 - Chat and Cowork: read `index/boot/{surface}.md` in one call (GitHub) or run the four boot queries (Notion). If the read fails, say in one line that the store could not be read, then answer without it.
 - Answer the user's question from the file. Load a project's detail only when the conversation names that project.

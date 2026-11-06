@@ -1,8 +1,7 @@
 # samepage plugin for Claude Code
 
-Your AI tools forget. samepage doesn't. This plugin loads your shared working context (profile, rules,
-projects, ships, decisions and handoffs) at the start of every Claude Code session, from a store you own,
-and adds the `/sp` commands to write to it.
+Your AI tools forget. samepage doesn't. This plugin reads your shared working context (profile, rules,
+projects, ships, decisions and handoffs) from a store you own, and adds the `/sp` commands to write to it.
 
 ## Install
 ```
@@ -13,10 +12,10 @@ On Claude Code 2.1.275 or later, one step also works: `/plugin install samepage 
 Then run `/sp init` once to create your private store.
 
 ## What it runs
-- A SessionStart hook (`hooks/session-start.sh`) that runs `python3 -m sp boot` from this folder and prints
-  your context. It reads your local store clone and runs `git pull` on it with a 2 second limit.
-- A Stop hook (`hooks/stop-nudge.sh`) that prints a one-line reminder to log what you shipped.
-- The `/sp` commands, which run the same `sp` package (Python standard library only, no installs).
+- The `/sp` commands and the samepage skill. They run the bundled `sp` package with `python3` (Python
+  standard library only, no installs). The plugin ships no hooks: ask "what am I working on?" or run
+  `/sp boot` to load your context. The one-line installer on the website can also add a session-start
+  entry to your own Claude Code settings, so context loads by itself.
 
 ## What it reads and writes
 - Your store: a private GitHub repo you own, cloned on your machine (default `~/.samepage/store`), and the
