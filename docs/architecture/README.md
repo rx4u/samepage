@@ -1,7 +1,7 @@
 # Architecture: samepage
 
 Mode: new
-Status: draft
+Status: approved (PRD and scope accepted by Raja, 2026-11-06; gate passed)
 Last validated: 2026-11-06
 
 Name: samepage, CLI `sp`, published under github.com/rx4u (ADR-0010, ADR-0013). Earlier drafts used the working name context-os.

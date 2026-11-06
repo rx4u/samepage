@@ -17,7 +17,7 @@
 | A9 | Notion connector is usable inside Claude Code when signed in with the claude.ai account | Integration | 3 | 2 | 6 |
 | A13 | Flat frontmatter (no nesting) is enough for every entity | Technical feasibility | 3 | 2 | 6 |
 | A8 | 2,000 tokens is enough boot context to change answers on every surface | User behaviour | 3 | 2 | 6 |
-| A7 | SessionStart hook stdout is added to Claude Code's context | Technical feasibility | 4 | 1 | 4 |
+| A7 | SessionStart hook stdout is added to Claude Code's context (VERIFIED 2026-11-06) | Technical feasibility | 4 | 0 | 0 |
 | A14 | Most early users are on macOS or Linux | User behaviour | 2 | 2 | 4 |
 | A18 | Launch date 2026-12-01 (ASSUMPTION in prd.md) | Business | 2 | 2 | 4 |
 | A10 | Store Action stays within GitHub's free private-repo minutes | Scale | 2 | 1 | 2 |
@@ -46,7 +46,7 @@
 - A9: Notion in Code. Recovery cost: document "Notion stores boot in Code through the skill on first use", 0.5 day.
 - A13: flat frontmatter. Recovery cost: new child table per nested need, 1 day each.
 - A8: boot size. Recovery cost: raise the cap by ADR, 0.5 day.
-- A7: hook stdout. Documented Claude Code behaviour; verified in WP-01. Recovery cost: CLAUDE.md import line instead, 1 day.
+- A7: hook stdout. VERIFIED 2026-11-06 (WP-01): a 5,965 character SessionStart hook output was recalled at both ends by Claude Code 2.1.318 in headless mode. Closed.
 - A10: Action minutes. Recovery cost: rebuild only on changed folders, 0.5 day.
 - A17: crowded category. Mitigated by ADR-0010 rename and a demo that shows chat citing Code work. Recovery cost: relaunch content, 2 days.
 - A18, A19: dates and time-loss estimate are planning numbers. Recovery cost: 0.
