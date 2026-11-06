@@ -1,6 +1,6 @@
 # samepage store
 
-Your shared working context for every Claude surface. Private. Edit through samepage (`/sp log`, "log this") or by hand, then run `sp check`.
+Your shared working context for Claude and your other AI tools. Private. Edit through samepage (`/sp log`, "log this") or by hand, then run `sp check`.
 
 ## Set it up
 

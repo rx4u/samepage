@@ -7,8 +7,8 @@
 
 <h1 align="center">samepage</h1>
 
-<p align="center"><b>Keep every Claude on the same page.</b><br>
-Claude Code ships it. Claude chat forgets it. samepage fixes that.</p>
+<p align="center"><b>Your AI tools forget. samepage doesn't.</b><br>
+One shared working context for Claude, Codex, Gemini CLI, Copilot, Cursor and Windsurf, in a private repo you own.</p>
 
 <p align="center"><img src="docs/demo.gif" width="760" alt="Logging a ship in Claude Code, then the proof file claude.ai chat reads shows it"></p>
 
@@ -16,7 +16,7 @@ Claude Code ships it. Claude chat forgets it. samepage fixes that.</p>
 
 You plan in claude.ai chat, build in Claude Code, design in Claude Design and run long tasks in Cowork. Each one starts from zero. Chat doesn't know what you shipped in Code yesterday. Code reopens a decision you settled in chat last week. You paste the same brief into three tabs.
 
-samepage gives every Claude surface one shared working context, stored in a private repo you own. Codex, Gemini CLI, Copilot, Cursor and Windsurf can use it too:
+samepage gives all of them one shared working context, stored in a private repo you own:
 
 | | What it holds | What changes |
 |---|---|---|
