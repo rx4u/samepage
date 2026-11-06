@@ -8,7 +8,7 @@ one_liner: Halcyon, a product
 role: Design and build
 outcome: Live with 40 beta users
 live_url: https://halcyon.example.com
-repo_url: https://github.com/asha-rao/halcyon
+repo_url: https://code.example.com/asha-rao/halcyon
 shipped_on: 2026-09-14
 last_verified_at: 2026-11-01T09:00:00Z
 created_at: 2026-11-01T09:00:00Z

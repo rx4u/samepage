@@ -36,7 +36,7 @@ PROJECTS = [
     ("general", "General", "active", "other", [], {}),
     ("halcyon", "Halcyon", "shipped", "product", ["nextjs", "supabase", "ai"],
      {"role": "Design and build", "outcome": "Live with 40 beta users", "live_url": "https://halcyon.example.com",
-      "repo_url": "https://github.com/asha-rao/halcyon", "shipped_on": "2026-09-14"}),
+      "repo_url": "https://code.example.com/asha-rao/halcyon", "shipped_on": "2026-09-14"}),
     ("ledger-lite", "Ledger Lite", "shipped", "product", ["nextjs", "supabase"],
      {"live_url": "https://ledger.example.com", "shipped_on": "2026-06-02"}),
     ("ai", "AI Notes", "active", "tool", ["ai", "python"], {"problem": "Slug equals a tag slug on purpose"}),
@@ -51,7 +51,7 @@ PROJECTS = [
     ("vault-cli", "Vault CLI", "idea", "tool", ["python"], {}),
     ("lahari", "Lahari Collections", "shipped", "client_site", ["landing", "nextjs"],
      {"live_url": "https://lahari.example.com", "shipped_on": "2026-05-19"}),
-    ("ship-gate", "Ship Gate", "shipped", "skill", ["python"], {"repo_url": "https://github.com/asha-rao/ship-gate"}),
+    ("ship-gate", "Ship Gate", "shipped", "skill", ["python"], {"repo_url": "https://code.example.com/asha-rao/ship-gate"}),
     ("dagboard", "Dagboard", "shipped", "tool", ["nextjs", "ai"], {"live_url": "https://dagboard.example.com"}),
     ("notion-sync", "Notion Sync", "unknown", "tool", ["notion"], {}),
     ("rams-kit", "Rams Kit", "active", "concept", ["design-system"], {}),
@@ -72,7 +72,7 @@ def main():
                          "voice": "Direct, lowercase, no fluff", "created_at": T0, "updated_at": T0},
           "Longer bio for humans. Never parsed.")
     for i, (label, url) in enumerate([("Portfolio", "https://asha.example.com"),
-                                      ("GitHub", "https://github.com/asha-rao")], start=1):
+                                      ("GitHub", "https://code.example.com/asha-rao")], start=1):
         lid = uid("link-%d" % i)
         write("profile/links/%s.md" % lid[:8], {"id": lid, "label": label, "url": url, "sort_order": i,
                                                  "created_at": T0})
@@ -110,7 +110,7 @@ def main():
         day = "2026-%02d-%02d" % (5 + i % 6, 1 + i % 27)
         fields = {"id": eid, "project": slug, "kind": kinds[i % len(kinds)],
                   "surface": ["code", "chat", "cowork"][i % 3], "summary": "Event %d on %s" % (i, slug)}
-        if i % 3 != 0:
+        if i % 3 != 0 and slug != "vault-cli":  # vault-cli: shipped work with no public proof
             fields["proof_url"] = "https://proof.example.com/%d" % i
         if kinds[i % len(kinds)] == "metric":
             fields.update({"metric_label": "signups", "metric_value": str(10 * i), "metric_unit": "users"})
@@ -134,7 +134,7 @@ def main():
               "Detail for decision %d.\n\nSecond paragraph." % i if i % 2 == 0 else "")
     # Design assets: approved system, draft, handoff bundle.
     assets = [("halcyon", "design_system", "approved", "code", "Halcyon tokens",
-               {"tokens_repo_url": "https://github.com/asha-rao/halcyon", "tokens_path": "design/tokens.json"}),
+               {"tokens_repo_url": "https://code.example.com/asha-rao/halcyon", "tokens_path": "design/tokens.json"}),
               ("halcyon", "screen_set", "draft", "chat", "Onboarding screens", {}),
               ("north-star-ds", "handoff_bundle", "approved", "code", "Design handoff, no link", {})]
     for i, (slug, kind, status, surface, title, extra) in enumerate(assets):

@@ -248,7 +248,7 @@ Rules: one row per file, YAML frontmatter holds every column, the Markdown body 
 | design_asset | `design/{project-slug}/{id8}.md` | pointer only; tokens live in the product repo |
 | handoff | `handoffs/{id8}.md` | |
 | index_build | `index/builds.md` | last 50 builds, rewritten by `sp index` |
-| serve files | `index/boot/{surface}.md`, `index/project/{slug}.md`, `index/projects-{n}.md`, `index/proof-{n}.md`, `index/tags/{slug}.md`, `index/handoffs-{surface}-{n}.md`, `index/rules.md` | generated, never hand-edited; header carries build commit and time; read-models.md says which screen reads which file |
+| serve files | `index/boot/{surface}.md`, `index/project/{slug}.md`, `index/projects-{n}.md`, `index/proof-{n}.md`, `index/tags/{slug}.md`, `index/handoffs-{surface}-{n}.md`, `index/rules.md`, `index/repos.md` | generated, never hand-edited; header carries build commit and time; read-models.md says which screen reads which file |
 
 Agent call (B18), file key naming, applied by `schema/fields.json`:
 - `id` is written in full as `id`. Singleton ids (`store_meta.id`, `profile.id`) and `profile_link.profile_id` are implied and not written.
@@ -257,6 +257,8 @@ Agent call (B18), file key naming, applied by `schema/fields.json`:
 - `project_tag` is the `tags: [slug, slug]` list on the project file; `project_tag.created_at` takes the project's `updated_at`.
 - Columns named `body` (`decision.body`, `handoff.body`) are display-only long text and are stored as the file's Markdown body, never in frontmatter. A required body must be non-empty.
 - Every other column keeps its name. An optional key may be absent or empty; both mean NULL.
+
+Agent call (B20): `index/repos.md` maps each normalised `repo_url` to its project slug (serves the project_repo index), so `sp boot` matches the current git remote without reading raw folders. Agent call (B19): boot files for chat and cowork follow the Chat recall column list and carry no recent ship events; the code boot file carries the 5 latest.
 
 Agent call (B2): setup creates the reserved project `general` (type other, status active). It holds handoffs and decisions that belong to no single project, and it is excluded from boot project lists, projects pages and proof.
 

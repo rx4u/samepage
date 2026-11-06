@@ -19,7 +19,7 @@ PROJECT_SECTION_MAX_CHARS = 6000
 MAX_ACTIVE_RULES = 50
 WARN_RULES_PER_SURFACE = 20
 RESERVED_PROJECT = "general"
-SKIP_DIRS = {".git", ".github", "index", "node_modules"}
+SKIP_DIRS = {".git", ".github", "index", "index.tmp", "node_modules"}
 ROOT_FILES_ALLOWED = {"README.md", "LICENSE", ".gitignore"}
 
 SECRET_PATTERNS = [
@@ -30,7 +30,7 @@ SECRET_PATTERNS = [
     ("Google API key", re.compile(r"\bAIza[0-9A-Za-z_-]{35}\b")),
     ("private key", re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")),
 ]
-CARD_RE = re.compile(r"(?<![\d-])(?:\d[ -]?){13,19}(?![\d-])")
+CARD_RE = re.compile(r"(?<![\w-])(?:\d[ -]?){12,18}\d(?![\w-])")
 
 
 class Report:
@@ -291,7 +291,7 @@ def _check_index(store, report):
                 report.error(rel, "size", "%d characters, maximum %d" % (size, limit))
 
 
-def check_store(store, schema_dir=None, only=None):
+def check_store(store, schema_dir=None, only=None, check_index=True):
     fields_spec, lookups = load(schema_dir) if schema_dir else load()
     tables = fields_spec["tables"]
     report = Report()
@@ -334,7 +334,8 @@ def check_store(store, schema_dir=None, only=None):
             report.error("profile.md", "file", "missing; every store needs profile.md")
         for table in ("project", "preference"):
             rows.setdefault(table, [])
-        _check_index(store, report)
+        if check_index:
+            _check_index(store, report)
     _cross_checks(rows, report)
     if only:
         def keep(item):

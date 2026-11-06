@@ -5,7 +5,7 @@ name: Ship Gate
 status: shipped
 type: skill
 one_liner: Ship Gate, a skill
-repo_url: https://github.com/asha-rao/ship-gate
+repo_url: https://code.example.com/asha-rao/ship-gate
 last_verified_at: 2026-11-01T09:00:00Z
 created_at: 2026-11-01T09:00:00Z
 updated_at: 2026-11-03T10:00:00Z
