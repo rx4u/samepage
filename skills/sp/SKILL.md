@@ -34,7 +34,7 @@ SAMEPAGE_TOOL=claude_code PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m sp init 
 SAMEPAGE_TOOL=claude_code PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m sp init --local --display-name "..." --headline "..."
 ```
 
-If it reports that the GitHub CLI is not installed or not signed in, show the one-click template link it printed, ask the user to create the repo (Private, named samepage-store) and give their GitHub login, then run `--use-existing LOGIN/samepage-store` with the same profile flags. If it says the store still has the template profile, ask for the profile answers and run it again with them. If a repo already exists, offer `--name` or `--use-existing` and stop. Report the result in one or two lines; the next session starts with the context loaded.
+If it reports that the GitHub CLI is not installed or not signed in, show the one-click template link it printed, ask the user to create the repo (Private, named samepage-store) and give their GitHub login, then run `--use-existing LOGIN/samepage-store` with the same profile flags. If it says the store still has the template profile, ask for the profile answers and run it again with them. If a repo already exists, offer `--name` or `--use-existing` and stop. Report the result in one or two lines. Context loads when the user asks ("what am I working on?") or runs `/sp boot`. To load it by itself at every session start, point them to the one-line install in the samepage README, run in a terminal.
 
 ## check
 

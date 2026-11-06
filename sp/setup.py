@@ -248,6 +248,10 @@ def claude_hook_step(dry_run, out):
     The plugin ships no hooks, so the installed sp adds one SessionStart entry to ~/.claude/settings.json,
     keeping every other setting and a .samepage-backup copy of the old file.
     """
+    if not os.path.isfile(HOOK_SCRIPT):
+        out("samepage: session start not added: this sp has no hooks/session-start.sh (the plugin copy ships none). "
+            "Use the one-line install in the samepage README")
+        return 0
     path = os.path.expanduser(CLAUDE_SETTINGS)
     old = _read(path) if os.path.isfile(path) else None
     try:
