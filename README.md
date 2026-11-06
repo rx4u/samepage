@@ -1,4 +1,9 @@
-<p align="center"><img src="docs/icon.svg" width="88" alt="samepage"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/brand/samepage-mark-white.svg">
+    <img src="docs/brand/samepage-mark.svg" width="88" alt="samepage">
+  </picture>
+</p>
 
 <h1 align="center">samepage</h1>
 
