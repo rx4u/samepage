@@ -18,8 +18,16 @@ class PluginBundle(unittest.TestCase):
         with open(os.path.join(ROOT, ".claude-plugin", "marketplace.json"), encoding="utf-8") as handle:
             self.assertEqual(json.load(handle)["plugins"][0]["source"], "./plugin")
 
+    def test_only_allowed_file_types(self):
+        allowed = (".md", ".txt", ".json", ".yaml", ".yml", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico")
+        for dirpath, _, names in os.walk(os.path.join(ROOT, "plugin")):
+            for name in names:
+                if name in ("LICENSE", ".gitignore"):
+                    continue
+                self.assertTrue(name.lower().endswith(allowed), os.path.join(dirpath, name))
+
     def test_nothing_test_only_ships(self):
-        for top in ("tests", "fixtures", "docs", "site", "dist", "hooks"):
+        for top in ("tests", "fixtures", "docs", "site", "dist", "hooks", "sp", "schema", "store-template"):
             self.assertFalse(os.path.exists(os.path.join(ROOT, "plugin", top)), top)
 
 

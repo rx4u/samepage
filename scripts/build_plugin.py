@@ -13,8 +13,8 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "plugin")
-DIRS = ("sp", "skills", "schema", "store-template")  # no hooks/ (ADR-0026)
-FILES = ("sp_run.py", "LICENSE", ".claude-plugin/plugin.json", ".claude-plugin/icon.png")
+DIRS = ("skills",)  # text only: the directory refuses code files from unverified publishers (ADR-0027)  # no hooks/ (ADR-0026)
+FILES = ("LICENSE", ".claude-plugin/plugin.json", ".claude-plugin/icon.png")
 SKIP = ("__pycache__", ".DS_Store")
 README = """# samepage plugin for Claude Code
 
@@ -26,14 +26,15 @@ Your AI tools forget. samepage doesn't. This plugin reads your shared working co
 /plugin install samepage@samepage
 ```
 On Claude Code 2.1.275 or later, one step also works: `/plugin install samepage --marketplace rx4u/samepage`.
-Then run `/sp init` once to create your private store.
+Then run samepage's one-line install once (see the repo's Set up section). It installs the `sp` command these skills call, creates your private store and connects your other AI tools.
 
 ## What it runs
-- The `/sp` command (the `sp` skill) and the samepage skill. They run the bundled `sp` package with `python3` (Python standard library only, no installs). The plugin ships no hooks: ask "what am I working on?" or run `/sp boot` to load your context. The one-line installer on the website can also add a session-start entry to your own Claude Code settings, so context loads by itself.
+- Nothing of its own. The plugin is two skills in Markdown: `samepage` (Claude uses it when you ask about your work) and `sp` (the `/sp` command). Both call the `sp` command that samepage's one-line install puts in `~/.local/bin` (Python standard library only). Without it, the skills say how to install it and stop. The plugin never downloads or runs the installer.
+- No hooks and no MCP servers. Ask "what am I working on?" or run `/sp boot` to load your context. The one-line install can also add a session-start entry to your own Claude Code settings.
 
 ## What it reads and writes
 - Your store: a private GitHub repo you own, cloned on your machine (default `~/.samepage/store`), and the config at `~/.samepage/config`.
-- Writes happen only after you confirm an entry. Each is a normal git commit pushed to your own repo with your own git credentials. `sp init` uses your signed-in GitHub CLI (`gh`) to create that repo.
+- Writes happen only after you confirm an entry. Each is a normal git commit pushed to your own repo with your own git credentials.
 - No server, no tokens stored, no data sent anywhere except your own git remote.
 
 Source, tests and docs: https://github.com/rx4u/samepage. License: MIT.

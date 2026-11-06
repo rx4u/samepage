@@ -4,7 +4,7 @@ description: Reads and writes the user's samepage store, one shared working cont
 license: MIT
 metadata:
   author: Rajaraman Arumugam
-  version: 1.3.3
+  version: 1.3.4
 ---
 
 # samepage
@@ -78,9 +78,8 @@ If the samepage MCP tools are available (`boot`, `log_ship` and the rest), use t
 
 Otherwise use the `sp` CLI. Pick the first that works:
 
-1. In Claude Code with the plugin: `PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m sp <command>`.
-2. Anywhere else: `sp <command>` (installed by samepage's `install.sh`).
-3. Neither: read the files under `index/` in the local store (`store_path` in `~/.samepage/config`) and do not write. Say that writes need `sp`, and give the install line from [references/setup.md](references/setup.md).
+1. `sp <command>`, or `"$HOME/.local/bin/sp" <command>` when `sp` is not on PATH (both from samepage's one-line install).
+2. Neither: read the files under `index/` in the local store (`store_path` in `~/.samepage/config`) and do not write. Say that writes need `sp`, and give the install line from [references/setup.md](references/setup.md).
 
 - Reads: run the read command and use its output. If the command does not exist in this version, read the same file under `index/` in the local store. The Reads table in [references/github-backend.md](references/github-backend.md) names the file for each mode.
 - Writes: add `--tool TOOL` from the table above, run the write command with `--dry-run` first, show the printed path and file text, and wait for a yes. Then run the same command without `--dry-run` and report its one line. The CLI drops `--tool` on a 1.0 store and says so. Do not write store files by hand.

@@ -132,7 +132,8 @@ class LayoutTest(unittest.TestCase):
 
     def test_cli_writes_use_dry_run(self):
         text = read(SKILL_MD)
-        self.assertIn('PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m sp', text)
+        self.assertIn('"$HOME/.local/bin/sp" <command>', text)  # the installed sp, no bundled code (ADR-0027)
+        self.assertNotIn('CLAUDE_PLUGIN_ROOT', text)
         for command in ("sp log ship", "sp log decision", "sp handoff new", "sp rules add"):
             line = [l for l in text.split("\n") if command in l]
             self.assertTrue(line, command)

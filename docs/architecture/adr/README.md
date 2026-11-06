@@ -28,6 +28,7 @@
 | [0024](0024-one-line-install-with-sp-start.md) | One-line install with `sp start` | accepted | 2026-11-06 |
 | [0025](0025-ship-a-slim-plugin-folder.md) | Ship a slim plugin folder | accepted | 2026-11-06 |
 | [0026](0026-no-hooks-in-the-plugin.md) | No hooks in the plugin; session start lives in the user's settings | accepted | 2026-11-06 |
+| [0027](0027-text-only-plugin.md) | A text-only plugin that calls the installed `sp` | accepted | 2026-11-06 |
 
 Statuses: proposed, accepted, rejected, deprecated, superseded.
 A superseded ADR links to its replacement and the replacement links back. History is never rewritten;

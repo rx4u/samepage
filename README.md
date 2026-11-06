@@ -35,85 +35,17 @@ It installs the `sp` command in `~/.samepage` (no sudo), makes your private stor
 - **Safe to run again:** it reuses your store and updates the plugin. Every config file it edits keeps a `.samepage-backup` copy.
 - **Read it first:** the script is [install.sh](install.sh). To see every step without writing anything, run `curl -fsSL https://samepage-sigma.vercel.app/install | SAMEPAGE_NO_START=1 sh`, then `sp start --dry-run`.
 
-claude.ai chat and Cowork can't be set up from a terminal. See [claude.ai chat or Cowork](#claudeai-chat-or-cowork) below.
-
-## Or set up one tool by hand
-
-| Your tool | Path | Time |
-|---|---|---|
-| Claude Code | [Plugin](#claude-code) | 2 min |
-| claude.ai chat, Cowork | [Skill, nothing to install](#claudeai-chat-or-cowork) | 5 min |
-| Codex, Gemini CLI, Copilot, Cursor, Windsurf, Claude Desktop | [Local MCP server](#codex-gemini-cli-copilot-cursor-windsurf-or-claude-desktop) | 3 min |
-| Claude Design | [Reads your tokens](#claude-design) | 1 min |
-
-### Claude Code
-
-Run these in the Claude Code terminal, one at a time.
-
-```
-/plugin marketplace add rx4u/samepage
-```
-
-```
-/plugin install samepage@samepage
-```
-
-```
-/sp init
-```
-
-`/sp init` asks your name, headline and up to three working rules, then creates a private `samepage-store` repo. No GitHub CLI? It gives you a one-click link instead and connects the repo you create. Then ask "what am I working on?" (or run `/sp boot`) and Claude loads your context. To have it load by itself at every session start, run `sp setup claude-code` once, or use the one-line install, which does it for you. Say "log this" after you ship something.
-
-> In the Claude desktop app, `/plugin` opens the plugin directory, and samepage is not listed there yet. Use the Claude Code terminal for these commands.
-
 ### claude.ai chat or Cowork
 
-1. **Create your store:** [one click](https://github.com/new?template_owner=rx4u&template_name=samepage-store-template&name=samepage-store&visibility=private). Keep the name `samepage-store` and keep it Private, then click Create repository.
-2. **Download the skill:** [samepage.skill](https://github.com/rx4u/samepage/raw/main/dist/samepage.skill).
-3. **Upload it:** in claude.ai go to Customize, Skills, +, Upload a skill, and choose the file.
-4. **Turn on** code execution (Settings, Capabilities) and the GitHub connector with access to your store repo.
-5. **Say "set up samepage".** Claude finds `samepage-store`, asks who you are, and writes your profile after your yes.
+These have no terminal, so they get a skill instead:
 
-Saving from chat needs the Claude GitHub app installed on your account with access to the store repo (GitHub settings, Applications). Until then chat reads everything and hands you each entry to paste on GitHub. Claude walks you through it.
-
-### Codex, Gemini CLI, Copilot, Cursor, Windsurf or Claude Desktop
-
-Needs `git` and `python3` 3.9 or newer. No sudo.
-
-**1. Install the `sp` command**
-
-```bash
-git clone https://github.com/rx4u/samepage "$HOME/.samepage/tool" && SAMEPAGE_NO_START=1 sh "$HOME/.samepage/tool/install.sh"
-```
-
-**2. Create your store** (or connect one you have with `sp init --use-existing you/samepage-store`)
-
-```bash
-sp init --display-name "Your Name" --headline "What you build"
-```
-
-**3. Connect your tool**, from inside a project. Swap `codex` for `gemini`, `copilot`, `cursor`, `windsurf` or `claude-desktop`. Add `--dry-run` to see every change first.
-
-```bash
-sp setup codex
-```
-
-**4. Restart the tool** and ask "what am I working on?". Writes show a preview and wait for your yes.
-
-`sp setup` adds a `samepage` entry to the tool's MCP config, keeps a `.samepage-backup` copy of the old file, and writes a short instruction file to the project. That file holds no store content, so it is safe to commit. Cursor and Windsurf config paths are not verified yet, so for those it prints the snippet to paste instead. Gemini CLI runs MCP servers only in folders you trust.
-
-### Claude Design
-
-Link your product repo when you start a design. Put your tokens in `design/tokens.json` (W3C design token format), then log the design system once so every surface knows where it lives:
-
-```
-log the design system for my-app
-```
+1. [Create your store](https://github.com/new?template_owner=rx4u&template_name=samepage-store-template&name=samepage-store&visibility=private) (keep it Private). Skip this if the one line already made it.
+2. Download [samepage.skill](https://github.com/rx4u/samepage/raw/main/dist/samepage.skill) and upload it in Customize, Skills.
+3. Turn on code execution and the GitHub connector for your store, then say "set up samepage".
 
 ### Requirements
 
-- Claude Code and other coding tools: `git` and `python3` 3.9 or newer (macOS asks to install the command line tools the first time). Linux and macOS; Windows is untested.
-- claude.ai and Cowork: nothing to install.
+Mac or Linux with `git` and `python3` 3.9 or newer. Windows is untested. The Claude Code plugin is two skills with no code of its own; it calls the `sp` command the one line installs.
 
 ## The problem
 

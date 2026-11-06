@@ -306,8 +306,8 @@ body{margin:0}
 </div></header>
 
 <div class="sp-hero-copy" style="max-width:1000px;margin:0 auto;padding:72px 24px 0;display:flex;flex-direction:column;align-items:center;text-align:center">
-<a href="https://github.com/rx4u/samepage/releases/tag/v1.3.3" data-sp="release-link" class="sp-fade sp-mono" style="display:inline-flex;align-items:center;gap:10px;min-height:32px;padding:0 14px 0 4px;border:1px solid var(--line2);border-radius:999px;font-size:12px;color:var(--fg2);text-decoration:none;background:var(--bg2)">
-<span class="sp-holofill" data-sp="version" style="border-radius:999px;padding:4px 9px;font-weight:500">v1.3.3</span>
+<a href="https://github.com/rx4u/samepage/releases/tag/v1.3.4" data-sp="release-link" class="sp-fade sp-mono" style="display:inline-flex;align-items:center;gap:10px;min-height:32px;padding:0 14px 0 4px;border:1px solid var(--line2);border-radius:999px;font-size:12px;color:var(--fg2);text-decoration:none;background:var(--bg2)">
+<span class="sp-holofill" data-sp="version" style="border-radius:999px;padding:4px 9px;font-weight:500">v1.3.4</span>
 <span data-sp="headline">One line to set up</span>
 </a>
 <h1 class="sp-h1" style="margin-top:32px">
@@ -345,60 +345,14 @@ body{margin:0}
 </div>
 </div>
 </div>
-<h3 class="sp-eds-h">Or set up one tool by hand</h3>
-<div class="sp-eds">
+<h3 class="sp-eds-h">claude.ai chat and Cowork have no terminal, so they get a skill</h3>
 <div class="sp-card sp-ed">
-<div class="sp-ed-head"><div class="sp-ed-t">Claude Code<span class="sp-badge">Recommended</span></div><p class="sp-ed-s">Plugin. Your context loads at the start of every session. Run in the Claude Code terminal.</p></div>
 <div class="sp-ed-win" data-copy-scope>
-<div class="sp-ed-bar"><span class="sp-ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="sp-mono sp-ed-file">claude code &middot; terminal</span><button type="button" class="sp-copy" data-copy>Copy</button></div>
+<div class="sp-ed-bar"><span class="sp-ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="sp-mono sp-ed-file">claude.ai &middot; cowork</span></div>
 <div class="sp-mono sp-ed-body">
-<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">&gt;</span><span class="sp-c">/plugin marketplace add rx4u/samepage</span></div>
-<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">&gt;</span><span class="sp-c">/plugin install samepage@samepage</span></div>
-<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">&gt;</span><span class="sp-c">/sp init</span></div>
-<div class="sp-edl sp-note"><span class="sp-c"># asks your name and rules, creates a private samepage-store</span></div>
-<div class="sp-edl sp-note"><span class="sp-c"># then ask: what am I working on?</span></div>
-</div>
-</div>
-</div>
-<div class="sp-card sp-ed">
-<div class="sp-ed-head"><div class="sp-ed-t">claude.ai chat &middot; Cowork</div><p class="sp-ed-s">A skill and the GitHub connector. Nothing to install.</p></div>
-<div class="sp-ed-win" data-copy-scope>
-<div class="sp-ed-bar"><span class="sp-ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="sp-mono sp-ed-file">claude.ai &middot; setup</span></div>
-<div class="sp-mono sp-ed-body">
-<div class="sp-edl"><span class="sp-c"><a class="sp-edlink" href="https://github.com/new?template_owner=rx4u&amp;template_name=samepage-store-template&amp;name=samepage-store&amp;visibility=private" target="_blank" rel="noopener">Create your store</a> (keep it Private)</span></div>
-<div class="sp-edl"><span class="sp-c"><a class="sp-edlink" href="https://github.com/rx4u/samepage/raw/main/dist/samepage.skill">Download samepage.skill</a></span></div>
-<div class="sp-edl"><span class="sp-c">Customize, Skills, +, Upload a skill</span></div>
-<div class="sp-edl"><span class="sp-c">Settings, Capabilities: code execution on</span></div>
-<div class="sp-edl"><span class="sp-c">Turn on the GitHub connector for the store</span></div>
-<div class="sp-edl"><span class="sp-c">Say <span class="sp-holo sp-holotext">"set up samepage"</span></span></div>
-</div>
-</div>
-</div>
-<div class="sp-card sp-ed">
-<div class="sp-ed-head"><div class="sp-ed-t">Codex, Gemini CLI, Copilot, Cursor, Windsurf, Claude Desktop</div><p class="sp-ed-s">A local MCP server and a short instruction file. Needs git and python3.</p></div>
-<div class="sp-ed-win" data-copy-scope>
-<div class="sp-ed-bar"><span class="sp-ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="sp-mono sp-ed-file">terminal &middot; zsh</span><button type="button" class="sp-copy" data-copy>Copy</button></div>
-<div class="sp-chips sp-ed-chips" role="group" aria-label="Pick your tool"><button type="button" data-mcp="0" aria-pressed="true" class="sp-chip-b sp-chip-b-on">Codex</button><button type="button" data-mcp="1" aria-pressed="false" class="sp-chip-b">Gemini CLI</button><button type="button" data-mcp="2" aria-pressed="false" class="sp-chip-b">Copilot</button><button type="button" data-mcp="3" aria-pressed="false" class="sp-chip-b">Cursor</button><button type="button" data-mcp="4" aria-pressed="false" class="sp-chip-b">Windsurf</button><button type="button" data-mcp="5" aria-pressed="false" class="sp-chip-b">Claude Desktop</button></div>
-<div class="sp-mono sp-ed-body">
-<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">git clone https://github.com/rx4u/samepage ~/.samepage/tool</span></div>
-<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">SAMEPAGE_NO_START=1 sh ~/.samepage/tool/install.sh</span></div>
-<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">sp init --display-name "Your Name" --headline "What you build"</span></div>
-<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">sp setup <span class="sp-holo sp-holotext" data-sp="mcp-code">codex</span></span></div>
-<div class="sp-edl sp-note"><span class="sp-c"># <span data-sp="mcp-note">adds the MCP entry and AGENTS.md</span></span></div>
-<div class="sp-edl sp-note"><span class="sp-c"># restart the tool and ask: what am I working on?</span></div>
-</div>
-</div>
-</div>
-<div class="sp-card sp-ed">
-<div class="sp-ed-head"><div class="sp-ed-t">Claude Design</div><p class="sp-ed-s">Reads your product repo's tokens. No install.</p></div>
-<div class="sp-ed-win" data-copy-scope>
-<div class="sp-ed-bar"><span class="sp-ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="sp-mono sp-ed-file">design &middot; tokens</span></div>
-<div class="sp-mono sp-ed-body">
-<div class="sp-edl"><span class="sp-c">Link your product repo when you start a design</span></div>
-<div class="sp-edl"><span class="sp-c">Keep tokens in design/tokens.json (W3C format)</span></div>
-<div class="sp-edl"><span class="sp-c">Say <span class="sp-holo sp-holotext">"log the design system for my-app"</span></span></div>
-<div class="sp-edl sp-note"><span class="sp-c"># every surface now knows where your tokens live</span></div>
-</div>
+<div class="sp-edl"><span class="sp-c"><a class="sp-edlink" href="https://github.com/new?template_owner=rx4u&amp;template_name=samepage-store-template&amp;name=samepage-store&amp;visibility=private" target="_blank" rel="noopener">Create your store</a> (keep it Private; skip if the one line made it)</span></div>
+<div class="sp-edl"><span class="sp-c"><a class="sp-edlink" href="https://github.com/rx4u/samepage/raw/main/dist/samepage.skill">Download samepage.skill</a>, upload it in Customize, Skills</span></div>
+<div class="sp-edl"><span class="sp-c">Turn on code execution and the GitHub connector, say <span class="sp-holo sp-holotext">"set up samepage"</span></span></div>
 </div>
 </div>
 </div>
