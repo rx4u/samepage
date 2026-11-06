@@ -35,7 +35,16 @@ def main(argv=None):
     fixtures.add_argument("--perf", action="store_true", required=True)
     fixtures.add_argument("--seed", type=int, default=42)
     fixtures.add_argument("--out", default="fixtures/perf")
+    # ----- stream B: write and read commands (WP-08, WP-09, WP-12, WP-13)
+    from . import brief as _brief, handoff as _handoff, log as _log, proof as _proof, rules as _rules
+    for _module in (_log, _handoff, _proof, _rules, _brief):
+        _module.register(sub)
+    # ----- end stream B
     args = parser.parse_args(argv)
+    # ----- stream B dispatch
+    if getattr(args, "func", None) is not None:
+        return args.func(args)
+    # ----- end stream B dispatch
     if args.command == "schema":
         from .schema import generate
         for path in generate():
