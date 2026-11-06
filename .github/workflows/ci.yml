@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.9", "3.13"]
+        python: ["3.13"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
@@ -25,6 +25,20 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Small fixture store passes sp check
         run: python -m sp check fixtures/small
+
+  test-macos-system-python:
+    # The python3 that ships with Xcode Command Line Tools on macOS (3.9), the
+    # main target in ADR-0012. ubuntu-latest no longer offers 3.9 (Ubuntu 26).
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - name: System python version
+        run: /usr/bin/python3 --version
+      - name: Unit, schema and perf tests
+        run: /usr/bin/python3 -m unittest discover -s tests -v
+      - name: Small fixture store passes sp check
+        run: /usr/bin/python3 -m sp check fixtures/small
 
   guardrails:
     runs-on: ubuntu-latest
