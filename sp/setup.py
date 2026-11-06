@@ -284,8 +284,8 @@ def claude_hook_step(dry_run, out):
     if old is not None:
         _write(path + ".samepage-backup", old)
     _write(path, text)
-    out("samepage: %s now loads samepage at every session start (backup: settings.json.samepage-backup)"
-        % CLAUDE_SETTINGS)
+    out("samepage: %s now loads samepage at every session start%s"
+        % (CLAUDE_SETTINGS, " (backup: settings.json.samepage-backup)" if old is not None else ""))
     return 0
 
 
