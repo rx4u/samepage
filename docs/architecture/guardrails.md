@@ -8,10 +8,13 @@
 | Boot file under 8,000 characters | `sp check` on fixtures/perf | Merge | None |
 | Only Python standard library imports | CI import scan | Merge | None |
 | No new dependency without ADR | CI diff check on workflows and plugin manifests | Merge | adr/ references |
-| No maintainer-hosted endpoints | CI grep for http URLs outside docs, example hosts and github.com (the store backend, ADR-0016) | Merge | docs/, README.md |
-| No token or credential handling | CI grep for token, secret, password variables in sp/, hooks/ and commands/ | Merge | None |
+| No maintainer-hosted endpoints | CI grep for http URLs outside docs, example hosts and github.com (the store backend, ADR-0016), in sp/, hooks/, commands/, skills/ and install.sh | Merge | docs/, README.md |
+| No token or credential handling | CI grep for token, secret, password variables in sp/, hooks/, commands/, skills/ and install.sh | Merge | None |
+| No store content outside the store | Test: the `sp context` block contains no line of any fixture boot file | Merge | None |
+| MCP stdout carries protocol only | Protocol test: every stdout line of `sp mcp` parses as one JSON-RPC message | Merge | None |
+| No ChatGPT adapter (ADR-0019) | CI grep for chatgpt in sp/, skills/, commands/, hooks/ | Merge | None |
 | SKILL.md under 500 lines, description under 1,024 characters, no XML brackets in frontmatter | CI script | Merge | None |
-| No em dashes in skill, docs and README (house style) | CI grep for U+2014 | Merge | None |
+| No em dashes in skill, docs, README, install.sh and every runtime file (house style) | CI grep for U+2014 | Merge | None |
 | Store Action never commits when `sp check` fails | workflow step order | Store push (user's repo) | None |
 | Every frontmatter key is in schema/fields.json | `sp check` | Store push and Merge | None |
 

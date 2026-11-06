@@ -21,6 +21,10 @@
 | A14 | Most early users are on macOS or Linux | User behaviour | 2 | 2 | 4 |
 | A18 | Launch date 2026-12-01 (ASSUMPTION in prd.md) | Business | 2 | 2 | 4 |
 | A10 | Store Action stays within GitHub's free private-repo minutes | Scale | 2 | 1 | 2 |
+| A21 | Agents in Codex, Cursor, Copilot, Gemini CLI and Windsurf follow the instruction-file block and load context at session start | Integration | 4 | 4 | 16 |
+| A22 | The MCP config paths and formats in system-design.md are current for each tool (checked 2026-11-06 from vendor docs) | Integration | 4 | 3 | 12 |
+| A23 | MCP clients accept a stdlib server that negotiates the protocol versions listed in sp/mcp.py | Technical feasibility | 4 | 2 | 8 |
+| A24 | Users without Claude logins find samepage useful with adapters marked community-tested | Business | 3 | 4 | 12 |
 
 ## Top 3
 1. **A3: users keep logging.** We assume this because drafting from the session makes a log take about 30 seconds and the Stop hook reminds them. False if, among 5 testers, fewer than 3 log 5 or more entries in their second week.
@@ -36,7 +40,13 @@
    - Deadline: 2026-11-20, before wave 4.
    - Owner: Raja
 
+## Wave 5 top risks (ADR-0017 to ADR-0020)
+- **A21: agents follow the block.** No owner login exists for those tools (2026-11-06), so this cannot be tested before launch by the owner. Test: any contributor or tester with one tool runs the WP-23 checklist; one passing run per tool flips its README tick. Deadline: open, accepted as a launch risk in writing by Raja's answer Q3 (community-tested). Owner: Raja.
+- **A22: config paths.** Test: WP-21 tests pin the documented shapes; recheck vendor docs at each release. Deadline: each release. Owner: maintainer.
+- **A23: protocol acceptance.** Test: tests/test_mcp.py drives the handshake; Claude Desktop (owner has it) is the first real client in WP-23. Deadline: WP-23. Owner: Raja.
+
 ## Accepted risks
+- A24: adapters ship as community-tested (owner decision 2026-11-06). Recovery cost: 0; ticks are added as ledger rows land.
 - A2: chat writes through the connector. TESTED 2026-11-06 (WP-01): claude.ai chat read SPIKE.md on rx4u/samepage, but the write returned `403 Resource not accessible by integration`. Verified on github.com/settings/installations: the Claude app (used by Claude Code) is installed, the GitHub app behind the claude.ai chat connector is not. INFERRED from a public troubleshooting note (epik-agent/Epik issue 336): chat writes need that connector app installed on the repo owner's account, then a new conversation. Consequence: setup must include that install step, and the US-06 read-only fallback is required. Retest after install.
 - A12: native memory arrives. Recovery cost: reposition on proof, decisions and handoffs; 2 days of README and skill changes.
 - A16: Design reads nothing from the store. Already the v1 design (ADR-0011). Recovery cost: 0.

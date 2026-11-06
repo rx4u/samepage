@@ -1,6 +1,6 @@
 # samepage store spec
 
-Version 1.0. The binding source is [docs/architecture/data-architecture.md](docs/architecture/data-architecture.md); this page is the readable summary. `schema/fields.json` and `schema/lookups.json` are generated from it with `python3 -m sp schema` and are what `sp check` and the skill use.
+Version 1.1. The binding source is [docs/architecture/data-architecture.md](docs/architecture/data-architecture.md); this page is the readable summary. `schema/fields.json` and `schema/lookups.json` are generated from it with `python3 -m sp schema` and are what `sp check` and the skill use.
 
 ## What a store is
 
@@ -58,7 +58,8 @@ Markdown body. Display only, never parsed.
 
 | Field | Values |
 |---|---|
-| surface | code, chat, cowork, design |
+| surface | code, chat, cowork, design. A surface is a role: `code` is any coding agent, `chat` any chat assistant |
+| tool (1.1) | claude_code, claude_ai, claude_desktop, cowork, claude_design, codex, cursor, copilot, gemini_cli, windsurf, other |
 | project status | idea, active, shipped, parked, archived, unknown |
 | project type | product, client_site, concept, skill, tool, content, other |
 | event kind | shipped, deployed, launched, milestone, metric, published |
@@ -66,6 +67,33 @@ Markdown body. Display only, never parsed.
 | design asset status | draft, approved, superseded |
 | decision status | accepted, superseded, reversed |
 | handoff status | open, picked_up, done, dropped |
+
+## Version 1.1: the tool keys
+
+Version 1.1 adds one optional key that records which tool wrote an entry: `tool` on ship events, decisions and design assets, and `from_tool` on handoffs. Handoffs still go to a surface, so a handoff to `code` is picked up by whichever coding tool opens next.
+
+```
+---
+id: 7fe7baaf-2b1c-4f0e-9a51-3c1f1d1e2a10
+project: halcyon
+kind: shipped
+surface: code
+tool: cursor
+summary: Shipped the pricing page
+occurred_at: 2026-11-06T09:30:00Z
+created_at: 2026-11-06T09:31:00Z
+---
+```
+
+- A 1.0 store stays valid. It must not carry `tool` or `from_tool`; `sp check` fails it if it does, and every writer leaves them out.
+- New stores start at 1.1.
+
+### Upgrade a store from 1.0 to 1.1
+
+In one commit on the store's default branch:
+
+1. In `store.md`, set `schema_version: 1.1`.
+2. In `.github/workflows/index.yml`, set the samepage tool `ref:` to a commit of rx4u/samepage that has schema 1.1 or later (the template repo's workflow shows the current one).
 
 ## Rules every store follows
 

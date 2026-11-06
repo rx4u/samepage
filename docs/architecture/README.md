@@ -2,14 +2,14 @@
 
 Mode: new
 Status: approved (PRD and scope accepted by Raja, 2026-11-06; gate passed)
-Last validated: 2026-11-06
+Last validated: 2026-11-06 (wave 5 scope change: ADR-0017 to ADR-0020)
 
 Name: samepage, CLI `sp`, published under github.com/rx4u (ADR-0010, ADR-0013). Earlier drafts used the working name context-os.
 
 ## What this is
-An open-source kit that gives every Claude surface (Claude Code, claude.ai chat, Cowork, Claude Design) one shared working context: who you are, how you want Claude to behave, every project you have, what you shipped, what you decided, and what is waiting to be picked up on another surface. The context lives in a store the user owns: a private GitHub repo of Markdown files, or a set of Notion databases. One skill reads and writes it from every surface. A Claude Code plugin boots it into every session.
+An open-source kit that gives every Claude surface (Claude Code, claude.ai chat, Cowork, Claude Design), and since wave 5 other coding tools (Codex, Cursor, GitHub Copilot, Gemini CLI, Windsurf) and Claude Desktop, one shared working context: who you are, how you want Claude to behave, every project you have, what you shipped, what you decided, and what is waiting to be picked up on another surface. The context lives in a store the user owns: a private GitHub repo of Markdown files, or a set of Notion databases. One skill reads and writes it from every surface. A Claude Code plugin boots it into every session.
 
-There is no hosted service, no database server and no API key. The SQL in data-architecture.md is the logical contract every adapter must honour (ADR-0003), not a deployed database.
+There is no hosted service, no database server and no API key. `sp mcp` is a local stdio process the user's own tool starts. The SQL in data-architecture.md is the logical contract every adapter must honour (ADR-0003), not a deployed database.
 
 ## Documents
 | Document | What it decides |
@@ -32,7 +32,9 @@ There is no hosted service, no database server and no API key. The SQL in data-a
 
 ## Vocabulary
 - **Store**: the user's own context, in one backend (GitHub or Notion).
-- **Surface**: where Claude runs. Lookup `surface`: code, chat, cowork, design.
+- **Surface**: the role a tool plays. Lookup `surface`: code (any coding agent), chat, cowork, design (ADR-0017).
+- **Tool**: the product that wrote an entry. Lookup `tool`, optional, schema 1.1 (ADR-0017).
+- **Adapter**: one way a tool takes in context: the plugin, the skill, an instruction-file block, or the local MCP server `sp mcp` (ADR-0018).
 - **Screen**: a moment on a surface where the store is read or written (session boot, logging a ship, a proof lookup). There is no web UI; screens are skill modes, hook runs and commands.
 - **Serve layer**: pre-built index files (GitHub) or database queries (Notion) that answer one screen in one read.
 

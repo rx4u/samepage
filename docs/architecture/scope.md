@@ -12,13 +12,19 @@
 | Design pointers and Design handoff capture | US-10, US-11 | 4 | S | design_asset |
 | Demo store with synthetic data and perf check | US-13 | 4 | S | all entities |
 | Launch kit: README, demo gif, install in one line | none (adoption) | 5 | S | none |
+| Tool field and roles (schema 1.1, ADR-0017) | US-16, US-17 | 4 | S | ship_event, decision, design_asset, handoff, tool |
+| Portable skill, `sp context` instruction blocks, `sp mcp` local server (ADR-0018) | US-16, US-17, US-19 | 5 | M | all read models |
+| `install.sh` and `sp setup` for codex, cursor, copilot, gemini, windsurf, claude-desktop (ADR-0020) | US-18 | 4 | M | none |
 
 ## Cut from v1
 | Feature | Why cut | Revisit when |
 |---|---|---|
 | Two-way sync between a GitHub store and a Notion store | Doubles the write paths and creates conflicts. Users pick one backend. | 50 issues or discussions ask for it |
 | Writes from Claude Design | No evidence Claude Design runs skills or connectors (A1, A16) | Anthropic documents connectors or skills in Claude Design |
-| Hosted MCP server for the store | Adds infra, auth and cost; breaks "zero infra" | A surface appears that cannot use GitHub or Notion connectors |
+| Hosted MCP server for the store | Adds infra, auth and cost; breaks "zero infra". The local stdio `sp mcp` (ADR-0018) is in v1; nothing remote is | A surface appears that cannot use GitHub or Notion connectors |
+| ChatGPT | Accepts only remote HTTPS MCP servers; no login to test (ADR-0019, owner decision 2026-11-06) | ChatGPT supports local MCP or free-plan GitHub reads, and 10 issues ask |
+| Rules or handoffs aimed at one tool | Roles cover the need; per-tool targets multiply inboxes (ADR-0017) | 10 issues ask |
+| Tested ticks for Codex, Cursor, Copilot, Gemini CLI, Windsurf | No owner logins (2026-11-06); adapters ship as community-tested | A maintainer or contributor runs the Phase 3 checklist and records it |
 | Team stores (several people, one store) | Permissions and conflict model not designed | 3 teams ask, with a concrete workflow |
 | Importing claude.ai memory or chat history | Native export formats change; distilled entries are the point | A stable export format exists |
 | Windows-native hook script | Plugin hook uses POSIX shell and python3 | 10 Windows issues; then ADR for a Node or PowerShell hook |
@@ -28,7 +34,6 @@
 | Phase | Features | Trigger to start |
 |---|---|---|
 | 1.1 | Store migration helper from an existing Notion database with a field map | 2 weeks after launch |
-| 1.2 | Codex, Cursor and other agent adapters reading the same GitHub store | 300 stars or a contributor PR |
 | 2 | Team stores with per-member write logs | Revisit condition above |
 
 ## Parking rules

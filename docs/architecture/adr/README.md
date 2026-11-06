@@ -18,6 +18,10 @@
 | [0014](0014-package-one-skill-with-modes.md) | Package one skill with modes | accepted | 2026-11-06 |
 | [0015](0015-allow-non-store-folder-readers.md) | Allow non-store folder readers | accepted | 2026-11-06 |
 | [0016](0016-adopt-one-click-store-and-guided-setup.md) | Adopt a one-click store and guided setup | accepted | 2026-11-06 |
+| [0017](0017-adopt-surfaces-as-roles-with-tool-field.md) | Adopt surfaces as roles, with a tool field | accepted | 2026-11-06 |
+| [0018](0018-adopt-multi-tool-adapters.md) | Adopt multi-tool adapters (instruction files, local MCP, portable skill) | accepted | 2026-11-06 |
+| [0019](0019-leave-chatgpt-out-of-v1.md) | Leave ChatGPT out of v1 | accepted | 2026-11-06 |
+| [0020](0020-adopt-installer-and-sp-setup.md) | Adopt an installer and `sp setup` | accepted | 2026-11-06 |
 
 Statuses: proposed, accepted, rejected, deprecated, superseded.
 A superseded ADR links to its replacement and the replacement links back. History is never rewritten;

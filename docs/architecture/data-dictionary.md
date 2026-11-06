@@ -7,7 +7,7 @@ Lookup tables share one shape: `id` (logical only) and `code` (what files and No
 | `backend.id` | smallint | Logical id | Spec | Spec release | schema/lookups.json | Store check |
 | `backend.code` | text | github or notion | Spec | Spec release | schema/lookups.json | Setup, Store check |
 | `surface.id` | smallint | Logical id | Spec | Spec release | schema/lookups.json | Store check |
-| `surface.code` | text | code, chat, cowork, design | Spec | Spec release | schema/lookups.json | Session boot, Chat recall, Handoff inbox, Rules |
+| `surface.code` | text | code, chat, cowork, design. Since 1.1 a role: code is any coding agent, chat any chat assistant (ADR-0017) | Spec | Spec release | schema/lookups.json | Session boot, Chat recall, Handoff inbox, Rules |
 | `project_status.id` | smallint | Logical id | Spec | Spec release | schema/lookups.json | Store check |
 | `project_status.code` | text | idea, active, shipped, parked, archived, unknown | Spec | Spec release | schema/lookups.json | Session boot, Project detail |
 | `project_type.id` | smallint | Logical id | Spec | Spec release | schema/lookups.json | Store check |
@@ -24,8 +24,10 @@ Lookup tables share one shape: `id` (logical only) and `code` (what files and No
 | `handoff_status.code` | text | open, picked_up, done, dropped | Spec | Spec release | schema/lookups.json | Handoff inbox |
 | `build_status.id` | smallint | Logical id | Spec | Spec release | schema/lookups.json | Store check |
 | `build_status.code` | text | running, succeeded, failed | Spec | Spec release | schema/lookups.json | Store check |
+| `tool.id` | smallint | Logical id (since 1.1) | Spec | Spec release | schema/lookups.json | Store check |
+| `tool.code` | text | claude_code, claude_ai, claude_desktop, cowork, claude_design, codex, cursor, copilot, gemini_cli, windsurf, other (ADR-0017) | Spec | Spec release | schema/lookups.json | Log entry, Decision record, Design pointer, Handoff inbox |
 | `store_meta.id` | smallint | Always 1 | `sp init`, skill (setup) | Setup | constant | Store check |
-| `store_meta.schema_version` | text | Spec major.minor the store follows | `sp init`, `sp migrate` | Setup, migration | spec version | Store check, Session boot |
+| `store_meta.schema_version` | text | Spec major.minor the store follows; gates which keys writers emit (B23) and is printed in every serve file header (B22) | `sp init`, owner upgrade commit | Setup, upgrade | spec version | Store check, Session boot, Chat recall, Log entry |
 | `store_meta.backend_id` | smallint | Backend in use | `sp init`, skill (setup) | Setup | user choice | Setup, Store check |
 | `store_meta.owner_handle` | text | GitHub login or Notion user name | `sp init`, skill (setup) | Setup | gh or Notion connector | Store check |
 | `store_meta.created_at` | timestamptz | Store creation time, UTC | `sp init`, skill (setup) | Setup | clock | Store check |
@@ -78,6 +80,7 @@ Lookup tables share one shape: `id` (logical only) and `code` (what files and No
 | `ship_event.project_id` | uuid | Project it belongs to | skill (log), `sp log` | Logged | user | Proof lookup, Project detail |
 | `ship_event.kind_id` | smallint | What happened | skill (log), `sp log` | Logged | user, drafted | Proof lookup, Project detail |
 | `ship_event.surface_id` | smallint | Surface it was logged from | skill (log), `sp log` | Logged | runtime | Project detail |
+| `ship_event.tool_id` | smallint | Tool it was logged from, optional, since 1.1 | skill (log), `sp log`, `sp mcp` | Logged | runtime, the adapter's `--tool` | Log entry (written only; serve files do not print it, ADR-0017) |
 | `ship_event.summary` | text | What happened, 280 chars | skill (log), `sp log` | Logged | drafted from session, confirmed | Proof lookup, Project detail, Session boot |
 | `ship_event.proof_url` | text | Public link that proves it | skill (log), `sp log` | Logged | user | Proof lookup |
 | `ship_event.metric_label` | text | Metric name, e.g. signups | skill (log), `sp log` | Logged | user | Proof lookup |
@@ -89,6 +92,7 @@ Lookup tables share one shape: `id` (logical only) and `code` (what files and No
 | `decision.project_id` | uuid | Project | skill (decision) | Logged | user | Decision record, Project detail |
 | `decision.status_id` | smallint | accepted, superseded, reversed | skill (decision) | Logged, superseded | user | Decision record, Session boot |
 | `decision.surface_id` | smallint | Surface where decided | skill (decision) | Logged | runtime | Decision record |
+| `decision.tool_id` | smallint | Tool where decided, optional, since 1.1 | skill (decision), `sp log decision`, `sp mcp` | Logged | runtime, the adapter's `--tool` | Decision record (written only) |
 | `decision.superseded_by_id` | uuid | Replacing decision | skill (decision) | New decision logged with supersedes | user | Decision record |
 | `decision.title` | text | The decision, 120 chars | skill (decision) | Logged | user | Decision record, Session boot, Project detail |
 | `decision.reason` | text | Why, display only | skill (decision) | Logged | user | Decision record, Project detail |
@@ -101,6 +105,7 @@ Lookup tables share one shape: `id` (logical only) and `code` (what files and No
 | `design_asset.kind_id` | smallint | design_system, screen_set, handoff_bundle, prototype | skill (design), `sp log design` | Logged | user | Design pointer, Design handoff capture, Session boot |
 | `design_asset.status_id` | smallint | draft, approved, superseded | skill (design), `sp log design` | Logged, approved | user | Design pointer, Session boot |
 | `design_asset.surface_id` | smallint | Surface it was logged from | skill (design), `sp log design` | Logged | runtime | Design pointer |
+| `design_asset.tool_id` | smallint | Tool it was logged from, optional, since 1.1 | skill (design), `sp log design` | Logged | runtime, the adapter's `--tool` | Design pointer (written only) |
 | `design_asset.title` | text | Name of the system, screen set or handoff | skill (design), `sp log design` | Logged | user or bundle title | Design pointer, Design handoff capture, Session boot |
 | `design_asset.source_url` | text | Claude Design share link or file link | skill (design), `sp log design` | Logged | user | Design pointer, Design handoff capture |
 | `design_asset.tokens_repo_url` | text | Repo that holds the tokens file | skill (design), `sp log design` | Logged | user or project.repo_url | Design pointer, Session boot |
@@ -110,6 +115,7 @@ Lookup tables share one shape: `id` (logical only) and `code` (what files and No
 | `handoff.id` | uuid | Handoff id | skill (handoff), `/sp handoff` | Created | generated | Handoff inbox |
 | `handoff.project_id` | uuid | Project | skill (handoff), `/sp handoff` | Created | user or current repo | Handoff inbox |
 | `handoff.from_surface_id` | smallint | Where it was written | skill (handoff), `/sp handoff` | Created | runtime | Handoff inbox |
+| `handoff.from_tool_id` | smallint | Tool where it was written, optional, since 1.1 | skill (handoff), `sp handoff new`, `sp mcp` | Created | runtime, the adapter's `--tool` | Handoff inbox, Session boot, Chat recall |
 | `handoff.to_surface_id` | smallint | Where it should be picked up | skill (handoff), `/sp handoff` | Created | user | Handoff inbox, Session boot, Chat recall |
 | `handoff.status_id` | smallint | open, picked_up, done, dropped | skill (handoff), `/sp handoff` | Created, picked up, done | user | Handoff inbox, Session boot, Chat recall |
 | `handoff.title` | text | Short title, 120 chars | skill (handoff), `/sp handoff` | Created | user, drafted | Handoff inbox, Session boot, Chat recall |

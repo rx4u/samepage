@@ -44,7 +44,15 @@ Two promises that do not change: no hosted server, and samepage never handles to
 | 3 Test per tool | Real runs: Claude Code, claude.ai, Codex, Cursor, Copilot, Gemini CLI, ChatGPT (read-only) | Raja's Mac, Claude Code | each tested tool recorded in a ledger like `docs/build/wp14-edge-cases.md` |
 | 4 Reposition | README for every AI (tested-tools table, only tools actually tested get a tick), new gif, landing page on Vercel, release v1.0.0 | cloud | release published, page live |
 
-## Open questions for Raja (ask before Phase 0, then record the answers in the ADRs)
+## Answers (Raja, 2026-11-06, recorded in ADR-0017 to ADR-0020)
+
+1. No logins for Codex, Cursor, Copilot, Gemini CLI or Windsurf. Only Claude tools get a tested tick until someone runs the Phase 3 checklist on another tool.
+2. Leave ChatGPT out of the launch (ADR-0019). This replaces the read-only proposal below.
+3. Claude first; other tools are adapters marked community-tested (ADR-0018).
+
+Phase 0 changes to this plan: instruction files get a pointer block with no store content, so they are safe to commit and are not refreshed on every write (ADR-0018). Tool codes are snake_case (claude_code, gemini_cli). `sp setup` writes configs only where the vendor path is verified; Cursor and Windsurf print a snippet until verified (system-design.md, Tool adapters).
+
+## Open questions for Raja (asked 2026-11-06, answered above)
 
 1. Which tools does Raja have logins for (Codex, Cursor, Copilot, Gemini CLI, Windsurf)? Only those get a "tested" tick.
 2. ChatGPT read-only at launch: accepted? (Recommended: yes, keep the no-server promise.)

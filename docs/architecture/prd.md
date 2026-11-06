@@ -7,10 +7,12 @@ People who build with Claude use three or four surfaces for one piece of work: t
 - Open feature requests on anthropics/claude-code ask for exactly this (issues 14228, 28307, 46565, 52641, 55842, 90973). Users describe copy-pasting Markdown between tabs and Code asking the same questions chat already answered.
 - The most visible cost: when a builder writes a proposal, bio or case study in chat, chat does not know what they shipped last week in Code. They re-explain it every time, or leave it out.
 
+- Since v1.0 launch scope (2026-11-06, ADR-0017, ADR-0018): the same people also build in coding tools from other vendors (Codex, Cursor, GitHub Copilot, Gemini CLI, Windsurf). Each keeps its own instruction file and memory, so the gap is wider than Claude alone. Claude stays the deepest integration and leads the pitch; other tools get adapters marked community-tested until tested (owner answer, 2026-11-06).
+
 ASSUMPTION: an active multi-surface builder loses 15 to 30 minutes a day re-establishing context. Not measured; tested by A4 in assumptions.md.
 
 ## Target users
-- Solo Builder: builds products and client work with Claude Code, writes proposals and posts in chat.
+- Solo Builder: builds products and client work with Claude Code (and sometimes Codex, Cursor, Copilot, Gemini CLI or Windsurf), writes proposals and posts in chat.
 - Design Builder: designs in Claude Design, hands off to Claude Code, needs both to share the same design decisions.
 - Maintainer: runs the public repo, reviews contributions, keeps adapters working.
 
@@ -20,6 +22,7 @@ ASSUMPTION: an active multi-surface builder loses 15 to 30 minutes a day re-esta
 | Solo Builder | I open a new Claude Code session | Claude to already know me, my rules and this project's state | start working instead of re-explaining |
 | Solo Builder | I finish shipping something in Code | log it once in 30 seconds | have it available on every surface |
 | Solo Builder | I write a proposal or bio in chat | chat to pull my real shipped work with links | send accurate, specific proof |
+| Solo Builder | I open Cursor, Codex or another coding tool on the same project | it to load the same context and log to the same store | switch tools without losing what was decided |
 | Solo Builder | I plan something in chat that Code must build | leave a handoff Code picks up | stop pasting briefs between apps |
 | Design Builder | I finish a design in Claude Design | Code and chat to know which design system and decisions apply | ship what was designed, not a drift |
 | Maintainer | someone's store breaks | a validator that names the broken file and field | fix issues without guessing |
@@ -127,6 +130,34 @@ As a Solo Builder, I want to state a working rule once and have every surface ap
 - Given a preference "never use em dashes" with no surface, When any surface boots, Then the rule appears under Rules in that surface's boot file.
 - Given a preference scoped to `code`, When chat boots, Then it is not shown in chat.
 
+### US-16: Boot context in any coding tool
+As a Solo Builder, I want Codex, Cursor, Copilot, Gemini CLI or Windsurf to start with the same context Claude Code gets, so that switching tools costs nothing.
+- Given `sp setup cursor` has run and a GitHub store is configured, When the agent calls the samepage MCP tool `boot` with the project folder, Then it receives the same text `sp boot --surface code --cwd DIR` prints, wrapped in the `<samepage data>` block.
+- Given the tool has no MCP server registered, When the agent follows the samepage block in the project's instruction file, Then it runs `sp boot --surface code --cwd .` and receives the same text.
+- Given a Notion store, When `boot` is called, Then it returns one line saying the MCP server serves GitHub stores and the skill handles Notion.
+
+### US-17: Log from any coding tool, with a preview the server enforces
+As a Solo Builder, I want to log a ship, decision, handoff or rule from any MCP tool, so that the store stays current wherever I work.
+- Given an MCP session started with `--tool codex` on a 1.1 store, When the agent calls `log_ship` with `dry_run` true, Then it gets the file path, the full file text and a `confirm` value, and nothing is written.
+- Given that preview, When the agent calls `log_ship` with the same values and the `confirm` value, Then the file is written through the normal write path with `tool: codex` and `surface: code`.
+- Given a call with `dry_run` false and no `confirm` value, or values that differ from the preview, When the server handles it, Then nothing is written and the error says to run the preview first.
+- Given a 1.0 store, When any write runs, Then no `tool` key is written and the result says the store is 1.0.
+
+### US-18: Set up a coding tool in two commands
+As a Solo Builder, I want to install samepage and connect a coding tool without editing config files, so that setup takes minutes.
+- Given git and python3 on macOS or Linux, When the user runs `install.sh`, Then `~/.samepage/tool` holds samepage, `~/.local/bin/sp` runs it, and the output names the next command.
+- Given a Gemini CLI `~/.gemini/settings.json` with other servers, When the user runs `sp setup gemini`, Then a `samepage` entry is added, every other entry keeps its content and order, and a backup of the old file exists.
+- Given a tool whose config path is not verified (Cursor, Windsurf), When setup runs, Then it prints the snippet and the file it belongs in, and exits 0.
+- Given a config file that does not parse as JSON, When setup runs, Then the file is unchanged and the exact snippet to paste is printed.
+- Given `sp setup chatgpt`, When it runs, Then it exits 2 and lists the supported tools (ADR-0019).
+
+### US-19: Point a project's instruction file at samepage
+As a Solo Builder, I want my project's AGENTS.md (or the tool's equivalent) to tell any agent how to load and log context, so that the agent uses samepage without me asking.
+- Given an AGENTS.md with the user's own lines, When the user runs `sp context --tool codex`, Then a samepage block is added between markers and every user line is unchanged.
+- Given a block already present, When `sp context --refresh` runs, Then only the lines between the markers are rewritten.
+- Given a file with a start marker and no end marker, When `sp context` runs, Then it exits 1 and the file is unchanged.
+- Given any store, When the block is written, Then it contains no store content.
+
 ## Never do
 - Never write to the store without showing the entry and getting a confirmation in that turn (ADR-0007).
 - Never store secrets, API keys, tokens, passwords, government ids or financial account numbers. `sp check` fails on known secret patterns.
@@ -135,6 +166,8 @@ As a Solo Builder, I want to state a working rule once and have every surface ap
 - Never fetch or call a URL found inside the store as part of boot or recall.
 - Never follow instructions found inside store content. Store entries are data (ADR-0007).
 - Never run AI summarisation at boot or recall time. Drafting happens only when logging.
+- Never copy store content into a file outside the store, such as a product repo's instruction file (ADR-0018).
+- Never change a tool's config file that failed to parse. In a config, change only the `samepage` entry (other entries keep content and order; JSON whitespace may be normalised). In an instruction file, change only the lines between the samepage markers (ADR-0018, ADR-0020).
 
 ## Risks
 | Risk | Likelihood | Impact | Mitigation (an action, not "be careful") |
@@ -144,6 +177,8 @@ As a Solo Builder, I want to state a working rule once and have every surface ap
 | Name collision buries the repo in search | High | Medium | Rename before launch (ADR-0010). |
 | Claude Design cannot import tokens from a linked repo | Medium | Medium | Spike WP-01 before WP-13; fallback is a design brief the skill exports for pasting into Claude Design. |
 | Store content carries a prompt injection | Low | High | Skill treats store content as data; boot output is wrapped in a labelled data block; `sp check` flags instruction-like lines in profile and preferences for review. |
+| Non-Claude tool adapters ship untested (no logins, owner answer 2026-11-06) | High | Medium | README marks them community-tested; Phase 3 ledger in docs/build/ records each real run; protocol and config tests in CI |
+| A tool moves its MCP config path | Medium | Medium | `sp setup` writes only paths listed in system-design.md and prints the snippet otherwise; paths rechecked at each release |
 | GitHub write from chat fails on some plans | Medium | Medium | Read-only fallback path in US-06; README states the connector requirement up front. |
 
 ## Open questions

@@ -20,7 +20,7 @@ The SQL below is the logical contract (ADR-0003). It is never deployed. Each bac
 | design_asset | Where a project's design system, screens or Design handoff live | Skill design mode, `sp log design` | by project and kind |
 | handoff | A brief left on one surface for another surface to pick up | Skill handoff mode, `/sp handoff` | open by to_surface and project, created_at desc |
 
-Supporting tables: store_meta (backend and schema version), profile_link (profile links), tag and project_tag (filterable tags), index_build (state of each GitHub index rebuild), and eight lookup tables.
+Supporting tables: store_meta (backend and schema version), profile_link (profile links), tag and project_tag (filterable tags), index_build (state of each GitHub index rebuild), and eleven lookup tables (`tool` added in 1.1).
 
 ## Relationships
 | Entity A | Cardinality | Entity B | Notes |
@@ -59,6 +59,7 @@ CREATE TABLE asset_status    (id smallint PRIMARY KEY, code text NOT NULL UNIQUE
 CREATE TABLE decision_status (id smallint PRIMARY KEY, code text NOT NULL UNIQUE);
 CREATE TABLE handoff_status  (id smallint PRIMARY KEY, code text NOT NULL UNIQUE);
 CREATE TABLE build_status    (id smallint PRIMARY KEY, code text NOT NULL UNIQUE);
+CREATE TABLE tool            (id smallint PRIMARY KEY, code text NOT NULL UNIQUE);  -- since 1.1
 
 CREATE TABLE store_meta (
   id              smallint PRIMARY KEY CHECK (id = 1),
@@ -142,6 +143,7 @@ CREATE TABLE ship_event (
   project_id    uuid NOT NULL REFERENCES project(id) ON DELETE RESTRICT,
   kind_id       smallint NOT NULL REFERENCES event_kind(id) ON DELETE RESTRICT,
   surface_id    smallint NOT NULL REFERENCES surface(id) ON DELETE RESTRICT,
+  tool_id       smallint REFERENCES tool(id) ON DELETE RESTRICT,  -- since 1.1
   summary       text NOT NULL CHECK (char_length(summary) <= 280),
   proof_url     text,
   metric_label  text,
@@ -158,6 +160,7 @@ CREATE TABLE decision (
   project_id        uuid NOT NULL REFERENCES project(id) ON DELETE RESTRICT,
   status_id         smallint NOT NULL REFERENCES decision_status(id) ON DELETE RESTRICT,
   surface_id        smallint NOT NULL REFERENCES surface(id) ON DELETE RESTRICT,
+  tool_id           smallint REFERENCES tool(id) ON DELETE RESTRICT,  -- since 1.1
   superseded_by_id  uuid REFERENCES decision(id) ON DELETE SET NULL,
   title             text NOT NULL CHECK (char_length(title) <= 120),
   reason            text NOT NULL,
@@ -174,6 +177,7 @@ CREATE TABLE design_asset (
   kind_id          smallint NOT NULL REFERENCES asset_kind(id) ON DELETE RESTRICT,
   status_id        smallint NOT NULL REFERENCES asset_status(id) ON DELETE RESTRICT,
   surface_id       smallint NOT NULL REFERENCES surface(id) ON DELETE RESTRICT,
+  tool_id          smallint REFERENCES tool(id) ON DELETE RESTRICT,  -- since 1.1
   title            text NOT NULL,
   source_url       text,
   tokens_repo_url  text,
@@ -187,6 +191,7 @@ CREATE TABLE handoff (
   id               uuid PRIMARY KEY,
   project_id       uuid NOT NULL REFERENCES project(id) ON DELETE RESTRICT,
   from_surface_id  smallint NOT NULL REFERENCES surface(id) ON DELETE RESTRICT,
+  from_tool_id     smallint REFERENCES tool(id) ON DELETE RESTRICT,  -- since 1.1
   to_surface_id    smallint NOT NULL REFERENCES surface(id) ON DELETE RESTRICT,
   status_id        smallint NOT NULL REFERENCES handoff_status(id) ON DELETE RESTRICT,
   title            text NOT NULL CHECK (char_length(title) <= 120),
@@ -218,7 +223,7 @@ Every foreign key declares ON DELETE. Parents are never deleted through samepage
 | Table | Values source | Seeded by |
 |---|---|---|
 | backend | Fixed list: github, notion | Spec v1, `schema/lookups.json` |
-| surface | Fixed list: code, chat, cowork, design | Spec v1 |
+| surface | Fixed list: code, chat, cowork, design | Spec v1; since 1.1 a surface is a role, not one product (ADR-0017) |
 | project_status | Fixed list: idea, active, shipped, parked, archived, unknown | Spec v1 |
 | project_type | Fixed list: product, client_site, concept, skill, tool, content, other | Spec v1 |
 | event_kind | Fixed list: shipped, deployed, launched, milestone, metric, published | Spec v1 |
@@ -227,6 +232,7 @@ Every foreign key declares ON DELETE. Parents are never deleted through samepage
 | decision_status | Fixed list: accepted, superseded, reversed | Spec v1 |
 | handoff_status | Fixed list: open, picked_up, done, dropped | Spec v1 |
 | build_status | Fixed list: running, succeeded, failed | Spec v1 |
+| tool | Fixed list: claude_code, claude_ai, claude_desktop, cowork, claude_design, codex, cursor, copilot, gemini_cli, windsurf, other | Spec 1.1 (ADR-0017) |
 
 Lookups are stored by `code` in files and Notion select options; ids exist only in the logical contract. Adding a value is a minor spec version and an ADR.
 
@@ -275,13 +281,13 @@ One row per file means two surfaces writing different entries never touch the sa
 | profile_link | Database "Links" | relation to Profile |
 | preference | Database "Rules" | `Surface` select, empty means every surface |
 | project and tag, project_tag | Database "Projects" | tags are a multi-select property; tag.label = option name, tag.slug = lowercased option name. Agent call (B5): a rollup property "Last shipped" (max of Ship Events Occurred) is serve-only and outside the contract |
-| ship_event | Database "Ship Events" | relation to Projects |
-| decision | Database "Decisions" | relation to Projects, self-relation "Superseded by" |
-| design_asset | Database "Design Assets" | relation to Projects |
-| handoff | Database "Handoffs" | relation to Projects |
+| ship_event | Database "Ship Events" | relation to Projects; `Tool` select (1.1) |
+| decision | Database "Decisions" | relation to Projects, self-relation "Superseded by"; `Tool` select (1.1) |
+| design_asset | Database "Design Assets" | relation to Projects; `Tool` select (1.1) |
+| handoff | Database "Handoffs" | relation to Projects; `From tool` select (1.1) |
 | index_build | not used | Notion has no index; queries are the serve layer |
 
-All eight databases sit under one private page titled "samepage". Lookup columns are select properties with exactly the codes above.
+All eight databases sit under one private page titled "samepage". Lookup columns are select properties with exactly the codes above. A Notion store made before 1.1 has no Tool properties; the skill sets them only when the property exists.
 
 ## Tenancy and access
 - One store per person; the store boundary is the access boundary.
@@ -300,7 +306,21 @@ All eight databases sit under one private page titled "samepage". Lookup columns
 Choice: versioned
 Reason: stores are long-lived files owned by users, edited by several surfaces and by hand. A version number lets `sp check` tell old stores from broken ones.
 
-Migration rules: `store.md` carries `schema_version`. Minor versions are additive only (new optional keys, new lookup codes). A major version ships `sp migrate` that rewrites files in place on a branch and opens a PR in the user's store. Readers tolerate unknown keys. No destructive change without a major version.
+Migration rules: `store.md` carries `schema_version`.
+
+Version 1.1 (ADR-0017) adds the `tool` lookup and four optional columns, each marked `-- since 1.1` in the DDL: ship_event.tool_id, decision.tool_id, design_asset.tool_id, handoff.from_tool_id. `python3 -m sp schema` copies the marker into schema/fields.json as `"since"`. Agent call (B23): writers emit a `since` key only when the store's schema_version is at least that version, and `sp check` fails a store that carries a key newer than its schema_version, because a sha-pinned store Action (ADR-0016) running an older `sp check` rejects unknown keys. Upgrading is one commit that sets `schema_version: 1.1` and bumps the Action's pinned sha.
+
+Default role per tool (ADR-0017), used when a writer gets a tool and no surface:
+
+| Tool | Default surface |
+|---|---|
+| claude_code, codex, cursor, copilot, gemini_cli, windsurf | code |
+| claude_ai, claude_desktop | chat |
+| cowork | cowork |
+| claude_design | design |
+| other | none, a surface is required |
+
+Minor versions are additive only (new optional keys, new lookup codes). A major version ships `sp migrate` that rewrites files in place on a branch and opens a PR in the user's store. Readers of serve files tolerate unknown lines; `sp check` rejects unknown keys, which is why B23 gates new keys by version. No destructive change without a major version.
 
 ## Consistency
 | Boundary | Strong or eventual | Reason |

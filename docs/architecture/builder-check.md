@@ -26,4 +26,32 @@ Run: 2026-11-06, reader: cold read (deliberate, documents only; no subagent beca
 | B16 | ADR-0013: repo owner account | User call | User: personal account rx4u (ADR-0013 accepted 2026-11-06). |
 | B17 | WP-16: migrate the maintainer's existing Notion registry or start fresh | User call | User: migrate, keep the old database read-only for 2 weeks (WP-16 updated). |
 
+| B22 | read-models header `schema {version}`: the sp version or the store's? A chat reader needs the store's to know if it may write 1.1 keys | Agent call | Agent call: the header carries the store's schema_version (read-models.md paging conventions). |
+| B23 | data-architecture "Readers tolerate unknown keys" vs `sp check` rejecting unknown keys, with a sha-pinned Action running an older sp | Agent call | Agent call: `since` markers; writers emit a key only on stores at that version; check fails newer keys (data-architecture.md, Schema evolution). |
+| B24 | MCP spec 2026-07-28 drops `initialize`; older clients still send it | Agent call | Agent call: `sp mcp` is dual-era (system-design.md, Tool adapters). |
+
+Run: 2026-11-06, wave 5 (ADR-0017 to ADR-0020), reader: cold-read subagent given only the documents, 20 items.
+
+| # | Question (quoted line) | Group | Resolution |
+|---|---|---|---|
+| B25 | read-models MCP session: tools map to `sp project`, `sp rules`, `sp handoff show` that the docs do not list | Answered by the docs | Those commands exist (docs/build/wave3-contract.md, CLI interface); the MCP argument table now names each command. |
+| B26 | WP-22 "tools/list with input schemas": no argument names | Agent call | Agent call: argument table in read-models.md, MCP session. |
+| B27 | prd US-18 used `sp setup cursor`, a snippet-only (unverified) row | Agent call | Agent call: US-18 uses gemini; unverified rows print a snippet and exit 0. |
+| B28 | prd Never do "any line outside the samepage entry" vs JSON re-serialising | Agent call | Agent call: other entries keep content and order; whitespace may be normalised (prd.md, ADR-0020). |
+| B29 | ADR-0020 TOML block ends at "the next table header", which a `.env` subtable would be | Agent call | Agent call: block includes `[mcp_servers.samepage.*]`; env written inline (ADR-0020). |
+| B30 | ADR-0018 `confirm` format, hash and state unstated | Agent call | Agent call: base64url JSON of id, now and a 16-hex sha256 of the preview; stateless; no expiry (ADR-0018). |
+| B31 | WP-18 note text; `--tool` with a conflicting `--surface`; stores newer than sp | Agent call | Agent call: note `samepage: note: store is schema 1.0; tool not recorded`; explicit `--surface` wins; newer major fails (existing check), newer minor keys fail as unknown. |
+| B32 | ADR-0018 block content only paraphrased; frontmatter placement | Agent call | Agent call: exact text in system-design.md, Instruction block; frontmatter above the start marker only on files sp creates. |
+| B33 | system-design V/U rule: per cell or per row? | Agent call | Agent call: configs only; skill folders and instruction files are written for every listed path (ADR-0020). |
+| B34 | Copilot: CLI config, VS Code config or both? | Agent call | Agent call: CLI always, VS Code when its User folder exists (ADR-0020). |
+| B35 | Which python3 for the MCP entry; PATH for git in GUI apps; SAMEPAGE_HOME scope | Agent call | Agent call: `sys.executable`; env carries PYTHONPATH, PATH and SAMEPAGE_HOME (ADR-0020). |
+| B36 | ADR-0020 `SAMEPAGE_REF` default `main` runs unreleased code | Agent call | Agent call: keep `main` (same channel as the template pin and the README skill link, ADR-0016; no release exists yet); revisit after v1.0.0. Flagged to Raja in the Phase 0 report. |
+| B37 | `sp context --tool` takes setup names or codes; `--refresh` folder and tool | Agent call | Agent call: codes only; `--refresh` in `--cwd`, tool kept or inferred from path (read-models.md, Instruction file). |
+| B38 | MCP error mapping | Agent call | Agent call: protocol faults are JSON-RPC errors; child exit other than 0 is `isError: true` (read-models.md). |
+| B39 | targets 1 s p95 vs test at 2 s; does MCP boot pull | Agent call | Agent call: test asserts p95 of 20 calls under 1 s on a store with no remote; boot pulls like the hook; writes pull (B9). |
+| B40 | ADR-0018 "enforced by the server" overclaims ADR-0007 rule 1 | Agent call | Agent call: reworded; the server enforces preview equals write; the user's yes stays the agent's job, stated in every write tool description. Flagged to Raja. |
+| B41 | ADR-0018 "does not write" without sp vs ADR-0012 "writing files directly" | Agent call | Agent call: ADR-0018 replaces that sentence for local agents; note added to ADR-0012 More information. |
+| B42 | data-dictionary tool_id read by Project detail vs ADR-0017 "handoff lines only" | Agent call | Agent call: tool is written, not printed, except handoff lines; dictionary fixed. |
+| B43 | Is every MCP read result wrapped in the data block? | Agent call | Agent call: yes, every read tool result (ADR-0018). `sp boot` wraps its own output already. |
+
 ## Open user calls

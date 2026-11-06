@@ -49,4 +49,5 @@ Windows-native support in v1 (scope.md).
 10 Windows issues, or python3 found missing on a supported setup.
 
 ## More information
+- 2026-11-06: for local agents, ADR-0018 replaces "the skill can still log and recall without `sp` by writing files directly": without `sp` a local agent reads `index/` only. Chat and Cowork write through the connector as before.
 - 2026-11-06: ubuntu-latest moved to Ubuntu 26 and no longer provides Python 3.9 (first CI run failed on it). The 3.9 job now runs on macos-latest with the system /usr/bin/python3, which is the environment this ADR targets.

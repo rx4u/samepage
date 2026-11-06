@@ -9,6 +9,8 @@ There are no web routes, so browser vitals do not apply. Context budget replaces
 | Context | Reads per boot, GitHub store | 1 file | Skill test fixture asserts one get_file_contents call in boot mode (WP-07) |
 | Context | Reads per boot, Notion store | 4 queries | Skill reference lists exactly 4 queries for boot; review checklist in PR template |
 | Speed | SessionStart hook duration | 3 s p95 | hooks.json timeout set to 3 s; hook falls back to the cached boot file; `sp boot --time` logged in CI on demo store |
+| Speed | MCP read tool call | 1 s p95 on fixtures/small with no remote | tests/test_mcp.py fails when the p95 of 20 `boot` calls over stdio is over 1 s (B39) |
+| Context | Instruction block size | 1,500 characters | tests/test_context.py fails above 1,500 |
 | Speed | Index rebuild after a push | 90 s | Store Action job `timeout-minutes: 3`; failure emails the owner via GitHub |
 | Speed | `sp index` on a 1,000 project, 5,000 event store | 5 s | Perf job in CI on generated fixtures fails above 5 s |
 | Data | Rows per read | 50 max | `sp` rejects `--limit` above 50; Notion reference sets page_size 20 and never above 50 |

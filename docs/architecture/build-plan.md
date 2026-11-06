@@ -7,6 +7,7 @@
 | 2 | Session boot in Claude Code end to end, including GitHub setup: the template every other screen copies |
 | 3 | Skill modes on chat and Cowork, log, handoffs, proof, decisions, design, Notion backend, store Action |
 | 4 | Edge cases, dogfood, launch kit and release |
+| 5 | Every coding tool (ADR-0017 to ADR-0020): schema 1.1, instruction blocks, portable skill, installer and setup, local MCP server, per-tool tests, reposition |
 
 ### WP-01: Spikes for A1, A2 and A7
 Wave: 1
@@ -212,7 +213,92 @@ Depends on: WP-11, WP-15 (ADR-0016)
 - Out of scope: Windows hooks, hosted setup.
 - Done when: a repo made from the template passes `sp check` and rebuilds its index on the first edit; tests and guardrails pass.
 
+### WP-18: Schema 1.1, tool field and roles
+Wave: 5
+Depends on: WP-17
+- Why: every adapter records which tool wrote an entry, and old stores must stay valid (ADR-0017).
+- Do: `tool` lookup and the four `-- since 1.1` columns in data-architecture.md; `sp schema` emits `since`; SCHEMA_VERSION 1.1; `sp check` fails a key newer than the store's version; `--tool` on every write command (default `SAMEPAGE_TOOL`), `--surface` defaulting to the tool's role and an explicit `--surface` winning (B31); writers drop 1.1 keys on 1.0 stores with the note `samepage: note: store is schema 1.0; tool not recorded` (B31); index header carries the store's version (B22); handoff lines show `via TOOL`; `sp init`, store-template and the template repo at 1.1; plugin commands pass `--tool claude_code`; entry-schema.md and notion-backend.md document the keys; `sp export` maps Tool columns.
+- Read model: Log entry, Decision record, Design pointer, Handoff inbox, Session boot
+- Targets: Schema compatibility; Boot file size per surface
+- Columns touched: tool.*, ship_event.tool_id, decision.tool_id, design_asset.tool_id, handoff.from_tool_id, store_meta.schema_version
+- Migrations: none (additive minor version; upgrade is a store.md edit plus an Action pin bump)
+- Out of scope: per-tool rules or handoff targets.
+- Done when: fixtures/small (1.0) passes unchanged; a 1.0 store with a `tool` key fails; `sp log ship --tool cursor` writes `tool: cursor` on 1.1 and drops it on 1.0; tests and guardrails pass.
+
+### WP-19: `sp context` instruction blocks
+Wave: 5
+Depends on: WP-18
+- Why: agents in other tools must be told samepage exists and how to use it, without store content in product repos (ADR-0018).
+- Do: sp/context.py: block template per tool, marker-safe insert and replace, refuse unmatched or repeated markers, keep line endings, `--dry-run`, `--refresh` over the 5 known paths, Cursor `.mdc` frontmatter.
+- Read model: Instruction file
+- Targets: none
+- Columns touched: none
+- Migrations: none
+- Out of scope: hooks in other tools.
+- Done when: tests prove user lines are kept byte for byte, idempotence, refusal on broken markers, and no boot-file line in the block.
+
+### WP-20: Portable skill
+Wave: 5
+Depends on: WP-18
+- Why: one SKILL.md for every tool that reads skills (ADR-0018).
+- Do: skill-workshop phases 3 to 7 on skills/samepage/: CLI resolution (plugin root, then `sp` on PATH, then read-only), surface and tool detection table, `--tool` on writes, 1.1 key rule from the boot header; rebuild dist/samepage.skill with scripts/package_skill.py.
+- Read model: Chat recall, Log entry
+- Targets: SKILL.md length
+- Columns touched: none new
+- Migrations: none
+- Out of scope: new modes.
+- Done when: tests/test_skill.py passes, dist matches source, SKILL.md under 500 lines.
+
+### WP-21: `install.sh` and `sp setup`
+Wave: 5
+Depends on: WP-19
+- Why: two commands from nothing to a connected tool (ADR-0020).
+- Do: install.sh (git clone or pull into `$SAMEPAGE_HOME/tool`, shim, PATH hint); sp/setup.py for codex, cursor, copilot, gemini, windsurf, claude-desktop, claude-code (prints plugin command): MCP entry, skill copy, `sp context`, backups, parse-failure snippet, `--dry-run`, `--print`.
+- Read model: Tool setup
+- Targets: Time to first working boot
+- Columns touched: none
+- Migrations: none
+- Out of scope: Windows, uninstall, package managers.
+- Done when: tests with a temp HOME cover add, idempotent re-run, other entries kept, JSONC refusal, Codex TOML replace, unknown tool exit 2; install.sh test runs `sp --help` through the shim.
+
+### WP-22: `sp mcp` local stdio server
+Wave: 5
+Depends on: WP-18
+- Why: one intake path for every MCP-capable tool (ADR-0018).
+- Do: sp/mcp.py: newline-delimited JSON-RPC 2.0, both protocol eras (B24: `initialize` with legacy version negotiation, `server/discover` and `_meta` versions for 2026-07-28), tools/list with input schemas and read-only hints, tools/call mapping to `sp` child processes, dry-run-then-confirm writes with a pinned id, time and preview hash, Notion one-liner, errors as tool results.
+- Read model: MCP session
+- Targets: Rows per read; MCP tool call time
+- Columns touched: as the mapped write screens
+- Migrations: none
+- Out of scope: resources, prompts, HTTP transport.
+- Done when: a protocol test drives initialize, tools/list, every read tool and the write flow on a temp store; a write without a matching confirm writes nothing; every stdout line parses as JSON.
+
+### WP-23: Test in each tool (Phase 3)
+Wave: 5
+Depends on: WP-20, WP-21, WP-22
+- Why: only tested tools get a tick (owner answer Q1, 2026-11-06).
+- Do: run the per-tool checklist on Raja's Mac for Claude Code, claude.ai, Cowork and Claude Desktop; other tools only if a login becomes available; record each run in docs/build/tool-ledger.md.
+- Read model: MCP session, Session boot, Chat recall
+- Targets: Time to first working boot
+- Columns touched: none
+- Migrations: none
+- Out of scope: fixing tool vendors' bugs.
+- Done when: every tool in the README table has a ledger row with date, version and result.
+
+### WP-24: Reposition and release v1.0.0
+Wave: 5
+Depends on: WP-23
+- Why: launch copy must match what was tested (ADR-0018, ADR-0019).
+- Do: README leads with Claude, adds a tool table (ticks only from the ledger, others "community-tested"), install section for other tools; new gif; landing page; release workflow run by Raja (`workflow_dispatch`, version 1.0.0).
+- Read model: none
+- Targets: Time to first working boot
+- Columns touched: none
+- Migrations: none
+- Out of scope: ChatGPT (ADR-0019).
+- Done when: release published and page live.
+
 ## Parallel work
+Wave 5: WP-19, WP-20 and WP-22 can run in parallel after WP-18 (separate files: sp/context.py, skills/samepage/, sp/mcp.py); WP-21 needs WP-19 (setup calls `sp context`). All three add a subcommand to sp/__main__.py, so each adds one self-contained block.
 Safe pairs in wave 1: WP-01 with WP-02; WP-03, WP-04 and WP-05 after WP-02 (separate folders: sp/index.py, sp/fixtures.py, .github/). Safe in wave 3: WP-09, WP-10, WP-11 and WP-12 in parallel (separate skill reference files and sp modules); WP-08 and WP-13 both touch commands/sp.md, so run them in sequence.
 
 ## Definition of done (every change)
