@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/icon.svg" width="88" alt="samepage"></p>
+
 <h1 align="center">samepage</h1>
 
 <p align="center"><b>Keep every Claude on the same page.</b><br>
