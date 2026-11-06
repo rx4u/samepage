@@ -71,7 +71,8 @@ class SmallIndexTest(unittest.TestCase):
 
     def test_project_section_and_repo_map(self):
         section = read(self.store, "index/project/halcyon.md")
-        self.assertIn("design_system [approved] Halcyon tokens", section)
+        self.assertRegex(section, r"- [0-9a-f]{8} design_system \[approved\] Halcyon tokens")
+        self.assertRegex(section, r"- \d{4}-\d{2}-\d{2} [0-9a-f]{8} Decision 2:")
         self.assertNotIn("Decision 0:", section)  # superseded decisions are not in force
         self.assertIn("Decision 2:", section)
         repos = read(self.store, "index/repos.md")

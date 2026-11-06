@@ -181,7 +181,7 @@ class Index:
             group = [r for r in active if r.get("surface") == surface]
             if group:
                 out.append("## %s" % ("All surfaces" if surface is None else surface))
-                out.extend("- %s" % clip(r["rule"], 200) for r in group)
+                out.extend("- %s %s" % (r["id"][:8], clip(r["rule"], 200)) for r in group)
                 out.append("")
         self.files["index/rules.md"] = "\n".join(out).rstrip() + "\n"
         repos = sorted((p["repo_url"], p["slug"]) for p in self.rows["project"] if p.get("repo_url"))
@@ -278,8 +278,8 @@ class Index:
                                               " (proof: %s)" % e["proof_url"] if e.get("proof_url") else "")
                            for e in events[:n_events])
             out += ["", "## Decisions in force"]
-            out.extend("- %s %s: %s" % (day(d["decided_at"]), clip(d["title"], 120), clip(d["reason"], reason_cap))
-                       for d in decisions[:n_decisions])
+            out.extend("- %s %s %s: %s" % (day(d["decided_at"]), d["id"][:8], clip(d["title"], 120),
+                                           clip(d["reason"], reason_cap)) for d in decisions[:n_decisions])
             out += ["", "## Design"]
             for a in assets[:n_assets]:
                 where = ""
@@ -287,7 +287,7 @@ class Index:
                     where = " tokens: %s %s" % (a["tokens_repo_url"], a.get("tokens_path", ""))
                 if a.get("source_url"):
                     where += " source: %s" % a["source_url"]
-                out.append("- %s [%s] %s%s" % (a["kind"], a["status"], clip(a["title"], 120), where))
+                out.append("- %s %s [%s] %s%s" % (a["id"][:8], a["kind"], a["status"], clip(a["title"], 120), where))
             out += ["", "## Open handoffs"]
             out.extend("- %s [%s] to %s: %s file: handoffs/%s.md" % (h["id"][:8], h["status"], h["to_surface"],
                                                                      clip(h["title"], 120), h["id"][:8])
