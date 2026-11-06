@@ -18,6 +18,7 @@ Run: 2026-11-06, reader: cold read (deliberate, documents only; no subagent beca
 | B12 | Filenames use `{id8}`. What if two uuids share 8 characters? | Agent call | Agent call: the writer regenerates the uuid if the path exists; `sp check` fails on duplicate ids. Added to data-architecture.md. |
 | B13 | Cowork can run locally or in the cloud. Which surface code and path apply? | Agent call | Agent call: both use surface `cowork` and the connector path, same as chat. Added to read-models.md. |
 | B14 | "repo_url normalised https URL without .git". What about SSH remotes and case? | Agent call | Agent call: `git@host:owner/repo.git` becomes `https://host/owner/repo`, host lowercased, owner and repo lowercased, trailing `.git` and `/` removed. Added to data-dictionary.md. |
+| B18 | data-architecture: "YAML frontmatter holds every column". How are `_id` foreign keys named and valued in a file? | Agent call | Agent call: key naming rule added to data-architecture.md (B18), found while starting WP-02. |
 | B15 | prd Open questions: "Final public name" | User call | User: samepage, CLI `sp` (ADR-0010 accepted 2026-11-06). |
 | B16 | ADR-0013: repo owner account | User call | User: personal account rx4u (ADR-0013 accepted 2026-11-06). |
 | B17 | WP-16: migrate the maintainer's existing Notion registry or start fresh | User call | User: migrate, keep the old database read-only for 2 weeks (WP-16 updated). |

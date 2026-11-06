@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "lookups": {
+    "backend": [
+      "github",
+      "notion"
+    ],
+    "surface": [
+      "code",
+      "chat",
+      "cowork",
+      "design"
+    ],
+    "project_status": [
+      "idea",
+      "active",
+      "shipped",
+      "parked",
+      "archived",
+      "unknown"
+    ],
+    "project_type": [
+      "product",
+      "client_site",
+      "concept",
+      "skill",
+      "tool",
+      "content",
+      "other"
+    ],
+    "event_kind": [
+      "shipped",
+      "deployed",
+      "launched",
+      "milestone",
+      "metric",
+      "published"
+    ],
+    "asset_kind": [
+      "design_system",
+      "screen_set",
+      "handoff_bundle",
+      "prototype"
+    ],
+    "asset_status": [
+      "draft",
+      "approved",
+      "superseded"
+    ],
+    "decision_status": [
+      "accepted",
+      "superseded",
+      "reversed"
+    ],
+    "handoff_status": [
+      "open",
+      "picked_up",
+      "done",
+      "dropped"
+    ],
+    "build_status": [
+      "running",
+      "succeeded",
+      "failed"
+    ]
+  }
+}

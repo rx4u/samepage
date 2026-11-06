@@ -1,0 +1,19 @@
+{
+  "about": "Each case copies fixtures/small, applies one change, and must make sp check fail on the named path and field.",
+  "cases": [
+    {"name": "missing-required", "file": "projects/halcyon.md", "replace": ["status: shipped\n", ""], "expect_path": "projects/halcyon.md", "expect_field": "status"},
+    {"name": "bad-lookup-code", "file": "projects/halcyon.md", "replace": ["status: shipped", "status: done"], "expect_path": "projects/halcyon.md", "expect_field": "status"},
+    {"name": "unknown-key", "file": "projects/halcyon.md", "replace": ["slug: halcyon", "slug: halcyon\npriority: high"], "expect_path": "projects/halcyon.md", "expect_field": "priority"},
+    {"name": "nested-value", "file": "projects/halcyon.md", "replace": ["name: Halcyon", "name:\n  first: Halcyon"], "expect_path": "projects/halcyon.md", "expect_field": "frontmatter"},
+    {"name": "multi-line-value", "file": "projects/halcyon.md", "replace": ["name: Halcyon", "name: |"], "expect_path": "projects/halcyon.md", "expect_field": "name"},
+    {"name": "filename-mismatch", "rename": ["projects/runsheet.md", "projects/run-sheet.md"], "expect_path": "projects/run-sheet.md", "expect_field": "path"},
+    {"name": "missing-project-ref", "file": "projects/runsheet.md", "delete": true, "expect_field": "project"},
+    {"name": "duplicate-id", "copy": ["projects/runsheet.md", "projects/runsheet-copy.md"], "replace_in_copy": ["slug: runsheet", "slug: runsheet-copy"], "expect_field": "id"},
+    {"name": "handoff-to-design", "glob": "handoffs/*.md", "replace": ["to_surface: code", "to_surface: design"], "expect_field": "to_surface"},
+    {"name": "secret-in-body", "file": "profile.md", "append": "\nkey: AKIAABCDEFGHIJKLMNOP\n", "expect_path": "profile.md", "expect_field": "content"},
+    {"name": "boot-over-budget", "create": ["index/boot/code.md", 8001], "expect_path": "index/boot/code.md", "expect_field": "size"},
+    {"name": "summary-too-long", "glob": "events/*/*.md", "regex_replace": ["summary: .*", "summary: LONG281"], "expect_field": "summary"},
+    {"name": "card-number", "file": "profile.md", "append": "\ncard 4111 1111 1111 1111\n", "expect_path": "profile.md", "expect_field": "content"},
+    {"name": "superseded-without-status", "glob": "decisions/halcyon/*.md", "regex_replace": ["status: superseded", "status: accepted"], "expect_field": "status"}
+  ]
+}
