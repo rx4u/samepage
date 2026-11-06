@@ -33,8 +33,7 @@ jobs:
           python scripts/guardrails.py
       - name: Build samepage.zip and samepage.skill
         run: |
-          mkdir -p dist
-          (cd skills && zip -qr ../dist/samepage.zip samepage)
+          python scripts/package_skill.py dist/samepage.zip
           cp dist/samepage.zip dist/samepage.skill
           unzip -l dist/samepage.zip
       - name: Publish release

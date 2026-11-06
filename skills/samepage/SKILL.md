@@ -73,7 +73,7 @@ PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m sp <command>
 
 - GitHub store: follow [references/github-backend.md](references/github-backend.md). Boot is one file read; writes go through the GitHub connector.
 - Notion store: follow [references/notion-backend.md](references/notion-backend.md).
-- The store location comes from a line in the user's preferences or project instructions, such as `samepage store: github OWNER/REPO`. If there is none, run setup.
+- The store location comes from a line in the user's preferences or project instructions, such as `samepage store: github OWNER/REPO`. With no line, try `LOGIN/samepage-store` for the connector's signed-in login. If neither works, run setup.
 
 ### Entry format
 
@@ -91,7 +91,9 @@ Every write to a project or its children also sets the project's `updated_at` an
 
 ## setup
 
-Follow [references/setup.md](references/setup.md). In Claude Code, `/sp init` creates or connects the store. In chat or Cowork, check the store line, check the connector can read the store, and explain write access if it cannot write.
+Follow [references/setup.md](references/setup.md). In Claude Code, `/sp init` creates or connects the store. In chat or Cowork, find the store (or give the one-click template link), read it, fill in the placeholder profile when it says `Your name`, and explain write access if the first write returns 403.
+
+Also run setup, without being asked, when a boot file's profile says `Your name`.
 
 ## boot
 

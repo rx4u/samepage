@@ -200,6 +200,18 @@ Depends on: WP-10
 - Out of scope: publishing any of the maintainer's data.
 - Done when: maintainer store passes `sp check` and boots on all surfaces.
 
+### WP-17: One-click store and guided setup
+Wave: 4
+Depends on: WP-11, WP-15 (ADR-0016)
+- Why: a stranger must be able to start from claude.ai alone, and stores must not wait on a release.
+- Do: public template repo `rx4u/samepage-store-template` built by `scripts/make_template_repo.py` (placeholder profile `Your name`, built index, index Action); the Action pins the tool by commit sha; `sp init` prints the template link when the GitHub CLI is missing and `--use-existing` works with plain git and fills a placeholder profile; `dist/samepage.skill` committed and kept equal to the source by a test; skill setup mode guesses `LOGIN/samepage-store`, fills the profile and tests one write; README with two three-step paths and Notion last.
+- Read model: Setup
+- Targets: Time to first working boot
+- Columns touched: profile.*, store.owner_handle
+- Migrations: none
+- Out of scope: Windows hooks, hosted setup.
+- Done when: a repo made from the template passes `sp check` and rebuilds its index on the first edit; tests and guardrails pass.
+
 ## Parallel work
 Safe pairs in wave 1: WP-01 with WP-02; WP-03, WP-04 and WP-05 after WP-02 (separate folders: sp/index.py, sp/fixtures.py, .github/). Safe in wave 3: WP-09, WP-10, WP-11 and WP-12 in parallel (separate skill reference files and sp modules); WP-08 and WP-13 both touch commands/sp.md, so run them in sequence.
 

@@ -2,6 +2,16 @@
 
 Your shared working context for every Claude surface. Private. Edit through samepage (`/sp log`, "log this") or by hand, then run `sp check`.
 
+## Set it up
+
+If this store came from the template, `profile.md` still says `Your name`. Fill it in one of three ways:
+
+- In claude.ai chat or Cowork with the samepage skill: say "set up samepage".
+- In Claude Code with the plugin: `/sp init --use-existing YOUR-LOGIN/samepage-store --display-name "..." --headline "..."`.
+- By hand: edit `profile.md` on GitHub and commit. The index Action rebuilds within a minute.
+
+Keep the repo private. Full guide: https://github.com/rx4u/samepage
+
 ## Folders
 
 - `store.md`, `profile.md`, `profile/links/`: who you are and the store's schema version.

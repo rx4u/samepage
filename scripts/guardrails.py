@@ -12,6 +12,10 @@ WALK_ALLOW = {"sp/check.py", "sp/index.py"}
 # Read folders that are not a store (ADR-0015): docs, generated fixtures, a Notion export.
 NON_STORE_READERS = {"sp/schema.py", "sp/fixtures.py", "sp/export.py"}
 EXAMPLE_HOSTS = re.compile(r"^https?://([a-z0-9%-]+\.)*example\.(com|org|net)(/|$)")
+# github.com is the store backend (ADR-0002): the user's repos and GitHub's own template page (ADR-0016).
+BACKEND_HOSTS = re.compile(r"^https://github\.com/")
+# Repo scripts imported by tests (ADR-0016).
+LOCAL_MODULES = {"package_skill", "make_template_repo"}
 SKIP = {".git", "fixtures", "__pycache__", "index.tmp"}
 
 
@@ -37,7 +41,7 @@ def main():
     def fail(rule, where, detail):
         problems.append("%s: %s: %s" % (rule, where, detail))
 
-    stdlib = set(sys.stdlib_module_names) | {"sp"}
+    stdlib = set(sys.stdlib_module_names) | {"sp"} | LOCAL_MODULES
     for rel, path in files(RUNTIME_DIRS + ("tests", "scripts"), (".py",)):
         text = read(path)
         for match in re.finditer(r"^\s*(?:from|import)\s+([a-zA-Z_][\w]*)", text, re.M):
@@ -57,7 +61,7 @@ def main():
                 host = re.match(r"https?://([^/]*)", url).group(1)
                 if "." not in host or re.search(r"[%{}<]", host):
                     continue  # a template like https://%s/%s or https://host/owner, not an endpoint
-                if not EXAMPLE_HOSTS.match(url):
+                if not EXAMPLE_HOSTS.match(url) and not BACKEND_HOSTS.match(url):
                     fail("no maintainer-hosted endpoints", rel, url)
     for rel, path in files(("sp", "hooks", "commands", "skills", "tests", "scripts", "docs", "fixtures", ".github"),
                            (".py", ".md", ".json", ".yml", ".yaml", ".sh")):

@@ -146,3 +146,37 @@ class InitCopiesTemplateTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TemplateRepoTest(unittest.TestCase):
+    """ADR-0016: the public template store and filling its placeholder profile."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        sys.path.insert(0, os.path.join(ROOT, "scripts"))
+        import make_template_repo
+        self.store = make_template_repo.build(os.path.join(self.tmp, "store"))
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_template_store_is_valid_and_indexed(self):
+        self.assertEqual(check_store(self.store).errors, [])
+        self.assertTrue(os.path.isfile(os.path.join(self.store, "index", "boot", "chat.md")))
+        self.assertTrue(os.path.isfile(os.path.join(self.store, ".github", "workflows", "index.yml")))
+
+    def test_placeholder_is_detected_and_filled(self):
+        from sp.init import fill_profile, is_placeholder
+        self.assertTrue(is_placeholder(self.store))
+        fill_profile(self.store, "asha", {"display_name": "Asha Rao", "headline": "Product engineer"},
+                     [("Site", "https://asha.example.com")], ["Run tests before every commit."])
+        self.assertFalse(is_placeholder(self.store))
+        self.assertEqual(check_store(self.store).errors, [])
+        boot = read(os.path.join(self.store, "index", "boot", "chat.md"))
+        self.assertIn("Asha Rao", boot)
+        self.assertIn("Run tests before every commit.", boot)
+        self.assertIn("owner_handle: asha", read(os.path.join(self.store, "store.md")))
+
+    def test_action_pins_tool_by_sha(self):
+        text = read(WORKFLOW)
+        self.assertRegex(text, r"repository: rx4u/samepage\n\s+ref: [0-9a-f]{40}\b")

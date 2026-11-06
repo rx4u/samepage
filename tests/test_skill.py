@@ -262,3 +262,16 @@ TRIGGERS = {
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PackagedSkillTest(unittest.TestCase):
+    """ADR-0016: dist/samepage.skill is committed and must equal a fresh build."""
+
+    def test_committed_skill_matches_source(self):
+        sys.path.insert(0, os.path.join(ROOT, "scripts"))
+        import package_skill
+        committed = os.path.join(ROOT, "dist", "samepage.skill")
+        self.assertTrue(os.path.isfile(committed), "run python3 scripts/package_skill.py")
+        with open(committed, "rb") as handle:
+            self.assertEqual(handle.read(), package_skill.build_bytes(),
+                             "dist/samepage.skill is stale; run python3 scripts/package_skill.py")

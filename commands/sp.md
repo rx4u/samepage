@@ -28,11 +28,11 @@ Show the answers back in one short block and wait for a yes. Then run one of:
 
 ```
 PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m sp init --display-name "..." --headline "..." [--location "..."] [--link "Label=https://..."] [--rule "..."]
-PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m sp init --use-existing REPO
+PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m sp init --use-existing OWNER/REPO [--display-name "..." --headline "..."]
 PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m sp init --local --display-name "..." --headline "..."
 ```
 
-If it reports that GitHub CLI is not signed in, tell the user to run `gh auth login` and stop. If a repo already exists, offer `--name` or `--use-existing` and stop. Report the result in one or two lines; the next session starts with the context loaded.
+If it reports that the GitHub CLI is not installed or not signed in, show the one-click template link it printed, ask the user to create the repo (Private, named samepage-store) and give their GitHub login, then run `--use-existing LOGIN/samepage-store` with the same profile flags. If it says the store still has the template profile, ask for the profile answers and run it again with them. If a repo already exists, offer `--name` or `--use-existing` and stop. Report the result in one or two lines; the next session starts with the context loaded.
 
 ## check
 

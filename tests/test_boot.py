@@ -107,7 +107,14 @@ class FakeGhTest(Sandbox):
         self.fake_gh('[ "$1 $2" = "auth status" ] && exit 1\nexit 0\n')
         with self.assertRaises(InitError) as ctx:
             init(init_args(path=os.path.join(self.tmp, "store")))
-        self.assertIn("gh auth login", str(ctx.exception))
+        self.assertIn("samepage-store-template", str(ctx.exception))
+        self.assertIn("--use-existing", str(ctx.exception))
+
+    def test_use_existing_without_gh_needs_owner(self):
+        self.fake_gh('exit 1\n')
+        with self.assertRaises(InitError) as ctx:
+            init(init_args(use_existing="samepage-store", path=os.path.join(self.tmp, "store")))
+        self.assertIn("OWNER/REPO", str(ctx.exception))
 
     def test_existing_repo_is_not_touched(self):
         self.fake_gh('case "$1 $2" in\n"auth status") exit 0;;\n"api user") echo asha; exit 0;;\n'

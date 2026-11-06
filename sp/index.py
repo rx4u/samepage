@@ -84,7 +84,9 @@ def clip(text, limit):
 
 
 def newest_first(rows, key):
-    return sorted(rows, key=lambda r: (to_time(r.get(key) or EPOCH), r.get("id", r.get("slug", ""))), reverse=True)
+    # Ties on the sort key fall back to created_at, so a same-second ship shows after the entry made before it.
+    return sorted(rows, key=lambda r: (to_time(r.get(key) or EPOCH), to_time(r.get("created_at") or EPOCH),
+                                       r.get("id", r.get("slug", ""))), reverse=True)
 
 
 def oldest_first(rows, key):
