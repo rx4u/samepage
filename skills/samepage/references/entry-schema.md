@@ -27,12 +27,14 @@ Markdown body
 - A project's tags are `tags: [slug, slug]`; each slug needs a file `tags/{slug}.md`.
 - Slugs are lowercase kebab case (`^[a-z0-9]+(-[a-z0-9]+)*$`) and never change.
 - If a new file's path already exists, generate a new uuid (B12).
+- Schema 1.1 keys (`tool`, `from_tool`) go only into a store whose `store.md` says `schema_version: 1.1` or later. The first line of every index file ends in `schema X.Y`, the store's version. On a 1.0 store leave them out, or `sp check` fails.
 
 ## Allowed values
 
 | Key | Values |
 |---|---|
-| surface, from_surface, to_surface | code, chat, cowork, design (`to_surface` never `design`) |
+| surface, from_surface, to_surface | code, chat, cowork, design (`to_surface` never `design`). A role: `code` is any coding agent |
+| tool, from_tool (1.1) | claude_code, claude_ai, claude_desktop, cowork, claude_design, codex, cursor, copilot, gemini_cli, windsurf, other |
 | project status | idea, active, shipped, parked, archived, unknown |
 | project type | product, client_site, concept, skill, tool, content, other |
 | ship event kind | shipped, deployed, launched, milestone, metric, published |
@@ -53,7 +55,7 @@ Example, `store.md`:
 
 ```md
 ---
-schema_version: 1.0
+schema_version: 1.1
 backend: github
 owner_handle: asha-rao
 created_at: 2026-11-01T09:00:00Z
@@ -163,7 +165,7 @@ tags: [nextjs, stripe]
 
 ### Ship event
 
-Path `events/{yyyy}/{yyyy-mm-dd}-{project}-{id8}.md`, where the date is the `occurred_at` date. Keys: `id` R, `project` R, `kind` R, `surface` R, `summary` R (280), `proof_url`, `metric_label`, `metric_value` (number), `metric_unit`, `occurred_at` R, `created_at` R. Append only.
+Path `events/{yyyy}/{yyyy-mm-dd}-{project}-{id8}.md`, where the date is the `occurred_at` date. Keys: `id` R, `project` R, `kind` R, `surface` R, `tool` (1.1), `summary` R (280), `proof_url`, `metric_label`, `metric_value` (number), `metric_unit`, `occurred_at` R, `created_at` R. Append only.
 
 - Kind shipped or launched: set the project to `shipped` when it is idea, active or unknown, and set `shipped_on` if empty. Never change parked or archived.
 - Store `proof_url` as given. Never fetch it.
@@ -176,6 +178,7 @@ id: 7fe7baaf-f981-4684-a558-9b8b1bd9dd15
 project: halcyon
 kind: shipped
 surface: chat
+tool: claude_ai
 summary: Shipped the Halcyon pricing page with monthly and yearly plans
 proof_url: https://halcyon.example.com/pricing
 metric_label: signups
@@ -188,7 +191,7 @@ created_at: 2026-11-06T10:15:00Z
 
 ### Decision
 
-Path `decisions/{project}/{yyyy-mm-dd}-{id8}.md`, where the date is the `decided_at` date. Keys: `id` R, `project` R, `status` R, `surface` R, `superseded_by`, `title` R (120), `reason` R, body (optional, as the Markdown body), `decided_at` R, `created_at` R, `updated_at` R.
+Path `decisions/{project}/{yyyy-mm-dd}-{id8}.md`, where the date is the `decided_at` date. Keys: `id` R, `project` R, `status` R, `surface` R, `tool` (1.1), `superseded_by`, `title` R (120), `reason` R, body (optional, as the Markdown body), `decided_at` R, `created_at` R, `updated_at` R.
 
 - A new decision has `status: accepted`.
 - Superseding: the old file gets `status: superseded`, `superseded_by: NEW_UUID` and a new `updated_at`. Nothing else in it changes.
@@ -213,7 +216,7 @@ Firebase rules were harder to test. Revisit if we need offline sync.
 
 ### Design asset
 
-Path `design/{project}/{id8}.md`. Keys: `id` R, `project` R, `kind` R, `status` R, `surface` R, `title` R, `source_url`, `tokens_repo_url`, `tokens_path`, `created_at` R, `updated_at` R. A pointer only; token values live in the product repo. See design.md for each kind.
+Path `design/{project}/{id8}.md`. Keys: `id` R, `project` R, `kind` R, `status` R, `surface` R, `tool` (1.1), `title` R, `source_url`, `tokens_repo_url`, `tokens_path`, `created_at` R, `updated_at` R. A pointer only; token values live in the product repo. See design.md for each kind.
 
 Example, `design/halcyon/b4b647d0.md`:
 
@@ -224,6 +227,7 @@ project: halcyon
 kind: handoff_bundle
 status: approved
 surface: code
+tool: claude_code
 title: Pricing page handoff
 source_url: https://design.example.com/p/halcyon-pricing
 created_at: 2026-11-06T10:15:00Z
@@ -233,7 +237,7 @@ updated_at: 2026-11-06T10:15:00Z
 
 ### Handoff
 
-Path `handoffs/{id8}.md`. Keys: `id` R, `project` R, `from_surface` R, `to_surface` R (not `design`), `status` R, `title` R (120), body R (4,000, as the Markdown body), `created_at` R, `picked_up_at`, `done_at`.
+Path `handoffs/{id8}.md`. Keys: `id` R, `project` R, `from_surface` R, `from_tool` (1.1), `to_surface` R (not `design`), `status` R, `title` R (120), body R (4,000, as the Markdown body), `created_at` R, `picked_up_at`, `done_at`.
 
 - New: `status: open`, empty `picked_up_at` and `done_at`.
 - Start: `status: picked_up`, `picked_up_at` set. Done or drop: `status: done` or `dropped`, `done_at` set.
@@ -245,6 +249,7 @@ Example, `handoffs/e16a056a.md`:
 id: e16a056a-46eb-4826-8ee6-64a531788284
 project: halcyon
 from_surface: chat
+from_tool: claude_ai
 to_surface: code
 status: open
 title: Build the yearly plan toggle

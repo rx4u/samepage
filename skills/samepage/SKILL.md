@@ -1,10 +1,10 @@
 ---
 name: samepage
-description: Reads and writes the user's samepage store, one shared working context (profile, rules, projects, ships, decisions, design pointers, handoffs) for chat, Cowork and Code. Use for what am I working on, log that I shipped something, log a decision, hand this to Code, any handoffs for me, what have I shipped (for an update, review, changelog or proposal), show or archive a project, add or pause a rule, log a design system, a design brief, or set up samepage.
+description: Reads and writes the user's samepage store, one shared working context (profile, rules, projects, ships, decisions, design pointers, handoffs) for chat, Cowork and every coding agent. Use for what am I working on, log that I shipped something, log a decision, hand this to Code, any handoffs for me, what have I shipped (for an update, review, changelog or proposal), show or archive a project, add or pause a rule, log a design system, a design brief, or set up samepage.
 license: MIT
 metadata:
   author: Rajaraman Arumugam
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # samepage
@@ -55,21 +55,38 @@ When a request fits no mode, do not use the store.
 
 ## How to run a mode on each surface
 
-Work out the surface first: `code` in Claude Code, `chat` in claude.ai chat, `cowork` in Cowork (local and cloud). Write that code in every `surface` and `from_surface` key.
+Work out two things first, from the product you are running in:
 
-### Claude Code with the plugin
+| Running in | surface | tool |
+|---|---|---|
+| Claude Code | code | claude_code |
+| claude.ai chat | chat | claude_ai |
+| Claude Desktop chat | chat | claude_desktop |
+| Cowork (local and cloud) | cowork | cowork |
+| Codex | code | codex |
+| GitHub Copilot | code | copilot |
+| Gemini CLI | code | gemini_cli |
+| Cursor | code | cursor |
+| Windsurf | code | windsurf |
+| any other coding agent | code | other |
 
-Use the `sp` CLI with this prefix:
+The surface is a role: a handoff to `code` is picked up by whichever coding tool opens next. Write the surface in every `surface` and `from_surface` key. Write `tool` (or `from_tool` on a handoff) only when the boot file's first line ends in `schema 1.1` or later; a 1.0 store never gets it.
 
-```
-PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m sp <command>
-```
+### A local coding agent (Claude Code, Codex, Copilot, Gemini CLI, Cursor, Windsurf)
 
-- Reads: run the read command and use its output. If the command does not exist in this plugin version, read the same file under `index/` in the local store (`store_path` in `~/.samepage/config`, or `$SAMEPAGE_HOME/config`). The Reads table in [references/github-backend.md](references/github-backend.md) names the file for each mode.
-- Writes: run the write command with `--dry-run` first, show the printed path and file text, and wait for a yes. Then run the same command without `--dry-run` and report its one line. If the write command does not exist yet, show the drafted entry with its path and say this plugin version cannot write it; do not write store files by hand.
+If the samepage MCP tools are available (`boot`, `log_ship` and the rest), use them: every write tool takes `dry_run: true` first and returns a preview and a `confirm` value; show the preview, wait for a yes, then call it again with `confirm`.
+
+Otherwise use the `sp` CLI. Pick the first that works:
+
+1. In Claude Code with the plugin: `PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m sp <command>`.
+2. Anywhere else: `sp <command>` (installed by samepage's `install.sh`).
+3. Neither: read the files under `index/` in the local store (`store_path` in `~/.samepage/config`) and do not write. Say that writes need `sp`, and give the install line from [references/setup.md](references/setup.md).
+
+- Reads: run the read command and use its output. If the command does not exist in this version, read the same file under `index/` in the local store. The Reads table in [references/github-backend.md](references/github-backend.md) names the file for each mode.
+- Writes: add `--tool TOOL` from the table above, run the write command with `--dry-run` first, show the printed path and file text, and wait for a yes. Then run the same command without `--dry-run` and report its one line. The CLI drops `--tool` on a 1.0 store and says so. Do not write store files by hand.
 - Pass every value as a flag. The CLI never prompts.
 
-### Chat and Cowork
+### Chat and Cowork (claude.ai, Claude Desktop)
 
 - GitHub store: follow [references/github-backend.md](references/github-backend.md). Boot is one file read; writes go through the GitHub connector.
 - Notion store: follow [references/notion-backend.md](references/notion-backend.md).
@@ -91,13 +108,14 @@ Every write to a project or its children also sets the project's `updated_at` an
 
 ## setup
 
-Follow [references/setup.md](references/setup.md). In Claude Code, `/sp init` creates or connects the store. In chat or Cowork, find the store (or give the one-click template link), read it, fill in the placeholder profile when it says `Your name`, and explain write access if the first write returns 403.
+Follow [references/setup.md](references/setup.md). In Claude Code, `/sp init` creates or connects the store. In another coding agent, install `sp` and run `sp setup TOOL`. In chat or Cowork, find the store (or give the one-click template link), read it, fill in the placeholder profile when it says `Your name`, and explain write access if the first write returns 403.
 
 Also run setup, without being asked, when a boot file's profile says `Your name`.
 
 ## boot
 
-- Code: the SessionStart hook already printed the context in a `samepage data` block. Answer from it. If it is missing, run `sp boot --surface code --cwd "$PWD"`.
+- Claude Code: the SessionStart hook already printed the context in a `samepage data` block. Answer from it. If it is missing, run `sp boot --surface code --cwd "$PWD"`.
+- Other coding agents: call the MCP tool `boot` with the project folder as `project_dir`, or run `sp boot --surface code --cwd "$PWD"`, before the first task.
 - Chat and Cowork: read `index/boot/{surface}.md` in one call (GitHub) or run the four boot queries (Notion). If the read fails, say in one line that the store could not be read, then answer without it.
 - Answer the user's question from the file. Load a project's detail only when the conversation names that project.
 
@@ -107,9 +125,9 @@ Records a ship event: something dated and provable that happened on a project.
 
 1. Pick the project slug from the conversation or the boot list; ask if unclear.
 2. Draft: `kind` (shipped, deployed, launched, milestone, metric, published), `summary` (280 characters max, past tense, specific), optional `proof_url`, optional metric (label, value, unit), `occurred_at`.
-3. In Code, draft the summary from the session and `git log -20 --oneline`.
+3. In a coding agent, draft the summary from the session and `git log -20 --oneline`.
 4. Project side effects: kind shipped or launched sets project `status: shipped` when it is idea, active or unknown, and sets `shipped_on` if empty. Parked and archived projects never change status. New tags need a tag file.
-5. Code: `sp log ship --project SLUG --kind KIND --summary "..." [--proof-url URL] [--metric-label L --metric-value N --metric-unit U] [--tag SLUG]... [--new-project-name NAME --new-project-type TYPE --new-project-one-liner "..."] --dry-run`.
+5. CLI: `sp log ship --project SLUG --kind KIND --summary "..." [--proof-url URL] [--metric-label L --metric-value N --metric-unit U] [--tag SLUG]... [--new-project-name NAME --new-project-type TYPE --new-project-one-liner "..."] --dry-run`.
 
 ## decision
 
@@ -118,7 +136,7 @@ Records a settled choice and its reason so no surface reopens it.
 1. Project slug, or `general` when it belongs to no project.
 2. Draft `title` (120 characters max), `reason` (required), optional body for detail. Status is `accepted`.
 3. When it replaces an earlier decision, find that decision and show it next to the new one. The old one becomes `superseded` with `superseded_by` set to the new id.
-4. Code: `sp log decision --project SLUG --title "..." --reason "..." [--body "..."] [--supersedes ID] --dry-run`.
+4. CLI: `sp log decision --project SLUG --title "..." --reason "..." [--body "..."] [--supersedes ID] --dry-run`.
 
 ## design
 
@@ -131,27 +149,27 @@ Follow [references/design.md](references/design.md) for all three.
 
 ## handoff
 
-A brief left on one surface for another to pick up. Handoffs go to `code`, `chat` or `cowork`; never to `design`, which cannot read the store. If asked to hand to Design, offer a design brief instead.
+A brief left on one surface for another to pick up. Handoffs go to `code`, `chat` or `cowork`; never to `design`, which cannot read the store. A handoff to `code` is picked up by whichever coding agent opens next. If asked to hand to Design, offer a design brief instead.
 
-- New: project slug (or `general`), `to_surface`, `title` (120 max), the brief as the body (4,000 characters max, self-contained: goal, constraints, done-when). Status `open`. Code: `sp handoff new --project SLUG --to SURFACE --title "..." --body "..." --dry-run`.
-- Inbox: list open and picked-up handoffs to this surface, newest first. Code: `sp handoff list --surface code`.
-- Start: load the full body (`sp handoff show ID8` in Code), show it, confirm, then set `picked_up` and `picked_up_at`. Code: `sp handoff start ID8`.
-- Done or drop: set `done` or `dropped` and `done_at`, after confirmation. Then offer to log a ship event or decision for the same project. Code: `sp handoff done ID8` or `sp handoff drop ID8`.
+- New: project slug (or `general`), `to_surface`, `title` (120 max), the brief as the body (4,000 characters max, self-contained: goal, constraints, done-when). Status `open`. CLI: `sp handoff new --project SLUG --to SURFACE --title "..." --body "..." --dry-run`.
+- Inbox: list open and picked-up handoffs to this surface, newest first. CLI: `sp handoff list --surface code`.
+- Start: load the full body (`sp handoff show ID8` with the CLI), show it, confirm, then set `picked_up` and `picked_up_at`. CLI: `sp handoff start ID8`.
+- Done or drop: set `done` or `dropped` and `done_at`, after confirmation. Then offer to log a ship event or decision for the same project. CLI: `sp handoff done ID8` or `sp handoff drop ID8`.
 
 ## proof
 
 Lists shipped work with links: for status updates, reviews, changelogs, investor updates, proposals and case studies.
 
 1. Turn the user's stack words into tag slugs (lowercase kebab: "Next.js" is `nextjs`). Use at most 3 tags; they combine with AND.
-2. Code: `sp proof [--tag SLUG]...`. Elsewhere read the proof or tag files per the backend reference.
+2. CLI: `sp proof [--tag SLUG]...`. Elsewhere read the proof or tag files per the backend reference.
 3. Return at most 20 projects, newest ship first: name, one-liner, role and outcome when present, latest event and date, and the proof link.
 4. List projects whose proof line says "no public proof yet" under a separate heading "No public proof yet". Never present them as linked, and never invent a link.
 5. If a tag has no file, say no project carries that tag and ask for another word.
 
 ## project
 
-- Detail: read the project detail file (`sp project SLUG` in Code). It holds the fields, last 10 ship events, decisions in force, design assets and open handoffs.
-- Archive: show the change (`status: archived`, `archived_at`, `updated_at`), confirm, write. Ship events stay in proof. Code: `sp project SLUG --archive`, only after the user confirms in this turn.
+- Detail: read the project detail file (`sp project SLUG` with the CLI). It holds the fields, last 10 ship events, decisions in force, design assets and open handoffs.
+- Archive: show the change (`status: archived`, `archived_at`, `updated_at`), confirm, write. Ship events stay in proof. CLI: `sp project SLUG --archive`, only after the user confirms in this turn.
 - Delete request: do not delete. Offer to archive, and say deletion is done by hand in the backend.
 
 ## rules
@@ -159,6 +177,6 @@ Lists shipped work with links: for status updates, reviews, changelogs, investor
 Working rules every surface applies, optionally limited to one surface.
 
 - Show: read the rules index (`index/rules.md`), grouped by surface.
-- Add: `rule` (200 characters max, one plain sentence), optional `surface` (empty means every surface), active. Refuse when 50 rules are already active. Code: `sp rules add --rule "..." [--surface S] --dry-run`.
-- Pause: set `is_active: false` and `updated_at` after confirmation. Code: `sp rules pause ID8`.
+- Add: `rule` (200 characters max, one plain sentence), optional `surface` (empty means every surface), active. Refuse when 50 rules are already active. CLI: `sp rules add --rule "..." [--surface S] --dry-run`.
+- Pause: set `is_active: false` and `updated_at` after confirmation. CLI: `sp rules pause ID8`.
 - A rule about how Claude works across surfaces belongs here. A personal fact ("I like tea") does not; leave it to native memory.

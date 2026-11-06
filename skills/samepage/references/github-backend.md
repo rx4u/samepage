@@ -1,6 +1,6 @@
 # GitHub store from chat and Cowork
 
-How chat and Cowork (local and cloud) read and write a GitHub store through the GitHub connector. Claude Code uses the `sp` CLI instead (see SKILL.md).
+How chat and Cowork (local and cloud, claude.ai and Claude Desktop) read and write a GitHub store through the GitHub connector. Coding agents use the samepage MCP tools or the `sp` CLI instead (see SKILL.md).
 
 ## Find the store
 
@@ -38,7 +38,7 @@ Every read below is one call. The index files are pre-sorted and capped; do not 
 
 Rules for reads:
 - Follow a `next:` footer only when the user asks for more.
-- Every serve file starts with `built: TIME from SHA`. A write made from chat appears in index files after the store Action rebuilds them, usually within 90 seconds. If the user asks about something they just logged, say it may take a minute to show.
+- Every serve file starts with `built: TIME from SHA schema X.Y`, where X.Y is the store's schema version. Write `tool` and `from_tool` only when it is 1.1 or later. A write made from chat appears in index files after the store Action rebuilds them, usually within 90 seconds. If the user asks about something they just logged, say it may take a minute to show.
 - A 404 on `projects/{slug}.md` means the project does not exist: offer to create it. A 404 on `index/tags/{slug}.md` means no project has that tag.
 - Boot failure (any error): say in one line that the store could not be read, then answer without it. Do not retry in a loop.
 
@@ -81,6 +81,7 @@ id: 7fe7baaf-f981-4684-a558-9b8b1bd9dd15
 project: halcyon
 kind: shipped
 surface: chat
+tool: claude_ai
 summary: Shipped the Halcyon pricing page with monthly and yearly plans
 occurred_at: 2026-11-06T10:00:00Z
 created_at: 2026-11-06T10:15:00Z

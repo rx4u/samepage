@@ -12,6 +12,13 @@ The one-click template: `https://github.com/new?template_owner=rx4u&template_nam
 
 The next session boots with the context loaded.
 
+## Other coding agents (Codex, Copilot, Gemini CLI, Cursor, Windsurf) and Claude Desktop
+
+1. Install `sp` once: `git clone https://github.com/rx4u/samepage ~/samepage-src && sh ~/samepage-src/install.sh`. It needs git and python3 3.9 or newer, and puts `sp` in `~/.local/bin`.
+2. No store yet: `sp init` (same options as `/sp init` above). A store made in Claude Code already works; nothing to do.
+3. In the project folder: `sp setup codex` (or `copilot`, `gemini`, `cursor`, `windsurf`, `claude-desktop`). It adds the samepage MCP server to that tool's config, copies this skill where the tool reads skills, and adds the samepage block to the project's instruction file. For Cursor and Windsurf it prints the config snippet to paste, because their config paths are not verified.
+4. Restart the tool and ask "what am I working on?".
+
 ## Chat and Cowork with a GitHub store
 
 1. **Find the store.**
