@@ -25,7 +25,7 @@ None. samepage runs nothing on a server. The public repo is hosted on GitHub. Ea
 ## Background jobs
 | Job | Schedule or trigger | Max duration | On failure |
 |---|---|---|---|
-| Store index rebuild (`sp index` in the store Action) | push to the store's default branch that touches anything outside `index/` | 3 min (target 90 s) | Job fails, GitHub emails the owner, previous index stays, `index/builds.md` records the error; boot shows "index stale" |
+| Store index rebuild (`sp index` in the store Action) | push to the store's default branch that touches anything outside `index/` | 3 min (target 90 s) | Job fails, GitHub emails the owner, previous index stays; nothing is committed on failure (guardrails.md), so the failure shows only as the failed run; boot shows "index stale" |
 | Store check in the store Action | same push, before rebuild | 1 min | Job fails with the failing path and field; index is not rebuilt from an invalid store |
 | Public repo CI | every PR and push to main | 10 min | Merge blocked |
 | Release packaging | tag `v*` | 10 min | Release not published |

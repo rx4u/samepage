@@ -6,6 +6,7 @@ SAMEPAGE_HOME pointing at a temp config, so pull, commit and push are real.
 """
 import contextlib
 import io
+import json
 import os
 import shutil
 import subprocess
@@ -438,7 +439,7 @@ class NudgeTest(Store):
         env = dict(os.environ, CLAUDE_PLUGIN_ROOT=ROOT, CLAUDE_PROJECT_DIR=self.project)
         done = subprocess.run(["sh", os.path.join(ROOT, "hooks", "stop-nudge.sh")], env=env, capture_output=True,
                               text=True, timeout=5)
-        self.assertEqual((done.returncode, done.stdout), (0, NUDGE + "\n"))
+        self.assertEqual((done.returncode, json.loads(done.stdout)), (0, {"systemMessage": NUDGE}))
         env["CLAUDE_PROJECT_DIR"] = os.path.join(self.tmp, "missing")
         done = subprocess.run(["sh", os.path.join(ROOT, "hooks", "stop-nudge.sh")], env=env, capture_output=True,
                               text=True, timeout=5)

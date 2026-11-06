@@ -40,7 +40,7 @@ def brief(store, slug):
     out.extend(decisions or ["- none recorded"])
     pointer = None
     for line in _section(project, "Design"):
-        match = re.match(r"^- design_system \[approved\] .*? tokens: (\S+) (\S+)", line)
+        match = re.match(r"^- (?:[0-9a-f]{8} )?design_system \[approved\] .*? tokens: (\S+) (\S+)", line)
         if match:
             pointer = (match.group(1), match.group(2))
             break

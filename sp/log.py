@@ -4,6 +4,7 @@ Design pointer, Design handoff capture and Project detail read models).
 Every value comes from a flag and nothing prompts: Claude drafts the entry, shows the `--dry-run`
 output and runs the real write only after the user says yes (ADR-0007).
 """
+import json
 import datetime
 import os
 import re
@@ -225,7 +226,11 @@ def run_nudge(args):
     except Exception:  # the hook must never break a session
         line = None
     if line:
-        print(line)
+        if getattr(args, "json", False):
+            # Stop hook stdout goes to the debug log; systemMessage is what Claude Code shows the user.
+            print(json.dumps({"systemMessage": line}))
+        else:
+            print(line)
     return 0
 
 
@@ -279,6 +284,7 @@ def register(sub):
     project.set_defaults(func=run_project)
     hook = sub.add_parser("nudge", help="Stop hook: one line when you committed today and logged nothing")
     hook.add_argument("--cwd", help="project folder (default: current folder)")
+    hook.add_argument("--json", action="store_true", help="print {\"systemMessage\": ...} for the Stop hook")
     hook.set_defaults(func=lambda a: run_nudge(a) if a.cwd else run_nudge(_with_cwd(a)))
 
 
