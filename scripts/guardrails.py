@@ -64,8 +64,8 @@ def main():
                     continue  # a template like https://%s/%s or https://host/owner, not an endpoint
                 if not EXAMPLE_HOSTS.match(url) and not BACKEND_HOSTS.match(url):
                     fail("no maintainer-hosted endpoints", rel, url)
-    for rel, path in files(("sp", "hooks", "commands", "skills", "tests", "scripts", "docs", "fixtures", ".github"),
-                           (".py", ".md", ".json", ".yml", ".yaml", ".sh")):
+    for rel, path in files(("sp", "hooks", "commands", "skills", "tests", "scripts", "docs", "fixtures", ".github", "site"),
+                           (".py", ".md", ".json", ".yml", ".yaml", ".sh", ".html")):
         if "\u2014" in read(path):
             fail("no em dashes", rel, "contains U+2014")
     for rel in ("README.md", "SPEC.md", "CLAUDE.md", "install.sh"):
