@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "samepage",
-      "source": "./",
+      "source": "./plugin",
       "description": "Your AI tools forget. samepage doesn't. One shared working context for Claude Code, claude.ai, Cowork, Claude Design and other coding tools."
     }
   ]
