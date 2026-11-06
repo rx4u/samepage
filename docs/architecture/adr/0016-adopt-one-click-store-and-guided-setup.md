@@ -36,7 +36,7 @@ A hosted setup page, OAuth, or any token handling (ADR-0006 stands). Windows sup
 ## Consequences
 - Gets easier: setup from chat alone; stores work before and after releases; claude.ai install is one download.
 - Gets harder: `store-template/` changes must be copied to the template repo (`scripts/make_template_repo.py` builds it).
-- Follow-up tasks: mark `rx4u/samepage-store-template` as a template repository in its settings.
+- Follow-up tasks: none (template flag set 2026-11-06).
 
 ## Implementation plan
 - Affected paths: scripts/make_template_repo.py, scripts/package_skill.py, dist/samepage.skill, store-template/.github/workflows/index.yml, sp/init.py, skills/samepage/SKILL.md, skills/samepage/references/setup.md, README.md, .github/workflows/release.yml, tests.
@@ -45,13 +45,14 @@ A hosted setup page, OAuth, or any token handling (ADR-0006 stands). Windows sup
 - Config and env changes: none.
 
 ## Verification
-- [ ] A repo created from the template passes `sp check` and its Action rebuilds the index on the first edit
-- [ ] `sp init` without the GitHub CLI prints the template link instead of failing
-- [ ] `sp init --use-existing OWNER/REPO` works with plain git and fills a placeholder profile
-- [ ] `dist/samepage.skill` matches `skills/samepage/` (test)
+- [x] A repo created from the template passes `sp check` and its Action rebuilds the index on the first edit
+- [x] `sp init` without the GitHub CLI prints the template link instead of failing
+- [x] `sp init --use-existing OWNER/REPO` works with plain git and fills a placeholder profile
+- [x] `dist/samepage.skill` matches `skills/samepage/` (test)
 
 ## Revisit when
 Claude Code or claude.ai can create a repo for the user without a CLI, or the connector can write without an app install.
 
 ## More information
 - 2026-11-06: asked for by Raja after a walkthrough of what a stranger does after finding the repo.
+- 2026-11-06: verified on real GitHub. A private repo made from the template link ran its index Action on the first commit; `sp init --use-existing` with no GitHub CLI cloned it with plain git, filled the profile, pushed, and the Action rebuilt the index in under a minute.
