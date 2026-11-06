@@ -54,14 +54,14 @@ cat > "$SHIM" <<SHIM
 $MARK
 SAMEPAGE_HOME="\${SAMEPAGE_HOME:-$SAMEPAGE_HOME}"
 export SAMEPAGE_HOME
-PYTHONPATH="$TOOL_DIR" exec python3 -m sp "\$@"
+exec python3 "$TOOL_DIR/sp_run.py" "\$@"
 SHIM
 chmod 755 "$SHIM"
 
 echo "samepage: $action $REF ($(git -C "$TOOL_DIR" rev-parse --short HEAD)) in $TOOL_DIR, command at $SHIM"
 case ":$PATH:" in
   *":$BIN_DIR:"*) ;;
-  *) echo "samepage: $BIN_DIR is not on your PATH. Add this line to your shell profile: export PATH=\"$BIN_DIR:\$PATH\"" ;;
+  *) echo "samepage: optional: to type sp yourself, add $BIN_DIR to your PATH (export PATH=\"$BIN_DIR:\$PATH\"). Your tools do not need it." ;;
 esac
 if [ "${SAMEPAGE_NO_START:-}" = "1" ]; then
   echo "samepage: next: sp start (sets up your store and connects your tools)"

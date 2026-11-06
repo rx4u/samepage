@@ -219,6 +219,12 @@ class Installer(unittest.TestCase):
             ran = subprocess.run([shim, "--help"], env=env, capture_output=True, text=True, timeout=30)
             self.assertEqual(ran.returncode, 0, ran.stderr)
             self.assertIn("samepage store tools", ran.stdout)
+            decoy = os.path.join(tmp, "decoy")
+            os.makedirs(os.path.join(decoy, "sp"))
+            with open(os.path.join(decoy, "sp", "__init__.py"), "w", encoding="utf-8") as handle:
+                handle.write("raise SystemExit('wrong sp imported')\n")
+            ran = subprocess.run([shim, "--help"], env=env, cwd=decoy, capture_output=True, text=True, timeout=30)
+            self.assertEqual(ran.returncode, 0, ran.stderr)  # the shim never imports sp from the current folder
             self.assertTrue(os.path.isfile(os.path.join(home, ".samepage", "tool", "sp", "__init__.py")))
             again = subprocess.run(["sh", os.path.join(ROOT, "install.sh")], env=env, capture_output=True,
                                    text=True, timeout=120)
