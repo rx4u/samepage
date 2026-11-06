@@ -93,6 +93,18 @@ def oldest_first(rows, key):
     return sorted(rows, key=lambda r: (to_time(r.get(key) or EPOCH), r.get("id", "")))
 
 
+def store_version(rows):
+    """B22: serve file headers carry the store's own schema_version, so a reader of one boot
+    file knows whether it may write 1.1 keys (B23)."""
+    meta = rows.get("store_meta") or []
+    return (meta[0].get("schema_version") if meta else None) or SCHEMA_VERSION
+
+
+def via(row, key):
+    """ADR-0017: ' via TOOL' when a handoff records the tool that wrote it."""
+    return " via %s" % row[key] if row.get(key) else ""
+
+
 def day(value):
     return to_time(value).date().isoformat() if value else "?"
 
@@ -100,7 +112,7 @@ def day(value):
 class Index:
     def __init__(self, rows, built, sha):
         self.rows = rows
-        self.header = "built: %s from %s schema %s" % (built, (sha or "nogit")[:8], SCHEMA_VERSION)
+        self.header = "built: %s from %s schema %s" % (built, (sha or "nogit")[:8], store_version(rows))
         self.files = {}
         projects = rows["project"]
         self.projects = {p["slug"]: p for p in projects}
@@ -172,8 +184,9 @@ class Index:
         for surface in BOOT_SURFACES:
             items = [h for h in self.rows["handoff"] if h["to_surface"] == surface and h["status"] in ("open", "picked_up")]
             open_count = sum(1 for h in items if h["status"] == "open")
-            rows = [["- %s [%s] %s: %s (from %s, %s) file: handoffs/%s.md" % (
-                h["id"][:8], h["status"], h["project"], clip(h["title"], 120), h["from_surface"], day(h["created_at"]),
+            rows = [["- %s [%s] %s: %s (from %s%s, %s) file: handoffs/%s.md" % (
+                h["id"][:8], h["status"], h["project"], clip(h["title"], 120), h["from_surface"], via(h, "from_tool"),
+                day(h["created_at"]),
                 h["id"][:8])] for h in newest_first(items, "created_at")]
             self.page_files("index/handoffs-" + surface + "-%d.md", rows, DEFAULT_PAGE_SIZE,
                             extra_header="\nopen: %d" % open_count)
@@ -237,8 +250,8 @@ class Index:
                 out.extend("- %s %s, %s: %s" % (day(e["occurred_at"]), e["project"], e["kind"],
                                                 clip(e["summary"], level["summary"])) for e in events[:level["events"]])
             out += ["", "## Open handoffs to %s (%d)" % (surface, len(handoffs))]
-            out.extend("- %s %s: %s (from %s) file: handoffs/%s.md" % (h["id"][:8], h["project"], clip(h["title"], 120),
-                                                                       h["from_surface"], h["id"][:8])
+            out.extend("- %s %s: %s (from %s%s) file: handoffs/%s.md" % (h["id"][:8], h["project"], clip(h["title"], 120),
+                                                                         h["from_surface"], via(h, "from_tool"), h["id"][:8])
                        for h in handoffs[:level["handoffs"]])
             if len(handoffs) > level["handoffs"]:
                 out.append("- and %d more in index/handoffs-%s-1.md" % (len(handoffs) - level["handoffs"], surface))
@@ -369,8 +382,8 @@ def build_index(store, now=None):
     started = now or now_utc()
     clock = time.monotonic()
     sha = git_head(store)
-    header = "built: %s from %s schema %s" % (started, (sha or "nogit")[:8], SCHEMA_VERSION)
     report = check_store(store, check_index=False)
+    header = "built: %s from %s schema %s" % (started, (sha or "nogit")[:8], report.schema_version or SCHEMA_VERSION)
     if report.errors:
         path, field, problem = report.errors[0]
         message = "%d check errors, first: %s: %s: %s" % (len(report.errors), path, field, problem)

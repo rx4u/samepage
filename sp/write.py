@@ -14,7 +14,7 @@ import subprocess
 import sys
 import uuid
 
-from . import config
+from . import TOOL_ROLES, config, version_tuple
 from .check import Report, _validate_row, check_store, scan_secrets
 from .frontmatter import FrontmatterError, emit, parse
 from .index import build_index
@@ -91,6 +91,30 @@ class Context:
             self.notes.append("%s already existed, generated a new id" % rel)
             new = str(uuid.uuid4())
         raise WriteError("could not find a free path for %s" % make_path(new))
+
+    def store_version(self):
+        found = self.read("store.md")
+        return (found[0].get("schema_version") if found else None) or ""
+
+    def provenance(self, args, surface_key="surface", tool_key="tool"):
+        """ADR-0017: the surface (role) and, on 1.1 stores, the tool that wrote an entry.
+        An explicit --surface wins; otherwise the tool's default role, then code (B31)."""
+        tool = getattr(args, "tool", None) or None
+        if tool and tool not in schema()[1]["tool"]:
+            raise WriteError("unknown tool %r (choose from %s)" % (tool, ", ".join(schema()[1]["tool"])))
+        surface = getattr(args, surface_key, None)
+        if not surface:
+            surface = TOOL_ROLES.get(tool) if tool else None
+            if tool and surface is None:
+                raise WriteError("--tool %s has no default surface; pass --surface" % tool)
+            surface = surface or "code"
+        fields = {surface_key: surface}
+        if tool:
+            if version_tuple(self.store_version()) >= (1, 1):
+                fields[tool_key] = tool
+            elif "tool" not in " ".join(self.notes):
+                self.notes.append("store is schema %s; tool not recorded" % (self.store_version() or "unknown"))
+        return fields
 
     def path(self, rel):
         return os.path.join(self.store, rel)
@@ -318,6 +342,8 @@ def result_line(changes):
 
 def print_dry_run(ctx, changes, out):
     out("samepage: dry run, nothing written")
+    for note in ctx.notes:
+        out("samepage: note: " + note)
     for change in changes:
         out("")
         out("== %s (%s)" % (change.rel, "new file" if change.new else "update"))
@@ -402,6 +428,16 @@ def add_write_flags(parser):
     parser.add_argument("--dry-run", action="store_true", help="print the exact files and write nothing")
     parser.add_argument("--id", help="pin the new entry's uuid (printed by --dry-run)")
     parser.add_argument("--now", help="pin the time stamp, ISO with zone (printed by --dry-run)")
+
+
+def add_tool_flags(parser, surface_flag="--surface", surface_dest=None):
+    """--surface (a role) and --tool (the product), ADR-0017. --surface defaults to the tool's role."""
+    surfaces = schema()[1]["surface"]
+    kwargs = {"dest": surface_dest} if surface_dest else {}
+    parser.add_argument(surface_flag, choices=surfaces, default=None,
+                        help="role: code, chat, cowork or design (default: the tool's role, else code)", **kwargs)
+    parser.add_argument("--tool", choices=schema()[1]["tool"], default=os.environ.get("SAMEPAGE_TOOL") or None,
+                        help="tool writing this entry, recorded on schema 1.1 stores (default: $SAMEPAGE_TOOL)")
 
 
 # ----- serve file reads (read commands never walk raw folders)

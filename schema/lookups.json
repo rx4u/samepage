@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "lookups": {
     "backend": [
       "github",
@@ -62,6 +62,19 @@
       "running",
       "succeeded",
       "failed"
+    ],
+    "tool": [
+      "claude_code",
+      "claude_ai",
+      "claude_desktop",
+      "cowork",
+      "claude_design",
+      "codex",
+      "cursor",
+      "copilot",
+      "gemini_cli",
+      "windsurf",
+      "other"
     ]
   }
 }

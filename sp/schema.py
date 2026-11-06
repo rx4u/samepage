@@ -51,7 +51,12 @@ def _sql_block(markdown):
     return match.group(1)
 
 
+SINCE_RE = re.compile(r"--\s*since\s+(\d+\.\d+)")
+
+
 def _parse_tables(sql):
+    # A trailing `-- since 1.1` marks a column added in a minor version (ADR-0017, B23).
+    sql = re.sub(r"--\s*since\s+(\d+\.\d+)[^\n]*", r" SINCE_\1", sql)
     sql = re.sub(r"--[^\n]*", "", sql)
     tables = {}
     for match in re.finditer(r"CREATE TABLE (\w+)\s*\((.*?)\);", sql, re.S):
@@ -85,6 +90,9 @@ def _parse_tables(sql):
                 column["pattern"] = pattern.group(1)
             if re.search(r"CHECK \(id = 1\)", line):
                 column["singleton"] = True
+            since = re.search(r"SINCE_(\d+\.\d+)", line)
+            if since:
+                column["since"] = since.group(1)
             columns.append(column)
         tables[name] = columns
     return tables
@@ -112,7 +120,7 @@ def build(markdown):
             if (table, name) in OMITTED:
                 continue
             field = {"column": name, "type": TYPE_MAP[col["sqltype"]], "required": col["required"]}
-            for extra in ("max_length", "pattern", "unique"):
+            for extra in ("max_length", "pattern", "unique", "since"):
                 if col.get(extra):
                     field[extra] = col[extra]
             target = col.get("references")

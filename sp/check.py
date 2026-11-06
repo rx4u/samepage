@@ -9,7 +9,7 @@ import os
 import re
 import sys
 
-from . import MAX_ROWS_PER_READ, SCHEMA_VERSION
+from . import MAX_ROWS_PER_READ, SCHEMA_VERSION, version_tuple
 from .frontmatter import FrontmatterError, parse
 from .schema import load
 
@@ -39,6 +39,7 @@ class Report:
         self.warnings = []
         self.counts = {}
         self.sizes = {}
+        self.schema_version = None
 
     def error(self, path, field, problem):
         self.errors.append((path, field, problem))
@@ -180,6 +181,19 @@ def _walk(store):
         for name in sorted(filenames):
             rel = os.path.normpath(os.path.join(rel_dir, name)).replace(os.sep, "/")
             yield rel, os.path.join(dirpath, name)
+
+
+def _check_since(tables, rows, version, report):
+    """B23: a key added in a minor version may appear only in stores at that version or later,
+    because an older sp (a sha-pinned store Action, ADR-0016) rejects it as unknown."""
+    have = version_tuple(version)
+    for table, items in rows.items():
+        newer = {k["key"]: k["since"] for k in tables.get(table, {}).get("keys", []) if k.get("since")}
+        for rel, row in items:
+            for key, since in newer.items():
+                if row.get(key) not in (None, "") and version_tuple(since) > have:
+                    report.error(rel, key, "needs schema %s; store.md says %s (upgrade: SPEC.md, Upgrade a store)"
+                                 % (since, version))
 
 
 def _validate_row(table, spec, lookups, rel, fields, body, report):
@@ -327,9 +341,12 @@ def check_store(store, schema_dir=None, only=None, check_index=True):
             report.error("store.md", "file", "missing; every store needs store.md")
         else:
             version = meta.get("schema_version", "")
+            report.schema_version = version
             if version.split(".")[0] != SCHEMA_VERSION.split(".")[0]:
                 report.error("store.md", "schema_version", "%r is not readable by this sp (major %s)"
                              % (version, SCHEMA_VERSION.split(".")[0]))
+            else:
+                _check_since(tables, rows, version, report)
         if not rows.get("profile"):
             report.error("profile.md", "file", "missing; every store needs profile.md")
         for table in ("project", "preference"):

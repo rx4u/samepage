@@ -435,6 +435,7 @@ def convert(data, zone=datetime.timezone.utc, now=None):
             "project": slug,
             "kind": _need(row, "Kind", where),
             "surface": _need(row, "Surface", where),
+            "tool": row.get("Tool") or None,  # schema 1.1 (ADR-0017)
             "summary": _need(row, "Summary", where),
             "proof_url": plain_url(row.get("Proof URL")),
             "metric_label": row.get("Metric label") or None,
@@ -464,6 +465,7 @@ def convert(data, zone=datetime.timezone.utc, now=None):
             "project": slug,
             "status": _need(row, "Status", where),
             "surface": _need(row, "Surface", where),
+            "tool": row.get("Tool") or None,  # schema 1.1 (ADR-0017)
             "superseded_by": successors[0]["_id"] if successors else None,
             "title": _need(row, "Title", where),
             "reason": _need(row, "Reason", where),
@@ -483,6 +485,7 @@ def convert(data, zone=datetime.timezone.utc, now=None):
             "kind": _need(row, "Kind", where),
             "status": _need(row, "Status", where),
             "surface": _need(row, "Surface", where),
+            "tool": row.get("Tool") or None,  # schema 1.1 (ADR-0017)
             "title": _need(row, "Title", where),
             "source_url": plain_url(row.get("Source URL")),
             "tokens_repo_url": plain_url(row.get("Tokens repo URL")),
@@ -503,6 +506,7 @@ def convert(data, zone=datetime.timezone.utc, now=None):
             "id": handoff_id,
             "project": slug,
             "from_surface": _need(row, "From", where),
+            "from_tool": row.get("From tool") or None,  # schema 1.1 (ADR-0017)
             "to_surface": _need(row, "To", where),
             "status": _need(row, "Status", where),
             "title": _need(row, "Title", where),
@@ -513,7 +517,14 @@ def convert(data, zone=datetime.timezone.utc, now=None):
     for path, text in files.items():
         if not path.endswith(".md"):
             raise ExportError("internal: bad path %s" % path)
+        files[path] = _drop_empty_since(text)
     return files
+
+
+def _drop_empty_since(text):
+    """Schema 1.1 keys (tool, from_tool) are left out when empty, so a 1.0 store stays readable by an
+    older sp (B23)."""
+    return "".join(line for line in text.splitlines(True) if line not in ("tool:\n", "from_tool:\n"))
 
 
 def export(source, out, utc_offset="+00:00", now=None):

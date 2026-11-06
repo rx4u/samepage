@@ -6,7 +6,7 @@ the store. `--to design` is rejected: Claude Design cannot read the store in v1 
 import sys
 
 from .frontmatter import FrontmatterError, parse
-from .write import (WriteError, add_write_flags, check_slug, new_file, norm_id8, read_index, read_project,
+from .write import (WriteError, add_tool_flags, add_write_flags, check_slug, new_file, norm_id8, read_index, read_project,
                     resolve_read_store, run_write, schema, touch_project, updated_file)
 
 READ_SURFACES = ("code", "chat", "cowork")
@@ -19,7 +19,7 @@ def build_new(ctx, args):
     slug = check_slug(args.project)
     project = read_project(ctx, slug)
     new_id, rel = ctx.new_path(lambda i: "handoffs/%s.md" % i[:8])
-    fields = {"id": new_id, "project": slug, "from_surface": args.from_surface, "to_surface": args.to,
+    fields = {"id": new_id, "project": slug, **ctx.provenance(args, "from_surface", "from_tool"), "to_surface": args.to,
               "status": "open", "title": args.title, "created_at": ctx.now, "picked_up_at": None, "done_at": None}
     body = args.body or ""
     return [new_file("handoff", rel, fields, body, keep_empty=("picked_up_at", "done_at")),
@@ -103,7 +103,7 @@ def register(sub):
     new.add_argument("--to", required=True, choices=surfaces, help="code, chat or cowork (design is rejected, B7)")
     new.add_argument("--title", required=True, help="120 characters max")
     new.add_argument("--body", required=True, help="the brief, 4,000 characters max")
-    new.add_argument("--from", dest="from_surface", default="code", choices=surfaces)
+    add_tool_flags(new, "--from", "from_surface")
     add_write_flags(new)
     new.set_defaults(func=lambda a: run_write(a, build_new, lambda x: "handoff to %s for %s" % (x.to, x.project)))
     for action, text in (("start", "pick a handoff up"), ("done", "close a handoff as done"),

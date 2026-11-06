@@ -12,7 +12,7 @@ import sys
 
 from .boot import _git as git_quick
 from . import config
-from .write import (RESERVED_PROJECT, SLUG_RE, WriteError, add_write_flags, check_slug, git, new_file,
+from .write import (RESERVED_PROJECT, SLUG_RE, WriteError, add_tool_flags, add_write_flags, check_slug, git, new_file,
                     norm_id8, parse_time, read_index, read_project, resolve_read_store, run_write, schema,
                     touch_project, updated_file, utc_date)
 
@@ -57,10 +57,11 @@ def build_ship(ctx, args):
         except ValueError:
             raise WriteError("--metric-value must be a number")
     event_id, event_rel = ctx.new_path(lambda i: "events/%s/%s-%s-%s.md" % (day[:4], day, slug, i[:8]))
-    event = {"id": event_id, "project": slug, "kind": args.kind, "surface": args.surface,
-             "summary": args.summary, "proof_url": args.proof_url, "metric_label": args.metric_label,
+    event = {"id": event_id, "project": slug, "kind": args.kind}
+    event.update(ctx.provenance(args))
+    event.update({"summary": args.summary, "proof_url": args.proof_url, "metric_label": args.metric_label,
              "metric_value": args.metric_value, "metric_unit": args.metric_unit, "occurred_at": occurred,
-             "created_at": ctx.now}
+             "created_at": ctx.now})
     changes.append(new_file("ship_event", event_rel, event))
     # B6: shipped or launched moves idea, active or unknown to shipped; never parked or archived.
     if args.kind in SHIPPING_KINDS:
@@ -105,7 +106,7 @@ def build_decision(ctx, args):
     decided = ctx.now
     day = utc_date(decided)
     new_id, rel = ctx.new_path(lambda i: "decisions/%s/%s-%s.md" % (slug, day, i[:8]))
-    fields = {"id": new_id, "project": slug, "status": "accepted", "surface": args.surface, "title": args.title,
+    fields = {"id": new_id, "project": slug, "status": "accepted", **ctx.provenance(args), "title": args.title,
               "reason": args.reason, "decided_at": decided, "created_at": ctx.now, "updated_at": ctx.now}
     changes = [new_file("decision", rel, fields, args.body or "")]
     if args.supersedes:
@@ -139,7 +140,7 @@ def build_design(ctx, args):
     if bool(args.tokens_repo_url) != bool(args.tokens_path):
         raise WriteError("--tokens-repo-url and --tokens-path go together")
     new_id, rel = ctx.new_path(lambda i: "design/%s/%s.md" % (slug, i[:8]))
-    fields = {"id": new_id, "project": slug, "kind": args.kind, "status": status, "surface": args.surface,
+    fields = {"id": new_id, "project": slug, "kind": args.kind, "status": status, **ctx.provenance(args),
               "title": args.title, "source_url": args.source_url, "tokens_repo_url": args.tokens_repo_url,
               "tokens_path": args.tokens_path, "created_at": ctx.now, "updated_at": ctx.now}
     changes = [new_file("design_asset", rel, fields)]
@@ -237,7 +238,6 @@ def run_nudge(args):
 # ----- argparse
 
 def register(sub):
-    surfaces = lookup("surface")
     log = sub.add_parser("log", help="log a ship, decision or design asset (writes after --dry-run review)")
     kinds = log.add_subparsers(dest="log_kind", required=True)
     ship = kinds.add_parser("ship", help="log a ship event (US-05)")
@@ -253,7 +253,7 @@ def register(sub):
     ship.add_argument("--new-project-type", choices=lookup("project_type"))
     ship.add_argument("--new-project-one-liner", help="140 characters max")
     ship.add_argument("--tag", action="append", metavar="SLUG[=Label]", help="tag the project, repeatable")
-    ship.add_argument("--surface", default="code", choices=surfaces)
+    add_tool_flags(ship)
     add_write_flags(ship)
     ship.set_defaults(func=lambda a: run_write(a, build_ship, lambda x: "log ship %s %s" % (x.project, x.kind)))
     decision = kinds.add_parser("decision", help="record a decision (US-12)")
@@ -262,7 +262,7 @@ def register(sub):
     decision.add_argument("--reason", required=True)
     decision.add_argument("--body", help="longer detail, written as the Markdown body")
     decision.add_argument("--supersedes", metavar="ID", help="id (8 characters) of the decision this replaces")
-    decision.add_argument("--surface", default="code", choices=surfaces)
+    add_tool_flags(decision)
     add_write_flags(decision)
     decision.set_defaults(func=lambda a: run_write(a, build_decision, lambda x: "decision %s" % x.project))
     design = kinds.add_parser("design", help="record a design asset pointer (US-10, US-11)")
@@ -274,7 +274,7 @@ def register(sub):
     design.add_argument("--source-url")
     design.add_argument("--tokens-repo-url")
     design.add_argument("--tokens-path")
-    design.add_argument("--surface", default="code", choices=surfaces)
+    add_tool_flags(design)
     add_write_flags(design)
     design.set_defaults(func=lambda a: run_write(a, build_design, lambda x: "design %s %s" % (x.project, x.kind)))
     project = sub.add_parser("project", help="show a project, or archive it with --archive (US-14)")

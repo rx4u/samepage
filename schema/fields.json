@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "source": "docs/architecture/data-architecture.md",
   "tables": {
     "store_meta": {
@@ -357,6 +357,14 @@
           "lookup": "surface"
         },
         {
+          "column": "tool_id",
+          "type": "lookup",
+          "required": false,
+          "since": "1.1",
+          "key": "tool",
+          "lookup": "tool"
+        },
+        {
           "column": "summary",
           "type": "text",
           "required": true,
@@ -433,6 +441,14 @@
           "required": true,
           "key": "surface",
           "lookup": "surface"
+        },
+        {
+          "column": "tool_id",
+          "type": "lookup",
+          "required": false,
+          "since": "1.1",
+          "key": "tool",
+          "lookup": "tool"
         },
         {
           "column": "superseded_by_id",
@@ -523,6 +539,14 @@
           "lookup": "surface"
         },
         {
+          "column": "tool_id",
+          "type": "lookup",
+          "required": false,
+          "since": "1.1",
+          "key": "tool",
+          "lookup": "tool"
+        },
+        {
           "column": "title",
           "type": "text",
           "required": true,
@@ -585,6 +609,14 @@
           "required": true,
           "key": "from_surface",
           "lookup": "surface"
+        },
+        {
+          "column": "from_tool_id",
+          "type": "lookup",
+          "required": false,
+          "since": "1.1",
+          "key": "from_tool",
+          "lookup": "tool"
         },
         {
           "column": "to_surface_id",
