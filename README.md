@@ -1,69 +1,62 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/brand/samepage-mark-white.svg">
-    <img src="docs/brand/samepage-mark.svg" width="88" alt="samepage">
-  </picture>
+  <a href="https://samepage-rajaraman.vercel.app">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/readme/hero-dark.svg">
+      <img src="docs/readme/hero-light.svg" width="100%" alt="Every AI tool. On the same page. Ten AI tools connected to one private store.">
+    </picture>
+  </a>
 </p>
 
-<h1 align="center">samepage</h1>
+<p align="center">
+  <a href="https://samepage-rajaraman.vercel.app"><b>Website</b></a> &nbsp;·&nbsp;
+  <a href="#set-up"><b>Set up</b></a> &nbsp;·&nbsp;
+  <a href="https://github.com/rx4u/samepage/releases/latest"><b>Latest release</b></a> &nbsp;·&nbsp;
+  <a href="SPEC.md"><b>Store format</b></a>
+</p>
 
 <p align="center"><b>Your AI tools forget. samepage doesn't.</b><br>
-One shared working context for Claude, Codex, Gemini CLI, Copilot, Cursor and Windsurf, in a private repo you own.</p>
-
-<p align="center"><img src="docs/demo.gif" width="760" alt="Logging a ship in Claude Code, then the proof file claude.ai chat reads shows it"></p>
+One shared working context for Claude, Codex, Gemini CLI, Copilot, Cursor and Windsurf, in a private repo you own.<br>
+No server. No API keys. No account to create.</p>
 
 ---
 
-You plan in claude.ai chat, build in Claude Code, design in Claude Design and run long tasks in Cowork. Each one starts from zero. Chat doesn't know what you shipped in Code yesterday. Code reopens a decision you settled in chat last week. You paste the same brief into three tabs.
+## The problem
 
-samepage gives all of them one shared working context, stored in a private repo you own:
+You plan in one tool, build in another and review in a third. Each one starts from zero. Chat doesn't know what you shipped yesterday. Your coding agent reopens a decision you settled last week. You paste the same brief into three tabs.
+
+samepage keeps one store of your working context, and every tool reads it at the start and writes to it as you go.
 
 | | What it holds | What changes |
 |---|---|---|
 | **Projects** | Status, stack, links, outcomes | Every session knows what you're working on |
-| **Decisions** | Settled choices and the reason | No surface reopens a closed question |
-| **Ships** | What shipped, when, with links and metrics | Any surface can answer "what did we get done?" |
-| **Handoffs** | A brief left on one surface for another | Plan in chat, build in Code, report back |
-| **Rules** | How you want Claude to work, everywhere or per surface | Say it once, every surface follows it |
-| **Design** | Where each design system's tokens live | Claude Design and Claude Code use the same tokens |
-| **You** | Name, role, links | Claude writes as you, not as a stranger |
-
-## Who it's for
-
-Anyone who works on the same projects across more than one Claude surface.
-
-| You are | What you get |
-|---|---|
-| A developer | Code starts every session knowing the stack, the open work and the decisions already made |
-| A founder | One place for what shipped this week, ready for an investor update or a changelog |
-| A product manager | Specs planned in chat handed to Code as briefs, with the decisions behind them |
-| A designer | Design system pointers that Claude Design and Claude Code both follow |
-| A consultant or freelancer | Shipped work with real links, for proposals and case studies |
-| Anyone with a review coming | A dated record of what you delivered, instead of reconstructing it from memory |
-
-If you only chat with Claude and don't run ongoing projects, claude.ai's built-in memory is enough. samepage is for work that moves between surfaces.
-
-No hosted server. No API keys. No account to create. Your store is a private GitHub repo of plain Markdown files.
+| **Decisions** | Settled choices and the reason | No tool reopens a closed question |
+| **Ships** | What shipped, when, with links and metrics | Any tool can answer "what did we get done?" |
+| **Handoffs** | A brief left in one tool for another | Plan in chat, build in code, report back |
+| **Rules** | How you want AI to work, everywhere or per role | Say it once, every tool follows it |
+| **Design** | Where each design system's tokens live | Design and code use the same tokens |
+| **You** | Name, role, links | Your tools write as you, not as a stranger |
 
 ## How it works
 
-```
- claude.ai chat / Cowork                 Claude Code                      Claude Design
- ───────────────────────                 ───────────                      ─────────────
- samepage skill reads one file           plugin hook boots your context   links your product repo and
- through the GitHub connector;           into every session, matched to   uses the same design tokens
- "log this" writes an entry              the project you're in; /sp log
-                                         writes an entry
-            \                                   |                                 /
-             \______________________  your private store  _______________________/
-                                  (private GitHub repo of Markdown)
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/readme/how-dark.svg">
+  <img src="docs/readme/how-light.svg" width="100%" alt="Boot: every session starts from one small file. Write: the tool drafts a typed entry and you confirm. Hand off: a brief left in one tool is picked up by the next.">
+</picture>
 
-Every write is a small, typed entry you confirm first. A tiny index of pre-built "boot files" keeps reads to one file per session, under 2,000 tokens.
+- **Boot.** One pre-built file per role, under 8,000 characters, so a session start costs one read.
+- **Write.** Small, typed entries (a ship, a decision, a handoff, a rule). You see the entry and say yes before anything is saved.
+- **Store.** Plain Markdown in a private GitHub repo you own. Every change is a normal commit you can read, diff and revert.
+
+<details>
+<summary><b>Watch it in Claude Code</b></summary>
+
+<p align="center"><img src="docs/demo.gif" width="760" alt="Logging a ship in Claude Code, then the proof file claude.ai chat reads shows it"></p>
+
+</details>
 
 ## Works with
 
-samepage is built for Claude first. Other coding tools connect through a local MCP server and an instruction file, so they read and write the same store.
+Claude Code loads your context through a plugin. Claude chat surfaces use a skill. Every other tool connects through a local MCP server plus a short instruction file, so all of them read and write the same store.
 
 | Tool | How it connects | Status |
 |---|---|---|
@@ -82,16 +75,20 @@ Tested means a full run (boot, a confirmed write, a handoff picked up) passed an
 
 ## Set up
 
-Pick the path that matches how you use Claude. Both end at the same private store, so you can add the other path later. No Notion needed.
+Pick the path for the tool you use most. Every path ends at the same private store, so you can add the others later.
 
-### I use Claude Code
+<details>
+<summary><b>Claude Code</b>: plugin, one command</summary>
 
 1. In Claude Code: `/plugin install samepage --marketplace rx4u/samepage`
 2. Run `/sp init`. It asks your name, headline and up to three working rules, then creates a private `samepage-store` repo.
    No GitHub CLI? It gives you the one-click link below instead and connects the repo you create.
 3. Start a new session. Your context loads on its own; say "log this" after you ship something.
 
-### I only use claude.ai chat or Cowork
+</details>
+
+<details>
+<summary><b>claude.ai chat or Cowork</b>: a skill, nothing to install</summary>
 
 1. **Create your store:** [one click](https://github.com/new?template_owner=rx4u&template_name=samepage-store-template&name=samepage-store&visibility=private). Keep the name `samepage-store` and keep it Private, then click Create repository.
 2. **Add the skill:** download [samepage.skill](https://github.com/rx4u/samepage/raw/main/dist/samepage.skill). In claude.ai go to Customize, Skills, +, Upload a skill, and choose the file. Skills need code execution on (Settings, Capabilities). Turn on the GitHub connector with access to your store repo.
@@ -99,7 +96,10 @@ Pick the path that matches how you use Claude. Both end at the same private stor
 
 Saving from chat needs one GitHub permission: the Claude GitHub app installed on your account with access to the store repo (GitHub settings, Applications). Until then chat reads everything and hands you each entry to paste on GitHub. Claude walks you through it.
 
-### I use another coding tool (Codex, Gemini CLI, Copilot, Cursor, Windsurf, Claude Desktop)
+</details>
+
+<details>
+<summary><b>Codex, Gemini CLI, Copilot, Cursor, Windsurf or Claude Desktop</b>: local MCP server</summary>
 
 1. Install the `sp` command (needs `git` and `python3`, no sudo):
 
@@ -113,11 +113,16 @@ Saving from chat needs one GitHub permission: the Claude GitHub app installed on
 
 Cursor and Windsurf config paths are not verified yet, so for those `sp setup` prints the snippet to paste instead of editing the file. Gemini CLI runs MCP servers only in folders you trust.
 
-### Claude Design
+</details>
+
+<details>
+<summary><b>Claude Design</b>: reads your tokens</summary>
 
 Link your product repo when you start a design. Put your tokens in `design/tokens.json` (W3C design token format), and log the design system once ("log the design system for halcyon") so every surface knows where it lives.
 
-### Requirements
+</details>
+
+**Requirements.**
 
 - Claude Code and other coding tools: `git` and `python3` 3.9 or newer (macOS asks to install the command line tools the first time). Linux and macOS; Windows is untested.
 - claude.ai path: nothing to install.
@@ -129,13 +134,18 @@ Link your product repo when you start a design. Put your tokens in `design/token
 | "what am I working on?" | Your active projects, rules and open handoffs, from one read |
 | `/sp log` or "log this" after shipping | Drafts a ship event from your session, shows it, writes it after your yes |
 | "what did I ship this month?" or "what have I shipped with Next.js?" | Up to 20 shipped projects with outcomes and links, newest first |
-| "hand this to Code" | Leaves a brief that your next Claude Code session shows at start |
+| "hand this to Code" | Leaves a brief that your next coding session shows at start |
 | "log decision: Supabase over Firebase because of RLS" | Recorded with its reason; superseded decisions are kept, not deleted |
 | `/sp brief halcyon` | A design brief to paste into Claude Design, naming your tokens file |
 
 ## Two accounts? Link the stores
 
-Keep one store for your office account and one for your personal one, and share what should follow you. On a machine that has both store clones:
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/readme/sync-dark.svg">
+  <img src="docs/readme/sync-light.svg" width="100%" alt="Two stores, work and personal. Rules and decisions are shared both ways with sp sync; projects, ships and handoffs stay in their own store.">
+</picture>
+
+One store for your office account, one for your personal account. Share what should follow you. On a machine with both store clones:
 
 ```bash
 sp link add ~/code/my-personal-store --name personal
@@ -149,11 +159,11 @@ sp sync --dry-run
 sp sync
 ```
 
-Rules cross both ways, active or paused. Decisions cross for projects that exist in both stores, plus `general`. The newer edit wins, and you see the full list before anything is written. Projects, ships, handoffs and design pointers stay in their own store. Nothing goes through a server; each store gets one ordinary commit.
+Rules cross both ways, active or paused. Decisions cross for projects that exist in both stores, plus `general`. The newer edit wins, and you see the full list before anything is written.
 
 ## Works with native memory
 
-claude.ai memory remembers personal facts and preferences inside chat. samepage holds working context that has to travel to every surface and stay structured: projects, shipped work with proof, decisions, design pointers and handoffs. Use both.
+Built-in memory (claude.ai, ChatGPT, Cursor and others) remembers personal facts inside one tool. samepage holds working context that has to travel to every tool and stay structured: projects, shipped work with proof, decisions, design pointers and handoffs. Use both.
 
 ## Your data
 
@@ -172,7 +182,7 @@ Plain Markdown with flat frontmatter, one entry per file. See [SPEC.md](SPEC.md)
 
 ## Status
 
-Built in public. The full architecture, decisions and build plan are in [docs/architecture](docs/architecture/README.md).
+Built in public by [Rajaraman Arumugam](https://github.com/rx4u). Design. AI. Product. Leadership. The full architecture, decisions and build plan are in [docs/architecture](docs/architecture/README.md).
 
 ## License
 
