@@ -173,6 +173,27 @@ body{margin:0}
 .sp-maker-body{padding:48px;display:flex;flex-direction:column;justify-content:center}
 .sp-maker-q{margin:22px 0 0;font-size:clamp(22px,2.3vw,32px);line-height:1.3;letter-spacing:-.03em;font-weight:500}
 .sp-maker-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;margin-top:36px;padding-top:24px;border-top:1px solid var(--line)}
+.sp-eds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.sp-ed{padding:0;display:flex;flex-direction:column;overflow:hidden}
+.sp-ed-head{padding:26px 28px 20px}
+.sp-ed-t{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:19px;font-weight:600;letter-spacing:-.02em}
+.sp-ed-s{margin:8px 0 0;font-size:14px;line-height:1.55;color:var(--fg2)}
+.sp-badge{font:500 10px "Geist Mono",monospace;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:6px;background:var(--inv);color:var(--invfg)}
+.sp-ed-win{margin:0 16px 16px;border:1px solid var(--line2);border-radius:14px;background:var(--bg3);overflow:hidden;flex:1;display:flex;flex-direction:column}
+.sp-ed-bar{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 8px 0 14px;border-bottom:1px solid var(--line);background:var(--bg2)}
+.sp-ed-dots{display:inline-flex;gap:6px}.sp-ed-dots i{width:10px;height:10px;border-radius:50%;background:var(--line2)}
+.sp-ed-file{font-size:12px;color:var(--fg3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-copy{min-height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--line2);background:transparent;color:var(--fg2);font:500 12px "Geist Mono",monospace;cursor:pointer}
+.sp-copy:hover{color:var(--fg);border-color:var(--fg3)}
+.sp-ed-chips{margin:14px 16px 0}
+.sp-ed-body{-webkit-user-select:text;user-select:text;counter-reset:ln;padding:14px 0 18px;font-size:13.5px;line-height:1.95;overflow-x:auto;color:var(--fg)}
+.sp-edl{counter-increment:ln;white-space:pre-wrap;overflow-wrap:anywhere;padding:0 20px 0 0;display:flex}
+.sp-edl>span.sp-c{min-width:0}
+.sp-edl::before{content:counter(ln);flex:0 0 44px;text-align:right;padding-right:16px;color:var(--fg3);opacity:.55;-webkit-user-select:none;user-select:none}
+.sp-pr{color:var(--fg3);margin-right:12px;-webkit-user-select:none;user-select:none}
+.sp-note{color:var(--fg3)}
+.sp-edlink{color:var(--fg);text-decoration:underline;text-underline-offset:3px}
+@media (max-width:960px){.sp-eds{grid-template-columns:1fr}}
 @media (max-width:1100px){.sp-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:960px){
 .sp-head{grid-template-columns:minmax(0,1fr);gap:20px;margin-bottom:40px}
@@ -259,10 +280,10 @@ body{margin:0}
 </a>
 <nav class="sp-navlinks sp-navwrap" aria-label="Main">
 <span class="sp-pill" aria-hidden="true"></span>
+<a href="#install" data-nav="install" data-go="install">Install</a>
 <a href="#how" data-nav="how" data-go="how">How it works</a>
 <a href="#store" data-nav="store" data-go="store">The store</a>
 <a href="#adapters" data-nav="adapters" data-go="adapters">Adapters</a>
-<a href="#install" data-nav="install" data-go="install">Install</a>
 </nav>
 <div style="justify-self:end;display:flex;align-items:center;gap:10px">
 <button type="button" class="sp-icon" data-theme-toggle aria-label="Switch to light mode">
@@ -296,10 +317,76 @@ body{margin:0}
 </div>
 </section>
 
+<section class="sp-sec sp-sec-install" id="install">
+<div class="sp-wrap">
+<div class="sp-head">
+<div><div class="sp-eyebrow"><span class="sp-idx">01</span>Get started</div>
+<h2 class="sp-h2"><span class="sp-mask"><span class="sp-line">Two minutes to the same page.</span></span></h2></div>
+<p class="sp-lead">Pick the tool you use most. Every path ends at the same private store, so you can add the others later.</p>
+</div>
+<div class="sp-eds">
+<div class="sp-card sp-ed">
+<div class="sp-ed-head"><div class="sp-ed-t">Claude Code<span class="sp-badge">Recommended</span></div><p class="sp-ed-s">Plugin. Your context loads at the start of every session. Run in the Claude Code terminal.</p></div>
+<div class="sp-ed-win">
+<div class="sp-ed-bar"><span class="sp-ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="sp-mono sp-ed-file">claude code &middot; terminal</span><button type="button" class="sp-copy" data-copy>Copy</button></div>
+<div class="sp-mono sp-ed-body">
+<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">&gt;</span><span class="sp-c">/plugin marketplace add rx4u/samepage</span></div>
+<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">&gt;</span><span class="sp-c">/plugin install samepage@samepage</span></div>
+<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">&gt;</span><span class="sp-c">/sp init</span></div>
+<div class="sp-edl sp-note"><span class="sp-c"># asks your name and rules, creates a private samepage-store</span></div>
+<div class="sp-edl sp-note"><span class="sp-c"># start a new session: your context loads on its own</span></div>
+</div>
+</div>
+</div>
+<div class="sp-card sp-ed">
+<div class="sp-ed-head"><div class="sp-ed-t">claude.ai chat &middot; Cowork</div><p class="sp-ed-s">A skill and the GitHub connector. Nothing to install.</p></div>
+<div class="sp-ed-win">
+<div class="sp-ed-bar"><span class="sp-ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="sp-mono sp-ed-file">claude.ai &middot; setup</span></div>
+<div class="sp-mono sp-ed-body">
+<div class="sp-edl"><span class="sp-c"><a class="sp-edlink" href="https://github.com/new?template_owner=rx4u&amp;template_name=samepage-store-template&amp;name=samepage-store&amp;visibility=private" target="_blank" rel="noopener">Create your store</a> (keep it Private)</span></div>
+<div class="sp-edl"><span class="sp-c"><a class="sp-edlink" href="https://github.com/rx4u/samepage/raw/main/dist/samepage.skill">Download samepage.skill</a></span></div>
+<div class="sp-edl"><span class="sp-c">Customize, Skills, +, Upload a skill</span></div>
+<div class="sp-edl"><span class="sp-c">Settings, Capabilities: code execution on</span></div>
+<div class="sp-edl"><span class="sp-c">Turn on the GitHub connector for the store</span></div>
+<div class="sp-edl"><span class="sp-c">Say <span class="sp-holo sp-holotext">"set up samepage"</span></span></div>
+</div>
+</div>
+</div>
+<div class="sp-card sp-ed">
+<div class="sp-ed-head"><div class="sp-ed-t">Codex, Gemini CLI, Copilot, Cursor, Windsurf, Claude Desktop</div><p class="sp-ed-s">A local MCP server and a short instruction file. Needs git and python3.</p></div>
+<div class="sp-ed-win">
+<div class="sp-ed-bar"><span class="sp-ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="sp-mono sp-ed-file">terminal &middot; zsh</span><button type="button" class="sp-copy" data-copy>Copy</button></div>
+<div class="sp-chips sp-ed-chips" role="group" aria-label="Pick your tool"><button type="button" data-mcp="0" aria-pressed="true" class="sp-chip-b sp-chip-b-on">Codex</button><button type="button" data-mcp="1" aria-pressed="false" class="sp-chip-b">Gemini CLI</button><button type="button" data-mcp="2" aria-pressed="false" class="sp-chip-b">Copilot</button><button type="button" data-mcp="3" aria-pressed="false" class="sp-chip-b">Cursor</button><button type="button" data-mcp="4" aria-pressed="false" class="sp-chip-b">Windsurf</button><button type="button" data-mcp="5" aria-pressed="false" class="sp-chip-b">Claude Desktop</button></div>
+<div class="sp-mono sp-ed-body">
+<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">git clone https://github.com/rx4u/samepage ~/.samepage/tool</span></div>
+<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">sh ~/.samepage/tool/install.sh</span></div>
+<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">sp init</span></div>
+<div class="sp-edl sp-cmd"><span class="sp-pr" aria-hidden="true">$</span><span class="sp-c">sp setup <span class="sp-holo sp-holotext" data-sp="mcp-code">codex</span></span></div>
+<div class="sp-edl sp-note"><span class="sp-c"># <span data-sp="mcp-note">adds the MCP entry and AGENTS.md</span></span></div>
+<div class="sp-edl sp-note"><span class="sp-c"># restart the tool and ask: what am I working on?</span></div>
+</div>
+</div>
+</div>
+<div class="sp-card sp-ed">
+<div class="sp-ed-head"><div class="sp-ed-t">Claude Design</div><p class="sp-ed-s">Reads your product repo's tokens. No install.</p></div>
+<div class="sp-ed-win">
+<div class="sp-ed-bar"><span class="sp-ed-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="sp-mono sp-ed-file">design &middot; tokens</span></div>
+<div class="sp-mono sp-ed-body">
+<div class="sp-edl"><span class="sp-c">Link your product repo when you start a design</span></div>
+<div class="sp-edl"><span class="sp-c">Keep tokens in design/tokens.json (W3C format)</span></div>
+<div class="sp-edl"><span class="sp-c">Say <span class="sp-holo sp-holotext">"log the design system for my-app"</span></span></div>
+<div class="sp-edl sp-note"><span class="sp-c"># every surface now knows where your tokens live</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
 <section class="sp-sec" id="problem">
 <div class="sp-wrap">
 <div class="sp-head">
-<div><div class="sp-eyebrow"><span class="sp-idx">01</span>The problem</div>
+<div><div class="sp-eyebrow"><span class="sp-idx">02</span>The problem</div>
 <h2 class="sp-h2"><span class="sp-mask"><span class="sp-line">Every AI tool starts from zero.</span></span></h2></div>
 <p class="sp-lead">You decide something in chat and your coding agent never hears about it. Switch accounts and it is gone. Open a new session and you explain it all again.</p>
 </div>
@@ -340,7 +427,7 @@ body{margin:0}
 <section class="sp-sec" id="how">
 <div class="sp-wrap">
 <div class="sp-head">
-<div><div class="sp-eyebrow"><span class="sp-idx">02</span>How it works</div>
+<div><div class="sp-eyebrow"><span class="sp-idx">03</span>How it works</div>
 <h2 class="sp-h2"><span class="sp-mask"><span class="sp-line">Boot. Write. Hand off.</span></span></h2></div>
 <p class="sp-lead">Three moves, the same in every tool. One store underneath, and nothing writes without your yes.</p>
 </div>
@@ -394,7 +481,7 @@ body{margin:0}
 <section class="sp-sec" id="store">
 <div class="sp-wrap">
 <div class="sp-head">
-<div><div class="sp-eyebrow"><span class="sp-idx">03</span>The store</div>
+<div><div class="sp-eyebrow"><span class="sp-idx">04</span>The store</div>
 <h2 class="sp-h2"><span class="sp-mask"><span class="sp-line">Plain files. Your repo. No server.</span></span></h2></div>
 <p class="sp-lead">Everything lives in a private git repo you own. No account to sign up for, no cloud copy, nothing to switch off later.</p>
 </div>
@@ -486,7 +573,7 @@ body{margin:0}
 <section class="sp-sec" id="adapters">
 <div class="sp-wrap">
 <div class="sp-head">
-<div><div class="sp-eyebrow"><span class="sp-idx">04</span>Adapters</div>
+<div><div class="sp-eyebrow"><span class="sp-idx">05</span>Adapters</div>
 <h2 class="sp-h2"><span class="sp-mask"><span class="sp-line">Works where you already work.</span></span></h2></div>
 <p class="sp-lead">A plugin, a skill or a local MCP server. Tested means a full run passed and is recorded in the tool ledger.</p>
 </div>
@@ -584,64 +671,7 @@ body{margin:0}
 </div>
 </section>
 
-<section class="sp-sec" id="install">
-<div class="sp-wrap">
-<div class="sp-head">
-<div><div class="sp-eyebrow"><span class="sp-idx">05</span>Install</div>
-<h2 class="sp-h2"><span class="sp-mask"><span class="sp-line">Two minutes to the same page.</span></span></h2></div>
-<p class="sp-lead">Pick the way in for the tool you use. Every path ends at the same private store.</p>
-</div>
-<div class="sp-card sp-panel">
-<div class="sp-insbar">
-<div role="tablist" aria-label="Install paths" style="display:flex;flex-wrap:wrap;gap:6px">
-<button type="button" role="tab" data-tab="0" aria-selected="true" class="sp-tab sp-tab-on">MCP tools</button><button type="button" role="tab" data-tab="1" aria-selected="false" class="sp-tab">Claude Code</button><button type="button" role="tab" data-tab="2" aria-selected="false" class="sp-tab">claude.ai · Cowork</button><button type="button" role="tab" data-tab="3" aria-selected="false" class="sp-tab">Claude Design</button>
-</div>
-<span class="sp-mono" data-sp="tab-title" style="font-size:12px;color:var(--fg3)">terminal</span>
-</div>
-<div class="sp-vp">
-<div data-panel="0">
-<div class="sp-mono sp-ins" role="tabpanel">
-<div class="sp-chips" role="group" aria-label="Pick your tool">
-<button type="button" data-mcp="0" aria-pressed="true" class="sp-chip-b sp-chip-b-on">Codex</button><button type="button" data-mcp="1" aria-pressed="false" class="sp-chip-b">Gemini CLI</button><button type="button" data-mcp="2" aria-pressed="false" class="sp-chip-b">Copilot</button><button type="button" data-mcp="3" aria-pressed="false" class="sp-chip-b">Cursor</button><button type="button" data-mcp="4" aria-pressed="false" class="sp-chip-b">Windsurf</button><button type="button" data-mcp="5" aria-pressed="false" class="sp-chip-b">Claude Desktop</button>
-</div>
-<div class="sp-insl"><span style="color:var(--fg3)">$</span> git clone https://github.com/rx4u/samepage ~/.samepage/tool</div>
-<div class="sp-insl"><span style="color:var(--fg3)">$</span> sh ~/.samepage/tool/install.sh</div>
-<div class="sp-insl"><span style="color:var(--fg3)">samepage: installed <span data-sp="version-plain">v1.2.0</span></span></div>
-<div class="sp-insl"><span style="color:var(--fg3)">$</span> sp init</div>
-<div class="sp-insl"><span style="color:var(--fg3)">$</span> sp setup <span class="sp-holo sp-holotext"><span data-sp="mcp-code">codex</span></span></div>
-<div class="sp-insl"><span style="color:var(--fg3)"># <span data-sp="mcp-note">adds the MCP entry and AGENTS.md</span></span></div>
-<div class="sp-insl"><span style="color:var(--fg3)"># restart it and ask: what am I working on?</span></div>
-</div>
-</div>
-<div data-panel="1" hidden>
-<div class="sp-mono sp-ins" role="tabpanel">
-<div class="sp-insl"><span style="color:var(--fg3)">&gt;</span> /plugin marketplace add rx4u/samepage</div>
-<div class="sp-insl"><span style="color:var(--fg3)">&gt;</span> /plugin install samepage@samepage</div>
-<div class="sp-insl"><span style="color:var(--fg3)">&gt;</span> /sp init</div>
-<div class="sp-insl"><span style="color:var(--fg3)"># new session: your context loads on its own</span></div>
-</div>
-</div>
-<div data-panel="2" hidden>
-<div class="sp-mono sp-ins" role="tabpanel">
-<div class="sp-insl"><span style="color:var(--fg3)">1</span>  create your store from the template repo</div>
-<div class="sp-insl"><span style="color:var(--fg3)">2</span>  upload samepage.skill: Customize, Skills, Upload a skill</div>
-<div class="sp-insl"><span style="color:var(--fg3)">3</span>  turn on code execution and the GitHub connector</div>
-<div class="sp-insl"><span style="color:var(--fg3)">4</span>  say <span class="sp-holo sp-holotext">"set up samepage"</span></div>
-<div class="sp-insl"><span style="color:var(--fg3)"># same steps in claude.ai and Cowork</span></div>
-</div>
-</div>
-<div data-panel="3" hidden>
-<div class="sp-mono sp-ins" role="tabpanel">
-<div class="sp-insl"><span style="color:var(--fg3)">1</span>  link your product repo when you start a design</div>
-<div class="sp-insl"><span style="color:var(--fg3)">2</span>  keep your tokens in design/tokens.json (W3C format)</div>
-<div class="sp-insl"><span style="color:var(--fg3)">3</span>  say <span class="sp-holo sp-holotext">"log the design system for my-app"</span></div>
-<div class="sp-insl"><span style="color:var(--fg3)"># no install: every surface now knows where it lives</span></div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
+
 
 <section class="sp-sec" id="maker">
 <div class="sp-wrap">
@@ -870,7 +900,7 @@ class Component extends DCLogic {
         g.to(pill, { x: link.offsetLeft, width: link.offsetWidth, opacity: 1, duration: 0.55, ease: 'expo.out' });
         g.utils.toArray('.sp-navwrap a').forEach(function (a) { a.style.color = a === link ? 'var(--fg)' : 'var(--fg2)'; });
       }
-      ['how', 'store', 'adapters', 'install'].forEach(function (id) {
+      ['install', 'how', 'store', 'adapters'].forEach(function (id) {
         var sec = document.getElementById(id), link = nav && nav.querySelector('[data-nav="' + id + '"]');
         if (!sec || !link) return;
         ST.create({ trigger: sec, start: 'top 50%', end: 'bottom 50%', onToggle: function (st) { if (st.isActive) movePill(link); } });
@@ -1270,6 +1300,14 @@ class Component extends DCLogic {
     }
     if (t.hasAttribute('data-tab')) { c.setState({ tab: +t.getAttribute('data-tab') }); return; }
     if (t.hasAttribute('data-mcp')) { c.setState({ mcp: +t.getAttribute('data-mcp') }); }
+  });
+  root.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-copy]');
+    if (!b) return;
+    var win = b.closest('.sp-ed-win');
+    var text = Array.prototype.map.call(win.querySelectorAll('.sp-cmd .sp-c'), function (n) { return n.textContent; }).join('\n');
+    var done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1600); };
+    try { navigator.clipboard.writeText(text).then(done, function () {}); } catch (err) {}
   });
   window.__spRender();
   c.componentDidMount();
