@@ -75,7 +75,7 @@ Checked 2026-11-06. V = verified in the vendor's official docs or source; U = se
 | cursor | cursor | `~/.cursor/mcp.json` (U): snippet only | `mcpServers` command, args, env | `.cursor/rules/samepage.mdc` with `alwaysApply: true` (U) | `~/.agents/skills/samepage` (U) |
 | windsurf | windsurf | `~/.codeium/windsurf/mcp_config.json` (U): snippet only | `mcpServers` command, args, env | `.windsurf/rules/samepage.md` with `trigger: always_on` (U) | none written (U) |
 | claude-desktop | claude_desktop | `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS (V); other OS: snippet only | `mcpServers` command, args, env | none (no project file) | none: upload `dist/samepage.skill` in the app |
-| claude-code | claude_code | none: the plugin (`/plugin install samepage --marketplace rx4u/samepage`) | n/a | none: SessionStart hook | bundled in the plugin |
+| claude-code | claude_code | none: the plugin (`/plugin marketplace add rx4u/samepage` then `/plugin install samepage@samepage`) | n/a | none: SessionStart hook | bundled in the plugin |
 
 `sp setup` takes the names in the first column; `sp context --tool` and `sp mcp --tool` take tool codes (B37).
 

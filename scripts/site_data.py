@@ -19,7 +19,7 @@ sys.path.insert(0, ROOT)
 
 OUT = os.path.join(ROOT, "site", "data.json")
 REPO = "https://github.com/rx4u/samepage"
-KIND_DEFAULT = {"plugin": "/plugin install samepage", "skill": "GitHub connector", "tokens": "design/tokens.json"}
+KIND_DEFAULT = {"plugin": "/plugin install samepage@samepage", "skill": "GitHub connector", "tokens": "design/tokens.json"}
 
 
 def read(*parts):

@@ -39,7 +39,7 @@ Keep `export SAMEPAGE_HOME="$HOME/.samepage-test"` set in every Terminal you use
 cd "$HOME/sp-check" && SAMEPAGE_HOME="$HOME/.samepage-test" claude
 ```
 
-- In Claude Code: `/plugin install samepage --marketplace rx4u/samepage` (skip if installed), then start a new session the same way.
+- In Claude Code: `/plugin marketplace add rx4u/samepage`, then `/plugin install samepage@samepage` (skip if installed), then start a new session the same way.
 - Ask: "what am I working on?" Pass: the answer uses the "Raja Test" profile.
 - Say: "log that I shipped the sp-check readme". Pass: it shows a dry run with `tool: claude_code` and writes only after your yes.
 

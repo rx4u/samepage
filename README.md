@@ -80,7 +80,17 @@ Pick the path for the tool you use most. Every path ends at the same private sto
 <details>
 <summary><b>Claude Code</b>: plugin, one command</summary>
 
-1. In Claude Code: `/plugin install samepage --marketplace rx4u/samepage`
+1. In the Claude Code terminal, run these two commands:
+
+   ```
+   /plugin marketplace add rx4u/samepage
+   ```
+
+   ```
+   /plugin install samepage@samepage
+   ```
+
+   In the Claude desktop app, `/plugin` opens the plugin directory instead, and samepage is not listed there. Use the terminal for this step.
 2. Run `/sp init`. It asks your name, headline and up to three working rules, then creates a private `samepage-store` repo.
    No GitHub CLI? It gives you the one-click link below instead and connects the repo you create.
 3. Start a new session. Your context loads on its own; say "log this" after you ship something.

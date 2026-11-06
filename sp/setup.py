@@ -19,7 +19,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SKILL_SOURCE = os.path.join(ROOT, "skills", "samepage")
 LAUNCHER = os.path.join(ROOT, "sp_run.py")
 NAME = "samepage"
-PLUGIN_COMMAND = "/plugin install samepage --marketplace rx4u/samepage"
+PLUGIN_COMMAND = "/plugin marketplace add rx4u/samepage, then /plugin install samepage@samepage"
 AGENT_SKILLS = "~/.agents/skills"
 
 
