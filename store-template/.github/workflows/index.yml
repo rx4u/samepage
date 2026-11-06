@@ -1,0 +1,72 @@
+# samepage store index (WP-11, ADR-0004). Rebuilds index/ after every push
+# that changes the store, so chat and Cowork read fresh boot files.
+# Order is fixed by guardrails.md: sp check, then sp index, then commit only
+# index/. A failing check fails the job (GitHub emails the owner) and nothing
+# is committed, so the previous index stays.
+name: index
+
+on:
+  push:
+    paths-ignore:
+      - "index/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: samepage-index-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  index:
+    # Default branch only, and never on the Action's own index commits.
+    if: github.ref_name == github.event.repository.default_branch && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      PYTHONPATH: ${{ github.workspace }}/.samepage-tool
+    steps:
+      - name: Check out the store
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          ref: ${{ github.ref }}
+          path: store
+      - name: Check out the samepage tool
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          repository: rx4u/samepage
+          ref: main
+          path: .samepage-tool
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: "3.13"
+      - name: sp check
+        working-directory: store
+        run: python -m sp check .
+      - name: sp index
+        working-directory: store
+        run: python -m sp index .
+      - name: Commit and push index/ only
+        working-directory: store
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- index
+          if git diff --cached --quiet; then
+            echo "index/ unchanged, nothing to commit"
+            exit 0
+          fi
+          git commit -q -m "index: rebuild $(git rev-parse --short=8 HEAD)"
+          for attempt in 1 2 3; do
+            if git push -q origin "HEAD:${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+            if ! git pull -q --rebase origin "${GITHUB_REF_NAME}"; then
+              git rebase --abort || true
+              echo "::warning::a newer push changed index/ during this run; its own run rebuilds the index"
+              exit 0
+            fi
+          done
+          echo "::error::could not push the rebuilt index after 3 attempts"
+          exit 1
