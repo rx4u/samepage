@@ -1,6 +1,6 @@
 ---
 name: samepage
-description: Reads and writes the user's samepage store, one shared working context (profile, rules, projects, ships, decisions, design pointers, handoffs) for chat, Cowork and Code. Use for what am I working on, log that I shipped something, log a decision, hand this to Code, any handoffs for me, what have I shipped with a stack (proof for a proposal), show or archive a project, add or pause a rule, log a design system, a design brief, or set up samepage.
+description: Reads and writes the user's samepage store, one shared working context (profile, rules, projects, ships, decisions, design pointers, handoffs) for chat, Cowork and Code. Use for what am I working on, log that I shipped something, log a decision, hand this to Code, any handoffs for me, what have I shipped (for an update, review, changelog or proposal), show or archive a project, add or pause a rule, log a design system, a design brief, or set up samepage.
 license: MIT
 metadata:
   author: Rajaraman Arumugam
@@ -47,7 +47,7 @@ This skill does not:
 | "log decision: X because Y", "we decided X", "this replaces the old decision" | decision |
 | "log the design system for X", "log this design handoff", "where is X's design system?", "design brief for X" | design |
 | "hand this to Code", "any handoffs for me?", "start handoff ID", "handoff done", "drop handoff ID" | handoff |
-| "what have I shipped with Next.js?", "proof for this proposal", "my shipped work with links" | proof |
+| "what did I ship this month?", "what have I shipped with Next.js?", "shipped work for my review", "proof for this proposal" | proof |
 | "show project X", "status of X", "archive X", "delete project X" (archive instead) | project |
 | "add a rule: ...", "show my rules", "pause the rule about ..." | rules |
 
@@ -140,7 +140,7 @@ A brief left on one surface for another to pick up. Handoffs go to `code`, `chat
 
 ## proof
 
-Lists shipped work with links for proposals, bios and case studies.
+Lists shipped work with links: for status updates, reviews, changelogs, investor updates, proposals and case studies.
 
 1. Turn the user's stack words into tag slugs (lowercase kebab: "Next.js" is `nextjs`). Use at most 3 tags; they combine with AND.
 2. Code: `sp proof [--tag SLUG]...`. Elsewhere read the proof or tag files per the backend reference.

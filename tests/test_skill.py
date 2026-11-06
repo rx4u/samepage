@@ -244,7 +244,7 @@ TRIGGERS = {
         "must_trigger": ["what have I shipped with nextjs?", "pull proof for this proposal",
                          "list my shipped work with links"],
         "must_not_trigger": ["proofread this paragraph", "prove this theorem", "what has Vercel shipped lately?"],
-        "keywords": ["what have i shipped", "proof for a proposal"],
+        "keywords": ["what have i shipped", "what have i shipped"],
     },
     "project": {
         "must_trigger": ["show project halcyon", "archive cv-heap", "delete the freightflow project"],

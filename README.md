@@ -1,5 +1,3 @@
-<p align="center"><img src=".claude-plugin/icon.png" width="96" alt="samepage"></p>
-
 <h1 align="center">samepage</h1>
 
 <p align="center"><b>Keep every Claude on the same page.</b><br>
@@ -9,19 +7,34 @@ Claude Code ships it. Claude chat forgets it. samepage fixes that.</p>
 
 ---
 
-You plan in claude.ai chat, design in Claude Design, build in Claude Code and run long tasks in Cowork. Each one forgets what the others know. Chat can't see what you shipped in Code last week. Code asks questions chat already answered. You paste briefs between tabs.
+You plan in claude.ai chat, build in Claude Code, design in Claude Design and run long tasks in Cowork. Each one starts from zero. Chat doesn't know what you shipped in Code yesterday. Code reopens a decision you settled in chat last week. You paste the same brief into three tabs.
 
-samepage gives every Claude surface one shared working context, stored in a place you own:
+samepage gives every Claude surface one shared working context, stored in a private repo you own:
 
-| | What it holds | Why it matters |
+| | What it holds | What changes |
 |---|---|---|
-| **You** | Profile, voice, links | Proposals and bios start from the real you |
-| **Rules** | How you want Claude to work, per surface or everywhere | Say it once, every surface follows it |
 | **Projects** | Status, stack, links, outcomes | Every session knows what you're working on |
-| **Ships** | What you shipped, when, with proof links and metrics | Chat cites real work instead of asking |
-| **Decisions** | Settled choices and why | No surface reopens a closed question |
+| **Decisions** | Settled choices and the reason | No surface reopens a closed question |
+| **Ships** | What shipped, when, with links and metrics | Any surface can answer "what did we get done?" |
+| **Handoffs** | A brief left on one surface for another | Plan in chat, build in Code, report back |
+| **Rules** | How you want Claude to work, everywhere or per surface | Say it once, every surface follows it |
 | **Design** | Where each design system's tokens live | Claude Design and Claude Code use the same tokens |
-| **Handoffs** | Briefs left on one surface for another | Plan in chat, pick it up in Code, report back |
+| **You** | Name, role, links | Claude writes as you, not as a stranger |
+
+## Who it's for
+
+Anyone who works on the same projects across more than one Claude surface.
+
+| You are | What you get |
+|---|---|
+| A developer | Code starts every session knowing the stack, the open work and the decisions already made |
+| A founder | One place for what shipped this week, ready for an investor update or a changelog |
+| A product manager | Specs planned in chat handed to Code as briefs, with the decisions behind them |
+| A designer | Design system pointers that Claude Design and Claude Code both follow |
+| A consultant or freelancer | Shipped work with real links, for proposals and case studies |
+| Anyone with a review coming | A dated record of what you delivered, instead of reconstructing it from memory |
+
+If you only chat with Claude and don't run ongoing projects, claude.ai's built-in memory is enough. samepage is for work that moves between surfaces.
 
 No server. No API keys. No account to create. Your store is a private GitHub repo of plain Markdown files.
 
@@ -75,7 +88,7 @@ Link your product repo when you start a design. Put your tokens in `design/token
 |---|---|
 | "what am I working on?" | Your active projects, rules and open handoffs, from one read |
 | `/sp log` or "log this" after shipping | Drafts a ship event from your session, shows it, writes it after your yes |
-| "what have I shipped with Next.js and AI?" | Up to 20 shipped projects with outcomes and proof links, newest first |
+| "what did I ship this month?" or "what have I shipped with Next.js?" | Up to 20 shipped projects with outcomes and links, newest first |
 | "hand this to Code" | Leaves a brief that your next Claude Code session shows at start |
 | "log decision: Supabase over Firebase because of RLS" | Recorded with its reason; superseded decisions are kept, not deleted |
 | `/sp brief halcyon` | A design brief to paste into Claude Design, naming your tokens file |
