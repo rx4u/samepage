@@ -25,7 +25,7 @@ WP-24 asks for a landing page. ADR-0001 rules out a hosted server for user data;
 - Price: 0 USD.
 
 ## Decision
-Option A. `site/index.html` with inline CSS and a few lines of inline JavaScript (tabs and copy buttons), brand assets copied from `docs/brand/`, and `og.png`. The page loads nothing at runtime except Google Fonts (Inter Tight, Inter, JetBrains Mono, with system fallbacks). No analytics, no cookies, no forms, no tracking. Black and white only (docs/brand/README.md). Tool status on the page follows the README table, which follows the tool ledger (WP-23): a tool shows Tested only with a passing ledger row.
+Option A. `site/index.html` with inline CSS and inline JavaScript, brand assets copied from `docs/brand/`, and `og.png`. Motion uses GSAP 3.13.0 (core, ScrollTrigger, SplitText, MotionPathPlugin), vendored as minified files in `site/vendor/gsap/` with their licence headers kept (GSAP's standard no-charge licence, free for commercial use since 3.13), so no script loads from a third-party host. The page is fully readable without them, and `prefers-reduced-motion` turns motion off. The page loads nothing at runtime from another host except Google Fonts (Geist, Geist Mono, with system fallbacks). GSAP runs in the visitor's browser only; it is not a dependency of `sp` (ADR-0012 covers the Python tool). No analytics, no cookies, no forms, no tracking. Black and white only (docs/brand/README.md). Tool status on the page follows the README table, which follows the tool ledger (WP-23): a tool shows Tested only with a passing ledger row.
 
 ## Non-goals
 A custom domain (Raja's call, added in Vercel when bought), a docs site, analytics.
@@ -36,7 +36,7 @@ A custom domain (Raja's call, added in Vercel when bought), a docs site, analyti
 - Follow-up tasks: switch a tool to Tested on the page in the same commit as its README tick.
 
 ## Implementation plan
-- Affected paths: site/, scripts/guardrails.py (site/*.html joins the em dash scan).
+- Affected paths: site/ (site/vendor/gsap/ is vendored, not edited), scripts/guardrails.py (site/*.html joins the em dash scan).
 - Pattern to follow: copy and claims on the page match README.md.
 - Pattern to avoid: any third-party script, tracker or form.
 

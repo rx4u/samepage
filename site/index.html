@@ -3,427 +3,439 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>samepage: your AI tools forget, samepage doesn't</title>
-<meta name="description" content="One shared working context for Claude, Codex, Gemini CLI, Copilot, Cursor and Windsurf. Projects, decisions, ships and handoffs in a private GitHub repo you own. Open source, no server, no API keys.">
-<meta property="og:title" content="samepage: your AI tools forget, samepage doesn't">
-<meta property="og:description" content="One shared working context for Claude and your other AI coding tools, in a private GitHub repo you own.">
+<title>samepage: the shared context layer for your AI tools</title>
+<meta name="description" content="Every AI tool keeps its own context. samepage gives them one: projects, decisions, shipped work and handoffs as typed Markdown in a git repo you own, readable over MCP, a CLI or a skill.">
+<meta property="og:title" content="samepage: the shared context layer for your AI tools">
+<meta property="og:description" content="Typed Markdown in a git repo you own. Any AI tool boots from it over MCP, a CLI or a skill.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="/og.png">
+<meta property="og:image" content="https://samepage-rajaraman.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#08080a">
 <link rel="icon" href="/samepage-tile.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #ffffff;
-  --bg-2: #f5f5f4;
-  --fg: #0a0a0a;
-  --fg-2: #52525b;
-  --fg-3: #71717a;
-  --line: #e4e4e7;
-  --line-2: #d4d4d8;
-  --code-bg: #0a0a0a;
-  --code-fg: #fafafa;
-  --code-dim: #a1a1aa;
-  --invert-bg: #0a0a0a;
-  --invert-fg: #ffffff;
-  --radius: 14px;
-  --display: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
-  --body: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+:root{
+  --bg:#08080a; --bg-1:#0e0e11; --bg-2:#141418;
+  --line:#1d1d22; --line-2:#2a2a31; --line-3:#3a3a42;
+  --fg:#f5f5f6; --fg-2:#b4b4bb; --fg-3:#8b8b94; --fg-4:#5c5c64;
+  --sans:"Geist",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ease:cubic-bezier(.2,.7,.1,1);
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0a0a0a;
-    --bg-2: #141414;
-    --fg: #fafafa;
-    --fg-2: #a1a1aa;
-    --fg-3: #8a8a93;
-    --line: #232326;
-    --line-2: #2f2f33;
-    --code-bg: #141414;
-    --code-fg: #fafafa;
-    --code-dim: #8a8a93;
-    --invert-bg: #fafafa;
-    --invert-fg: #0a0a0a;
-  }
-}
-* { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--fg);
-  font: 400 16px/1.6 var(--body);
-  -webkit-font-smoothing: antialiased;
-}
-a { color: inherit; }
-img { max-width: 100%; display: block; }
-code, pre, kbd { font-family: var(--mono); }
-.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
-@media (max-width: 640px) { .wrap { padding: 0 16px; } }
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+::selection{background:var(--fg);color:var(--bg)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 32px}
+@media (max-width:640px){.wrap{padding:0 16px}}
+.mono{font-family:var(--mono)}
+.js .reveal{opacity:0}
 
 /* nav */
-header.nav { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
-.nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
-.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 600 18px/1 var(--display); letter-spacing: -0.01em; }
-.brand svg { width: 26px; height: 26px; }
-.nav nav { display: flex; align-items: center; gap: 28px; font-size: 14px; color: var(--fg-2); }
-.nav nav a { text-decoration: none; }
-.nav nav a:hover { color: var(--fg); }
-.gh { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border: 1px solid var(--line-2); border-radius: 999px; color: var(--fg) !important; font-weight: 500; }
-.gh:hover { border-color: var(--fg); }
-.gh svg { width: 16px; height: 16px; }
-@media (max-width: 720px) { .nav nav a.hide-sm { display: none; } .nav nav { gap: 16px; } }
+.nav{position:fixed;top:16px;left:0;right:0;z-index:50;display:flex;justify-content:center;padding:0 16px;pointer-events:none}
+.nav-in{pointer-events:auto;display:flex;align-items:center;gap:4px;padding:6px 6px 6px 16px;border:1px solid var(--line-2);border-radius:999px;background:rgba(14,14,17,.72);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%)}
+.brand{display:flex;align-items:center;gap:9px;font:600 15px/1 var(--sans);text-decoration:none;margin-right:14px;letter-spacing:-.01em}
+.brand svg{width:20px;height:20px}
+.nav a.l{font-size:14px;color:var(--fg-2);text-decoration:none;padding:8px 12px;border-radius:999px;transition:color .2s}
+.nav a.l:hover{color:var(--fg)}
+.nav a.cta{font-size:14px;font-weight:500;text-decoration:none;background:var(--fg);color:var(--bg);padding:9px 15px;border-radius:999px;margin-left:4px}
+@media (max-width:720px){.nav a.l.h{display:none}}
 
 /* hero */
-.hero { padding: 96px 0 72px; }
-.eyebrow { display: inline-flex; max-width: 100%; line-height: 1.4 !important; border-radius: 14px !important; align-items: center; gap: 8px; font: 500 13px/1 var(--mono); color: var(--fg-2); border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; text-decoration: none; }
-.eyebrow b { color: var(--fg); font-weight: 500; }
-.eyebrow:hover { border-color: var(--line-2); }
-h1 { font: 700 clamp(44px, 7.4vw, 88px)/0.98 var(--display); letter-spacing: -0.035em; margin: 28px 0 0; max-width: 13ch; }
-h1 .cursor { display: inline-block; width: 0.42em; height: 0.78em; background: var(--fg); border-radius: 0.06em; margin-left: 0.08em; vertical-align: -0.04em; animation: blink 1.1s steps(1) infinite; }
-@keyframes blink { 50% { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { h1 .cursor { animation: none; } }
-.lede { font-size: clamp(18px, 2.1vw, 21px); line-height: 1.55; color: var(--fg-2); max-width: 40ch; margin: 28px 0 0; }
-.lede strong { color: var(--fg); font-weight: 500; }
-.ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 22px; border-radius: 999px; font: 600 15px/1 var(--body); text-decoration: none; border: 1px solid var(--fg); transition: transform .12s ease; }
-.btn:active { transform: translateY(1px); }
-.btn.primary { background: var(--invert-bg); color: var(--invert-fg); border-color: var(--invert-bg); }
-.btn.ghost { background: transparent; color: var(--fg); border-color: var(--line-2); }
-.btn.ghost:hover { border-color: var(--fg); }
-.facts { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 28px; padding: 0; list-style: none; font-size: 14px; color: var(--fg-3); }
-.facts li::before { content: ""; display: inline-block; width: 7px; height: 7px; background: var(--fg); border-radius: 1.5px; margin-right: 9px; vertical-align: 1px; }
+.hero{position:relative;padding:168px 0 40px;text-align:center}
+.grid-bg{position:absolute;inset:0;z-index:-1;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;-webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 30%,#000 30%,transparent 75%);mask-image:radial-gradient(ellipse 70% 60% at 50% 30%,#000 30%,transparent 75%);opacity:.7}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:5px 14px 5px 5px;border:1px solid var(--line-2);border-radius:999px;font-size:13px;color:var(--fg-2);text-decoration:none;background:var(--bg-1);max-width:100%}
+.pill b{font:500 11px/1 var(--mono);letter-spacing:.04em;background:var(--fg);color:var(--bg);padding:5px 9px;border-radius:999px;flex:none}
+.pill:hover{border-color:var(--line-3)}
+h1{margin:28px auto 0;font:600 clamp(44px,8vw,104px)/.94 var(--sans);letter-spacing:-.055em;max-width:12ch}
+h1 .dim{color:var(--fg-4)}
+.cursor{display:inline-block;width:.38em;height:.74em;background:var(--fg);border-radius:.06em;margin-left:.06em;vertical-align:-.03em;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.lede{margin:28px auto 0;max-width:620px;font-size:clamp(17px,1.6vw,19px);line-height:1.6;color:var(--fg-2)}
+.ctas{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:36px}
+.btn{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 22px;border-radius:999px;font:500 15px/1 var(--sans);text-decoration:none;transition:transform .25s var(--ease),background .2s,border-color .2s}
+.btn:hover{transform:translateY(-1px)}
+.btn.p{background:var(--fg);color:var(--bg)}
+.btn.g{border:1px solid var(--line-2);color:var(--fg);background:var(--bg-1)}
+.btn.g:hover{border-color:var(--line-3)}
+.btn .k{font:400 12px/1 var(--mono);color:var(--fg-4)}
+.under{margin-top:18px;font:400 12px/1.6 var(--mono);color:var(--fg-4);letter-spacing:.03em}
 
-.hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; }
-@media (max-width: 960px) { .hero-grid { grid-template-columns: 1fr; gap: 48px; } .hero { padding: 64px 0 56px; } }
-
-/* terminal */
-.term { background: var(--code-bg); color: var(--code-fg); border-radius: var(--radius); border: 1px solid var(--line-2); overflow: hidden; font: 400 13px/1.7 var(--mono); }
-.term-bar { display: flex; align-items: center; gap: 7px; padding: 12px 14px; border-bottom: 1px solid #262629; }
-.term-bar i { width: 10px; height: 10px; border-radius: 50%; background: #3f3f46; display: block; }
-.term-bar span { margin-left: 10px; color: var(--code-dim); font-size: 12px; }
-.term pre { margin: 0; padding: 18px 20px 20px; overflow-x: auto; white-space: pre; }
-.term .d { color: var(--code-dim); }
-.term .b { font-weight: 500; color: #ffffff; }
-.term .k { background: #fafafa; color: #0a0a0a; padding: 0 4px; border-radius: 3px; }
+/* topology */
+.topo-wrap{margin-top:72px;border:1px solid var(--line-2);border-radius:20px;background:var(--bg-1);overflow:hidden}
+.topo-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--line);font:400 12px/1 var(--mono);color:var(--fg-3)}
+.topo-bar .live{display:flex;align-items:center;gap:8px;color:var(--fg-2)}
+.topo-bar .live i{width:6px;height:6px;border-radius:1px;background:var(--fg);display:block;animation:blink 1.6s steps(1) infinite}
+.topo-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.topo{display:block;width:100%;min-width:780px;height:auto;background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:20px 20px}
+.topo text{font-family:var(--mono)}
+.log{border-top:1px solid var(--line);text-align:left;font:400 13px/1 var(--mono)}
+.log div{display:flex;gap:16px;padding:12px 18px;border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden}
+.log div:last-child{border-bottom:0}
+.log .t{color:var(--fg-4);flex:none}
+.log .m{color:var(--fg-3);overflow:hidden;text-overflow:ellipsis}
+.log div:first-child .m{color:var(--fg)}
 
 /* sections */
-section { padding: 96px 0; border-top: 1px solid var(--line); }
-@media (max-width: 640px) { section { padding: 64px 0; } }
-.kicker { font: 500 13px/1 var(--mono); color: var(--fg-3); text-transform: lowercase; letter-spacing: 0.02em; margin: 0 0 18px; }
-h2 { font: 700 clamp(32px, 4.6vw, 52px)/1.04 var(--display); letter-spacing: -0.03em; margin: 0; max-width: 20ch; }
-.sub { color: var(--fg-2); font-size: 18px; max-width: 58ch; margin: 18px 0 0; }
+section{position:relative}
+.sec{padding:160px 0 0}
+@media (max-width:640px){.sec{padding:112px 0 0}}
+.eyebrow{font:400 12px/1 var(--mono);letter-spacing:.06em;color:var(--fg-3);display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:6px;height:6px;border-radius:1px;background:var(--fg)}
+h2{margin:20px 0 0;font:600 clamp(36px,5.2vw,68px)/.98 var(--sans);letter-spacing:-.048em;max-width:15ch}
+h2 .dim{color:var(--fg-4)}
+.sub{margin:22px 0 0;max-width:560px;color:var(--fg-2);font-size:18px}
 
-/* problem */
-.pains { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-top: 48px; }
-.pain { background: var(--bg); padding: 28px; }
-.pain p { margin: 0; font: 500 19px/1.4 var(--display); letter-spacing: -0.01em; }
-.pain small { display: block; margin-top: 14px; font: 400 13px/1.5 var(--mono); color: var(--fg-3); }
-@media (max-width: 820px) { .pains { grid-template-columns: 1fr; } }
+/* silos */
+.silos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:64px;border-top:1px solid var(--line-2)}
+.silo{padding:36px 32px 40px 0;border-right:1px solid var(--line)}
+.silo+.silo{padding-left:32px}
+.silo:last-child{border-right:0}
+.silo .n{font:400 12px/1 var(--mono);color:var(--fg-4)}
+.silo p{margin:22px 0 0;font:500 24px/1.25 var(--sans);letter-spacing:-.02em}
+.silo small{display:block;margin-top:14px;font:400 13px/1.5 var(--mono);color:var(--fg-3)}
+@media (max-width:860px){.silos{grid-template-columns:1fr}.silo,.silo+.silo{padding:28px 0;border-right:0;border-bottom:1px solid var(--line)}}
 
-/* holds */
-.holds { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 48px; }
-.hold { border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; background: var(--bg); }
-.hold h3 { margin: 0; font: 600 17px/1.2 var(--display); letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; }
-.hold h3 code { font-size: 11px; font-weight: 500; color: var(--fg-3); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; }
-.hold p { margin: 10px 0 0; color: var(--fg-2); font-size: 15px; line-height: 1.5; }
-.hold.wide { grid-column: span 2; background: var(--bg-2); }
-@media (max-width: 960px) { .holds { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .holds { grid-template-columns: 1fr; } .hold.wide { grid-column: auto; } }
+/* statement */
+.statement{font:500 clamp(28px,4vw,52px)/1.14 var(--sans);letter-spacing:-.035em;max-width:22ch;margin:0}
+.statement .w{color:var(--fg-4);transition:color .3s}
+.statement .w.on{color:var(--fg)}
 
-/* how */
-.how { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; counter-reset: step; }
-.step { border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; position: relative; }
-.step::before { counter-increment: step; content: "0" counter(step); font: 500 13px/1 var(--mono); color: var(--fg-3); }
-.step h3 { margin: 18px 0 0; font: 600 21px/1.2 var(--display); letter-spacing: -0.015em; }
-.step p { margin: 10px 0 0; color: var(--fg-2); font-size: 15px; }
-.step pre { margin: 18px 0 0; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 12.5px; line-height: 1.6; overflow-x: auto; color: var(--fg); }
-@media (max-width: 900px) { .how { grid-template-columns: 1fr; } }
-.demo { margin-top: 56px; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--code-bg); }
-.demo img { width: 100%; height: auto; aspect-ratio: 960 / 600; }
-.caption { font-size: 14px; color: var(--fg-3); margin: 14px 0 0; }
+/* story */
+.story{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:64px;margin-top:64px;align-items:center}
+.steps{display:flex;flex-direction:column}
+.step{padding:28px 0;border-top:1px solid var(--line);opacity:.32;transition:opacity .35s}
+.step:last-child{border-bottom:1px solid var(--line)}
+.step.on{opacity:1}
+.step .n{font:400 12px/1 var(--mono);color:var(--fg-3)}
+.step h3{margin:12px 0 0;font:600 26px/1.15 var(--sans);letter-spacing:-.025em}
+.step p{margin:10px 0 0;color:var(--fg-2);font-size:16px;max-width:420px}
+.term{border:1px solid var(--line-2);border-radius:16px;background:var(--bg-1);overflow:hidden}
+.term-bar{display:flex;align-items:center;gap:7px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.term-bar i{width:10px;height:10px;border-radius:50%;background:var(--line-2);display:block}
+.term-bar span{margin-left:auto;font:400 12px/1 var(--mono);color:var(--fg-4)}
+.panes{position:relative;height:360px}
+.pane{position:absolute;inset:0;margin:0;padding:22px 24px;font:400 13.5px/1.8 var(--mono);color:var(--fg-2);white-space:pre;overflow:hidden;opacity:0}
+.pane.on{opacity:1}
+.pane .c{color:var(--fg-4)}
+.pane .b{color:var(--fg)}
+.pane .hl{background:var(--fg);color:var(--bg);padding:0 4px;border-radius:3px}
+@media (max-width:900px){.story{grid-template-columns:1fr;gap:32px}.step{opacity:1}.panes{height:auto}.pane{position:relative;opacity:1;overflow-x:auto;border-bottom:1px solid var(--line)}}
 
-/* tools */
-.tools { margin-top: 48px; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
-.tools table { width: 100%; border-collapse: collapse; font-size: 15px; }
-.tools th, .tools td { text-align: left; padding: 16px 20px; border-bottom: 1px solid var(--line); vertical-align: top; }
-.tools tr:last-child td { border-bottom: 0; }
-.tools th { font: 500 12px/1 var(--mono); color: var(--fg-3); text-transform: lowercase; background: var(--bg-2); padding-top: 14px; padding-bottom: 14px; }
-.tools td:first-child { font-weight: 600; white-space: nowrap; }
-.tools td code { font-size: 13px; color: var(--fg-2); }
-.tools .group td { background: var(--bg-2); font: 500 12px/1 var(--mono); color: var(--fg-3); padding-top: 12px; padding-bottom: 12px; }
-.pill { display: inline-flex; align-items: center; gap: 7px; font: 500 12px/1 var(--mono); padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--fg-2); white-space: nowrap; }
-.pill.ok { background: var(--invert-bg); color: var(--invert-fg); border-color: var(--invert-bg); }
-.pill.ok::before { content: ""; width: 6px; height: 6px; border-radius: 1px; background: currentColor; }
-@media (max-width: 700px) {
-  .tools table, .tools tbody, .tools tr, .tools td { display: block; width: 100%; }
-  .tools thead { display: none; }
-  .tools tr { border-bottom: 1px solid var(--line); padding: 14px 16px; }
-  .tools td { border: 0; padding: 3px 0; }
-  .tools .group { padding: 0; }
-  .tools .group td { padding: 12px 16px; }
-}
-.note { font-size: 14px; color: var(--fg-3); margin: 16px 0 0; max-width: 70ch; }
-.note a { color: var(--fg-2); }
+/* spec */
+.spec{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-top:64px}
+.card{border:1px solid var(--line-2);border-radius:18px;background:var(--bg-1);padding:28px;display:flex;flex-direction:column;gap:20px;transition:border-color .3s,transform .4s var(--ease)}
+.card:hover{border-color:var(--line-3);transform:translateY(-2px)}
+.card h3{margin:0;font:600 21px/1.2 var(--sans);letter-spacing:-.02em}
+.card p{margin:0;color:var(--fg-2);font-size:15px}
+.card pre{margin:auto 0 0;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font:400 12.5px/1.75 var(--mono);color:var(--fg-2);overflow-x:auto}
+.card pre .k{color:var(--fg-4)}
+.card pre .v{color:var(--fg)}
+.s2{grid-column:span 2}.s4{grid-column:span 4}
+@media (max-width:960px){.s2,.s4{grid-column:span 6}}
+
+/* numbers */
+.nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)}
+.num{padding:36px 28px;border-right:1px solid var(--line)}
+.num:last-child{border-right:0}
+.num b{display:block;font:600 clamp(44px,5.4vw,72px)/1 var(--sans);letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.num span{display:block;margin-top:14px;font:400 12px/1.5 var(--mono);color:var(--fg-3)}
+@media (max-width:860px){.nums{grid-template-columns:repeat(2,minmax(0,1fr))}.num:nth-child(2){border-right:0}.num:nth-child(-n+2){border-bottom:1px solid var(--line)}.num{padding:28px 16px}}
+
+/* adapters */
+.adapters{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-top:56px;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.ad{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:20px 22px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font:400 14px/1.2 var(--mono);transition:background .25s}
+.ad:hover{background:var(--bg-1)}
+.ad em{font-style:normal;font-size:12px;color:var(--fg-3)}
+.ad .ok{display:inline-flex;align-items:center;gap:7px;color:var(--fg)}
+.ad .ok::before{content:"";width:6px;height:6px;border-radius:1px;background:var(--fg)}
+.ad.any{color:var(--fg-3)}
+.note{margin-top:16px;font:400 12px/1.6 var(--mono);color:var(--fg-3)}
+.note a{color:var(--fg-2)}
 
 /* install */
-.tabs { margin-top: 48px; }
-.tablist { display: flex; flex-wrap: wrap; gap: 6px; padding: 5px; border: 1px solid var(--line); border-radius: 16px; width: fit-content; max-width: 100%; }
-.tablist button { appearance: none; border: 0; background: transparent; color: var(--fg-2); font: 500 14px/1 var(--body); padding: 10px 16px; border-radius: 999px; cursor: pointer; }
-.tablist button[aria-selected="true"] { background: var(--invert-bg); color: var(--invert-fg); }
-.tablist button:focus-visible, .copy:focus-visible, .btn:focus-visible, a:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
-.panel { margin-top: 24px; }
-.panel[hidden] { display: none; }
-.panel ol { margin: 0; padding: 0; list-style: none; counter-reset: li; display: grid; gap: 14px; max-width: 760px; }
-.panel li { counter-increment: li; display: grid; grid-template-columns: 32px 1fr; gap: 8px 14px; align-items: start; }
-.panel li::before { content: counter(li); width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--line-2); display: grid; place-items: center; font: 500 12px/1 var(--mono); color: var(--fg-2); margin-top: 1px; }
-.panel li > div { min-width: 0; }
-.panel li p { margin: 0; }
-.panel li p + .cmd { margin-top: 10px; }
-.cmd { display: flex; align-items: center; gap: 12px; background: var(--code-bg); color: var(--code-fg); border: 1px solid var(--line-2); border-radius: 10px; padding: 10px 10px 10px 16px; }
-.cmd code { flex: 1; font-size: 13.5px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
-.cmd code::-webkit-scrollbar { display: none; }
-.copy { appearance: none; flex: none; border: 1px solid #3f3f46; background: transparent; color: var(--code-fg); font: 500 12px/1 var(--mono); padding: 8px 10px; border-radius: 7px; cursor: pointer; }
-.copy:hover { border-color: #a1a1aa; }
-.panel .muted { color: var(--fg-3); font-size: 14px; margin-top: 8px; }
-
-/* data */
-.data { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 48px; }
-.data div { border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
-.data h3 { margin: 0; font: 600 18px/1.25 var(--display); letter-spacing: -0.01em; }
-.data p { margin: 8px 0 0; color: var(--fg-2); font-size: 15px; }
-@media (max-width: 720px) { .data { grid-template-columns: 1fr; } }
+.install{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:56px;align-items:center}
+.tabs{display:flex;gap:4px;padding:4px;border:1px solid var(--line-2);border-radius:18px;width:fit-content;max-width:100%;margin-top:32px;flex-wrap:wrap}
+.tabs button{appearance:none;border:0;background:transparent;color:var(--fg-3);font:500 13px/1 var(--sans);padding:9px 14px;border-radius:999px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--fg);color:var(--bg)}
+.tabs button:focus-visible,.copy:focus-visible,.btn:focus-visible,a:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.term pre.code{margin:0;padding:22px 24px;font:400 13.5px/1.9 var(--mono);color:var(--fg-2);white-space:pre;overflow-x:auto;min-height:220px}
+.term pre.code .c{color:var(--fg-4)}
+.term pre.code .o{color:var(--fg-3)}
+.copy{margin-left:auto;appearance:none;border:1px solid var(--line-2);background:transparent;color:var(--fg-2);font:400 12px/1 var(--mono);padding:6px 10px;border-radius:6px;cursor:pointer}
+.copy:hover{color:var(--fg);border-color:var(--line-3)}
+@media (max-width:900px){.install{grid-template-columns:1fr;gap:32px}}
 
 /* final */
-.final { text-align: center; padding: 120px 0; }
-.final h2 { margin: 0 auto; max-width: 16ch; }
-.final .ctas { justify-content: center; }
-footer { border-top: 1px solid var(--line); padding: 32px 0 48px; font-size: 14px; color: var(--fg-3); }
-footer .wrap { display: flex; flex-wrap: wrap; gap: 16px 32px; justify-content: space-between; align-items: center; }
-footer nav { display: flex; flex-wrap: wrap; gap: 20px; }
-footer a { text-decoration: none; }
-footer a:hover { color: var(--fg); }
+.final{padding:200px 0 160px;text-align:center}
+.final svg{width:120px;height:120px;display:block;margin:0 auto}
+.final h2{margin:40px auto 0;max-width:none}
+.final .ctas{margin-top:40px}
+footer{border-top:1px solid var(--line);padding:32px 0 48px;font:400 12px/1.6 var(--mono);color:var(--fg-4)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px}
+footer nav{display:flex;gap:22px;flex-wrap:wrap}
+footer a{text-decoration:none;color:var(--fg-3)}
+footer a:hover{color:var(--fg)}
+
+@media (prefers-reduced-motion:reduce){.cursor,.topo-bar .live i{animation:none}.js .reveal{opacity:1}}
 </style>
 </head>
 <body>
+<script>document.documentElement.classList.add('js');</script>
 
 <header class="nav">
-  <div class="wrap">
-    <a class="brand" href="#top" aria-label="samepage home">
-      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M36 26 H64 A10 10 0 0 1 64 46 H36 A10 10 0 0 1 36 26 Z" fill="currentColor"/><path d="M36 54 H40 A10 10 0 0 1 40 74 H36 A10 10 0 0 1 36 54 Z" fill="currentColor"/><rect x="58" y="54" width="16" height="20" rx="3" fill="currentColor"/></svg>
-      samepage
-    </a>
-    <nav aria-label="Main">
-      <a class="hide-sm" href="#how">How it works</a>
-      <a class="hide-sm" href="#tools">Tools</a>
-      <a href="#install">Install</a>
-      <a class="gh" href="https://github.com/rx4u/samepage">
-        <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-        GitHub
-      </a>
-    </nav>
+  <div class="nav-in">
+    <a class="brand" href="#top" aria-label="samepage home"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M36 26 H64 A10 10 0 0 1 64 46 H36 A10 10 0 0 1 36 26 Z" fill="currentColor"/><path d="M36 54 H40 A10 10 0 0 1 40 74 H36 A10 10 0 0 1 36 54 Z" fill="currentColor"/><rect x="58" y="54" width="16" height="20" rx="3" fill="currentColor"/></svg>samepage</a>
+    <a class="l h" href="#how">How it works</a>
+    <a class="l h" href="#spec">Spec</a>
+    <a class="l h" href="#adapters">Adapters</a>
+    <a class="l" href="https://github.com/rx4u/samepage">GitHub</a>
+    <a class="cta" href="#install">Install</a>
   </div>
 </header>
 
 <main id="top">
-  <div class="hero">
-    <div class="wrap hero-grid">
+  <section class="hero">
+    <div class="grid-bg" aria-hidden="true"></div>
+    <div class="wrap">
+      <a class="pill reveal" href="https://github.com/rx4u/samepage/releases/tag/v1.1.0"><b>v1.1.0</b>Now over MCP: Codex, Gemini CLI, Copilot, Cursor</a>
+      <h1 id="h1">The shared context layer for <span class="dim">your AI tools.</span><span class="cursor" aria-hidden="true"></span></h1>
+      <p class="lede reveal">Every AI tool keeps its own context: per app, per account, per session. samepage gives them one. Projects, decisions, shipped work and handoffs, as typed Markdown in a git repo you own.</p>
+      <div class="ctas reveal">
+        <a class="btn p" href="#install">Get started</a>
+        <a class="btn g" href="https://github.com/rx4u/samepage/blob/main/SPEC.md">Read the spec <span class="k">SPEC.md</span></a>
+      </div>
+      <div class="under reveal">open source · MIT · no server · no API keys · stdlib only</div>
+
+      <div class="topo-wrap reveal" id="topo">
+        <div class="topo-bar"><span>fig.01 / context flow</span><span class="live"><i></i>live</span></div>
+        <div class="topo-scroll"><svg class="topo" viewBox="0 0 1136 470" role="img" aria-label="Diagram: a chat assistant, a desktop app and any MCP client on the left, a coding agent, an IDE agent and a terminal on the right, all reading and writing one git store in the middle.">
+          <defs>
+            <path id="p0" d="M206 95 C 380 95, 420 235, 486 235"/>
+            <path id="p1" d="M206 235 L 486 235"/>
+            <path id="p2" d="M206 375 C 380 375, 420 235, 486 235"/>
+            <path id="p3" d="M930 95 C 756 95, 716 235, 650 235"/>
+            <path id="p4" d="M930 235 L 650 235"/>
+            <path id="p5" d="M930 375 C 756 375, 716 235, 650 235"/>
+          </defs>
+          <g fill="none" stroke-width="1">
+            <use href="#p0" class="edge" stroke="#2a2a31"/><use href="#p1" class="edge" stroke="#2a2a31"/><use href="#p2" class="edge" stroke="#2a2a31"/>
+            <use href="#p3" class="edge" stroke="#2a2a31"/><use href="#p4" class="edge" stroke="#2a2a31"/><use href="#p5" class="edge" stroke="#2a2a31"/>
+          </g>
+          <g class="nodes">
+            <g class="node" transform="translate(30 70)"><rect width="176" height="50" rx="10" fill="#0e0e11" stroke="#2a2a31"/><text x="16" y="22" fill="#f5f5f6" font-size="13">chat assistant</text><text x="16" y="38" fill="#5c5c64" font-size="11">skill</text></g>
+            <g class="node" transform="translate(30 210)"><rect width="176" height="50" rx="10" fill="#0e0e11" stroke="#2a2a31"/><text x="16" y="22" fill="#f5f5f6" font-size="13">desktop app</text><text x="16" y="38" fill="#5c5c64" font-size="11">mcp</text></g>
+            <g class="node" transform="translate(30 350)"><rect width="176" height="50" rx="10" fill="#0e0e11" stroke="#2a2a31" stroke-dasharray="4 4"/><text x="16" y="22" fill="#f5f5f6" font-size="13">any MCP client</text><text x="16" y="38" fill="#5c5c64" font-size="11">stdio</text></g>
+            <g class="node" transform="translate(930 70)"><rect width="176" height="50" rx="10" fill="#0e0e11" stroke="#2a2a31"/><text x="16" y="22" fill="#f5f5f6" font-size="13">coding agent</text><text x="16" y="38" fill="#5c5c64" font-size="11">plugin · mcp</text></g>
+            <g class="node" transform="translate(930 210)"><rect width="176" height="50" rx="10" fill="#0e0e11" stroke="#2a2a31"/><text x="16" y="22" fill="#f5f5f6" font-size="13">IDE agent</text><text x="16" y="38" fill="#5c5c64" font-size="11">mcp · rule</text></g>
+            <g class="node" transform="translate(930 350)"><rect width="176" height="50" rx="10" fill="#0e0e11" stroke="#2a2a31"/><text x="16" y="22" fill="#f5f5f6" font-size="13">terminal</text><text x="16" y="38" fill="#5c5c64" font-size="11">sp cli</text></g>
+          </g>
+          <g id="store" transform="translate(486 120)">
+            <rect id="storeBox" width="164" height="230" rx="14" fill="#08080a" stroke="#f5f5f6" stroke-width="1.2"/>
+            <g transform="translate(14 14) scale(.36)"><path d="M36 26 H64 A10 10 0 0 1 64 46 H36 A10 10 0 0 1 36 26 Z" fill="#f5f5f6"/><path d="M36 54 H40 A10 10 0 0 1 40 74 H36 A10 10 0 0 1 36 54 Z" fill="#f5f5f6"/><rect x="58" y="54" width="16" height="20" rx="3" fill="#f5f5f6"/></g>
+            <text x="56" y="38" fill="#f5f5f6" font-size="13">store</text>
+            <text x="56" y="52" fill="#5c5c64" font-size="10">git · private</text>
+            <line x1="0" y1="66" x2="164" y2="66" stroke="#2a2a31"/>
+            <g font-size="11.5">
+              <text x="18" y="92" class="f" data-f="projects" fill="#8b8b94">projects/</text>
+              <text x="18" y="114" class="f" data-f="decisions" fill="#8b8b94">decisions/</text>
+              <text x="18" y="136" class="f" data-f="events" fill="#8b8b94">events/</text>
+              <text x="18" y="158" class="f" data-f="handoffs" fill="#8b8b94">handoffs/</text>
+              <text x="18" y="180" class="f" data-f="rules" fill="#8b8b94">rules/</text>
+              <text x="18" y="202" class="f" data-f="index" fill="#f5f5f6">index/boot/</text>
+            </g>
+          </g>
+          <g id="pkt" opacity="0">
+            <rect x="-64" y="-13" width="128" height="26" rx="7" fill="#f5f5f6"/>
+            <text id="pktText" x="0" y="4.5" fill="#08080a" font-size="11.5" text-anchor="middle">decision.md</text>
+          </g>
+        </svg></div>
+        <div class="log" id="log">
+          <div><span class="t">09:12:04</span><span class="m">chat assistant wrote decisions/api/2026-11-04-8d95bb8f.md</span></div>
+          <div><span class="t">09:11:40</span><span class="m">store indexed · boot files rebuilt</span></div>
+          <div><span class="t">09:11:02</span><span class="m">coding agent booted from index/boot/code.md · 1 file</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="eyebrow reveal">the problem</div>
+      <h2 class="reveal">Context is stuck where you <span class="dim">left it.</span></h2>
+      <div class="silos">
+        <div class="silo reveal"><div class="n">[01] per tool</div><p>Your chat app doesn't know what your coding agent shipped.</p><small>"what did I ship this week?" gets a guess</small></div>
+        <div class="silo reveal"><div class="n">[02] per account</div><p>Your work account doesn't know your personal one exists.</p><small>two logins, two blank slates</small></div>
+        <div class="silo reveal"><div class="n">[03] per session</div><p>Every new session reopens a decision you already made.</p><small>Mongo again, after you picked Postgres</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <p class="statement" id="statement">Memory products learn who you are inside one app. samepage moves what you're doing from one tool to the next.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="how">
+    <div class="wrap">
+      <div class="eyebrow reveal">how it works</div>
+      <h2 class="reveal">Boot. Write. <span class="dim">Hand off.</span></h2>
+      <div class="story" id="story">
+        <div class="steps">
+          <div class="step on"><div class="n">01 / boot</div><h3>One read per session</h3><p>Each tool reads one prebuilt boot file for its role and the repo you're in. Capped at 8,000 characters, at any store size.</p></div>
+          <div class="step"><div class="n">02 / write</div><h3>Preview, then confirm</h3><p>Every write is a dry run first. The confirm token pins a hash of the preview; anything different is refused.</p></div>
+          <div class="step"><div class="n">03 / hand off</div><h3>Leave work for the next tool</h3><p>A brief written in one tool opens the next session in another, stamped with where it came from.</p></div>
+        </div>
+        <div class="term">
+          <div class="term-bar"><i></i><i></i><i></i><span id="paneTitle">mcp · tools/call boot</span></div>
+          <div class="panes">
+<pre class="pane on"><span class="c">→</span> <span class="b">tools/call</span> boot {"project_dir": "~/api"}
+<span class="c">←</span> &lt;samepage data&gt;
+  surface: code
+
+  <span class="b">## Rules</span>
+  - Run tests before every commit.
+
+  <span class="b">## Active projects (2 of 2)</span>
+  - api: Billing API (updated 2026-11-04)
+
+  <span class="b">## Open handoffs to code (1)</span>
+  - de3122d7 api: Build the pricing page
+    (from chat via claude_ai)</pre>
+<pre class="pane"><span class="c">→</span> <span class="b">tools/call</span> log_ship {"project": "api", "dry_run": true}
+<span class="c">←</span> dry run, nothing written
+
+  == events/2026/2026-11-04-api-c6f8d3d9.md (new file)
+  kind: launched
+  summary: pricing page live, 3 tiers
+  tool: codex
+
+  confirm: eyJoYXNoIjoiZjM3NzY3YmQ...
+
+  <span class="c">user:</span> <span class="hl">yes</span>
+<span class="c">→</span> <span class="b">tools/call</span> log_ship {"confirm": "eyJoYXNo..."}
+<span class="c">←</span> wrote events/2026/2026-11-04-api-c6f8d3d9.md</pre>
+<pre class="pane"><span class="c">$</span> <span class="b">sp handoff new</span> --project api --to code \
+    --title "Annual pricing toggle" --tool claude_ai
+  wrote handoffs/7a1c90e2.md
+
+  <span class="c">next morning, in another tool:</span>
+
+  <span class="b">## Open handoffs to code (1)</span>
+  - 7a1c90e2 api: Annual pricing toggle
+    (from chat via claude_ai)
+
+  <span class="c">&gt;</span> <span class="hl">pick it up</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="spec">
+    <div class="wrap">
+      <div class="eyebrow reveal">the spec</div>
+      <h2 class="reveal">Plain files. <span class="dim">Typed, diffable, yours.</span></h2>
+      <p class="sub reveal">Flat frontmatter, one entry per file, checked by <span class="mono">sp check</span> on every write. Read it in any editor. Review it like code.</p>
+      <div class="spec">
+        <div class="card s4 reveal"><h3>Decisions stay decided</h3><p>The choice and the reason. Superseded, never deleted, so every tool knows what still holds.</p>
+<pre><span class="k">decisions/api/2026-11-04-8d95bb8f.md</span>
+<span class="k">title:</span> <span class="v">Postgres over Mongo</span>
+<span class="k">reason:</span> <span class="v">row-level security per tenant</span>
+<span class="k">status:</span> <span class="v">accepted</span>
+<span class="k">tool:</span> <span class="v">claude_ai</span></pre></div>
+        <div class="card s2 reveal"><h3>Ships are proof</h3><p>What shipped, when, with a link and a metric.</p>
+<pre><span class="k">kind:</span> <span class="v">launched</span>
+<span class="k">proof_url:</span> <span class="v">github.com/…/pull/42</span>
+<span class="k">metric:</span> <span class="v">p95 120 ms</span></pre></div>
+        <div class="card s2 reveal"><h3>Handoffs carry origin</h3><p>Where it came from, where it goes, and its state.</p>
+<pre><span class="k">from_tool:</span> <span class="v">claude_ai</span>
+<span class="k">to_surface:</span> <span class="v">code</span>
+<span class="k">status:</span> <span class="v">open → done</span></pre></div>
+        <div class="card s2 reveal"><h3>Rules apply everywhere</h3><p>Say it once. Scope it to every tool or to one role.</p>
+<pre><span class="k">text:</span> <span class="v">Run tests first.</span>
+<span class="k">scope:</span> <span class="v">all</span></pre></div>
+        <div class="card s2 reveal"><h3>Secrets never land</h3><p>Keys, tokens, private keys and card numbers are blocked before a write.</p>
+<pre><span class="k">$ sp check</span>
+<span class="v">blocked: secret in summary</span></pre></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <div class="nums" id="nums">
+        <div class="num"><b data-to="1">1</b><span>file read per session</span></div>
+        <div class="num"><b data-to="8000" data-fmt="1">8,000</b><span>character cap per boot file</span></div>
+        <div class="num"><b data-to="0">0</b><span>servers, keys or dependencies</span></div>
+        <div class="num"><b data-to="11">11</b><span>MCP tools: 6 read, 5 write</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="adapters">
+    <div class="wrap">
+      <div class="eyebrow reveal">adapters</div>
+      <h2 class="reveal">Works where you <span class="dim">already work.</span></h2>
+      <div class="adapters reveal">
+        <div class="ad"><span>Claude Code</span><span class="ok">tested</span></div>
+        <div class="ad"><span>claude.ai · Cowork</span><em>skill</em></div>
+        <div class="ad"><span>Claude Desktop</span><em>mcp</em></div>
+        <div class="ad"><span>Codex</span><em>mcp · AGENTS.md</em></div>
+        <div class="ad"><span>Gemini CLI</span><em>mcp · GEMINI.md</em></div>
+        <div class="ad"><span>GitHub Copilot</span><em>mcp</em></div>
+        <div class="ad"><span>Cursor</span><em>mcp · rule</em></div>
+        <div class="ad"><span>Windsurf</span><em>mcp · rule</em></div>
+        <div class="ad any"><span>your tool</span><em>any MCP client</em></div>
+      </div>
+      <p class="note">tested = a full run passed and is recorded in the <a href="https://github.com/rx4u/samepage/blob/main/docs/build/tool-ledger.md">tool ledger</a>. The rest are built and covered by tests, not yet run end to end by a maintainer.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="install">
+    <div class="wrap install">
       <div>
-        <a class="eyebrow" href="https://github.com/rx4u/samepage/releases/tag/v1.1.0"><b>v1.1.0</b> now works with Codex, Gemini CLI and Copilot</a>
-        <h1>Your AI tools forget. samepage doesn’t.<span class="cursor" aria-hidden="true"></span></h1>
-        <p class="lede">One shared working context for <strong>Claude</strong>, Codex, Gemini CLI, Copilot, Cursor and Windsurf. Your projects, decisions, shipped work and handoffs, kept in a private GitHub repo you own.</p>
-        <div class="ctas">
-          <a class="btn primary" href="#install">Install samepage</a>
-          <a class="btn ghost" href="https://github.com/rx4u/samepage">Read the source</a>
+        <div class="eyebrow reveal">install</div>
+        <h2 class="reveal">Your AI tools forget. <span class="dim">samepage doesn't.</span></h2>
+        <div class="tabs reveal" role="tablist" aria-label="Install paths">
+          <button role="tab" id="t0" aria-controls="c0" aria-selected="true">Any MCP tool</button>
+          <button role="tab" id="t1" aria-controls="c1" aria-selected="false" tabindex="-1">Claude Code</button>
+          <button role="tab" id="t2" aria-controls="c2" aria-selected="false" tabindex="-1">Chat skill</button>
         </div>
-        <ul class="facts">
-          <li>Open source, MIT</li>
-          <li>No server, no API keys</li>
-          <li>Plain Markdown files</li>
-        </ul>
       </div>
-      <div class="term" role="img" aria-label="Example samepage boot file in a Claude Code session: profile, rules, active projects and a handoff left in claude.ai chat">
-        <div class="term-bar"><i></i><i></i><i></i><span>claude ~/halcyon</span></div>
-<pre><span class="d">&lt;samepage data&gt;  surface: code</span>
+      <div class="term reveal">
+        <div class="term-bar"><i></i><i></i><i></i><button class="copy" type="button" id="copy">copy</button></div>
+<pre class="code" id="c0" role="tabpanel" aria-labelledby="t0"><span class="c">$</span> git clone https://github.com/rx4u/samepage ~/.samepage/tool
+<span class="c">$</span> sh ~/.samepage/tool/install.sh
+<span class="o">samepage: installed v1.1.0</span>
+<span class="c">$</span> sp init
+<span class="c">$</span> sp setup codex  <span class="c"># or gemini, copilot, cursor, windsurf</span>
+<span class="o">samepage: wrote the samepage entry in ~/.codex/config.toml</span></pre>
+<pre class="code" id="c1" role="tabpanel" aria-labelledby="t1" hidden><span class="c">&gt;</span> /plugin install samepage --marketplace rx4u/samepage
+<span class="c">&gt;</span> /sp init
 
-<span class="b"># samepage context</span>
-
-<span class="b">## Profile</span>
-Asha Rao. Product engineer who designs and ships
-
-<span class="b">## Rules</span>
-- Never use em dashes.
-- Run tests before every commit.
-
-<span class="b">## Active projects (2 of 2)</span>
-- quote-bot: Quote Bot <span class="d">(updated 2026-11-04)</span>
-- halcyon: Halcyon DS <span class="d">(updated 2026-11-01)</span>
-
-<span class="b">## Open handoffs to code (1)</span>
-- e8c77bc8 halcyon: Build the pricing page
-  <span class="d">(from chat via claude_ai)</span>
-
-<span class="d">&gt;</span> <span class="k">pick up the pricing handoff</span></pre>
-      </div>
-    </div>
-  </div>
-
-  <section aria-labelledby="problem-h">
-    <div class="wrap">
-      <p class="kicker">the problem</p>
-      <h2 id="problem-h">Every tool starts from zero.</h2>
-      <p class="sub">You plan in chat, build in Code, design in Claude Design and run long tasks in an agent. None of them know what the others did.</p>
-      <div class="pains">
-        <div class="pain"><p>Chat doesn't know what you shipped in Code yesterday.</p><small>"what did I ship this week?" gets a guess</small></div>
-        <div class="pain"><p>Code reopens a decision you settled in chat last week.</p><small>Firebase again, after you picked Supabase</small></div>
-        <div class="pain"><p>You paste the same brief into three tabs.</p><small>and rewrite your rules in each one</small></div>
+<span class="c"># new session: your context loads on its own</span></pre>
+<pre class="code" id="c2" role="tabpanel" aria-labelledby="t2" hidden><span class="c">1</span> create your store from the template repo
+<span class="c">2</span> upload samepage.skill from the v1.1.0 release
+<span class="c">3</span> connect GitHub, then say:
+  <span class="o">"set up samepage"</span></pre>
       </div>
     </div>
   </section>
 
-  <section aria-labelledby="holds-h">
+  <section class="final">
     <div class="wrap">
-      <p class="kicker">what it holds</p>
-      <h2 id="holds-h">One context. Small, typed and yours.</h2>
-      <p class="sub">Every entry is a short Markdown file with a few fields. You can read it, edit it by hand and diff it like code.</p>
-      <div class="holds">
-        <div class="hold"><h3>Projects <code>projects/</code></h3><p>Status, stack, links and outcomes. Every session knows what you're working on.</p></div>
-        <div class="hold"><h3>Decisions <code>decisions/</code></h3><p>Settled choices with the reason. No tool reopens a closed question.</p></div>
-        <div class="hold"><h3>Ships <code>events/</code></h3><p>What shipped, when, with links and metrics. Proof for updates and reviews.</p></div>
-        <div class="hold"><h3>Handoffs <code>handoffs/</code></h3><p>A brief left in one tool for another. Plan in chat, build in Code.</p></div>
-        <div class="hold"><h3>Rules <code>rules/</code></h3><p>How you want AI to work, everywhere or per surface. Say it once.</p></div>
-        <div class="hold"><h3>Design <code>design/</code></h3><p>Where each design system's tokens live, so design and code use the same ones.</p></div>
-        <div class="hold wide"><h3>You <code>profile.md</code></h3><p>Name, role and links, so every tool writes as you and not as a stranger. Plus a tiny index of boot files, so a session reads one file, not your whole store.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="how" aria-labelledby="how-h">
-    <div class="wrap">
-      <p class="kicker">how it works</p>
-      <h2 id="how-h">Boot, work, log. Nothing written without your yes.</h2>
-      <div class="how">
-        <div class="step">
-          <h3>Boot</h3>
-          <p>Each session reads one small file matched to the project you're in: your rules, open work and handoffs.</p>
-<pre>index/boot/code.md
-under 2,000 tokens</pre>
-        </div>
-        <div class="step">
-          <h3>Work</h3>
-          <p>Ask "what am I working on?" or "what did I ship with Next.js?" Answers come from your store, not from a guess.</p>
-<pre>&gt; what did I ship this month?
-3 ships, 2 with metrics</pre>
-        </div>
-        <div class="step">
-          <h3>Log</h3>
-          <p>Say "log this" or "hand this to Code". You see the exact file first, and it's written only after you say yes.</p>
-<pre>dry run, nothing written
-== events/2026/...general.md
-write it? yes</pre>
-        </div>
-      </div>
-      <div class="demo"><img src="/demo.gif" width="960" height="600" loading="lazy" alt="Logging a ship in Claude Code, then the proof file that claude.ai chat reads shows it"></div>
-      <p class="caption">Log a ship in Claude Code, then ask claude.ai chat what you shipped.</p>
-    </div>
-  </section>
-
-  <section id="tools" aria-labelledby="tools-h">
-    <div class="wrap">
-      <p class="kicker">works with</p>
-      <h2 id="tools-h">Built for Claude first. Open to the rest.</h2>
-      <p class="sub">Claude tools connect through a plugin and a skill. Other coding tools connect through a local MCP server and a short instruction file in your project.</p>
-      <div class="tools">
-        <table>
-          <thead><tr><th>Tool</th><th>How it connects</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr class="group"><td colspan="3">claude</td></tr>
-            <tr><td>Claude Code</td><td>Plugin: context loads at session start, <code>/sp</code> commands</td><td><span class="pill ok">Tested</span></td></tr>
-            <tr><td>claude.ai chat</td><td>Skill plus the GitHub connector</td><td><span class="pill">Community-tested</span></td></tr>
-            <tr><td>Cowork</td><td>Skill plus the GitHub connector</td><td><span class="pill">Community-tested</span></td></tr>
-            <tr><td>Claude Desktop</td><td>Local MCP server, <code>sp setup claude-desktop</code></td><td><span class="pill">Community-tested</span></td></tr>
-            <tr><td>Claude Design</td><td>Reads your product repo's tokens, no install</td><td><span class="pill">Community-tested</span></td></tr>
-            <tr class="group"><td colspan="3">other coding tools</td></tr>
-            <tr><td>Gemini CLI</td><td>Local MCP server and GEMINI.md, <code>sp setup gemini</code></td><td><span class="pill">Community-tested</span></td></tr>
-            <tr><td>Codex</td><td>Local MCP server and AGENTS.md, <code>sp setup codex</code></td><td><span class="pill">Community-tested</span></td></tr>
-            <tr><td>GitHub Copilot</td><td>Local MCP server and copilot-instructions.md, <code>sp setup copilot</code></td><td><span class="pill">Community-tested</span></td></tr>
-            <tr><td>Cursor</td><td>Local MCP server and a project rule, <code>sp setup cursor</code></td><td><span class="pill">Community-tested</span></td></tr>
-            <tr><td>Windsurf</td><td>Local MCP server and a project rule, <code>sp setup windsurf</code></td><td><span class="pill">Community-tested</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="note">Tested means a full run (boot, a confirmed write, a handoff picked up) passed and is recorded in the <a href="https://github.com/rx4u/samepage/blob/main/docs/build/tool-ledger.md">tool ledger</a>. Community-tested means it's built and covered by tests, but no maintainer run has passed yet. Tried one? <a href="https://github.com/rx4u/samepage/issues">Tell us how it went</a>.</p>
-    </div>
-  </section>
-
-  <section id="install" aria-labelledby="install-h">
-    <div class="wrap">
-      <p class="kicker">install</p>
-      <h2 id="install-h">Two minutes, wherever you work.</h2>
-      <p class="sub">Every path ends at the same private store, so you can add another tool later.</p>
-      <div class="tabs">
-        <div class="tablist" role="tablist" aria-label="Install paths">
-          <button role="tab" id="t-code" aria-controls="p-code" aria-selected="true">Claude Code</button>
-          <button role="tab" id="t-chat" aria-controls="p-chat" aria-selected="false" tabindex="-1">claude.ai and Cowork</button>
-          <button role="tab" id="t-other" aria-controls="p-other" aria-selected="false" tabindex="-1">Other coding tools</button>
-        </div>
-
-        <div class="panel" id="p-code" role="tabpanel" aria-labelledby="t-code">
-          <ol>
-            <li><div><p>In Claude Code, install the plugin:</p><div class="cmd"><code>/plugin install samepage --marketplace rx4u/samepage</code><button class="copy" type="button">Copy</button></div></div></li>
-            <li><div><p>Create your store. It asks your name, headline and up to three rules, then creates a private <code>samepage-store</code> repo.</p><div class="cmd"><code>/sp init</code><button class="copy" type="button">Copy</button></div></div></li>
-            <li><div><p>Start a new session. Your context loads on its own. Say "log this" after you ship something.</p></div></li>
-          </ol>
-        </div>
-
-        <div class="panel" id="p-chat" role="tabpanel" aria-labelledby="t-chat" hidden>
-          <ol>
-            <li><div><p><a href="https://github.com/new?template_owner=rx4u&amp;template_name=samepage-store-template&amp;name=samepage-store&amp;visibility=private">Create your store in one click</a>. Keep the name <code>samepage-store</code> and keep it private.</p></div></li>
-            <li><div><p>Download <a href="https://github.com/rx4u/samepage/releases/download/v1.1.0/samepage.skill">samepage.skill</a>. In claude.ai go to Customize, Skills, Upload a skill. Turn on code execution and the GitHub connector with access to your store.</p></div></li>
-            <li><div><p>Say "set up samepage". Claude finds your store, asks who you are and writes your profile after your yes.</p></div></li>
-          </ol>
-        </div>
-
-        <div class="panel" id="p-other" role="tabpanel" aria-labelledby="t-other" hidden>
-          <ol>
-            <li><div><p>Install the <code>sp</code> command. It needs git and Python 3.9 or newer, no sudo.</p><div class="cmd"><code>git clone https://github.com/rx4u/samepage "$HOME/.samepage/tool" &amp;&amp; sh "$HOME/.samepage/tool/install.sh"</code><button class="copy" type="button">Copy</button></div></div></li>
-            <li><div><p>Create or connect your store.</p><div class="cmd"><code>sp init</code><button class="copy" type="button">Copy</button></div></div></li>
-            <li><div><p>From inside a project, connect your tool. Swap in <code>gemini</code>, <code>copilot</code>, <code>cursor</code>, <code>windsurf</code> or <code>claude-desktop</code>.</p><div class="cmd"><code>sp setup codex</code><button class="copy" type="button">Copy</button></div><p class="muted">It keeps a backup of every config it changes. Add <code>--dry-run</code> to see each change first.</p></div></li>
-            <li><div><p>Restart the tool and ask "what am I working on?"</p></div></li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section aria-labelledby="data-h">
-    <div class="wrap">
-      <p class="kicker">your data</p>
-      <h2 id="data-h">Your repo. Your files. No server in between.</h2>
-      <div class="data">
-        <div><h3>Private and yours</h3><p>The store is a private GitHub repo you own, or a Notion page if you prefer. samepage never runs a hosted server and never sees your data.</p></div>
-        <div><h3>Nothing written without your yes</h3><p>Every write shows you the exact file first. In MCP tools, the server refuses any write that doesn't match the preview you saw.</p></div>
-        <div><h3>Nothing deleted</h3><p>Projects are archived and decisions are superseded, never removed. Your history stays.</p></div>
-        <div><h3>Secrets blocked</h3><p><code>sp check</code> stops API keys, tokens, private keys and card numbers from ever entering a store.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="final" aria-labelledby="final-h">
-    <div class="wrap">
-      <h2 id="final-h">Stop re-explaining your work.</h2>
-      <p class="sub" style="margin-left:auto;margin-right:auto">Install once. Every tool starts where the last one stopped.</p>
-      <div class="ctas">
-        <a class="btn primary" href="#install">Install samepage</a>
-        <a class="btn ghost" href="https://github.com/rx4u/samepage">Star on GitHub</a>
+      <svg id="mark" viewBox="0 0 100 100" aria-hidden="true"><path id="mTop" d="M36 26 H64 A10 10 0 0 1 64 46 H36 A10 10 0 0 1 36 26 Z" fill="#f5f5f6"/><path id="mBot" d="M36 54 H40 A10 10 0 0 1 40 74 H36 A10 10 0 0 1 36 54 Z" fill="#f5f5f6"/><rect id="mCur" x="58" y="54" width="16" height="20" rx="3" fill="#f5f5f6"/></svg>
+      <h2 class="reveal">One page. <span class="dim">Every tool.</span></h2>
+      <div class="ctas reveal">
+        <a class="btn p" href="#install">Install samepage</a>
+        <a class="btn g" href="https://github.com/rx4u/samepage">Star on GitHub</a>
       </div>
     </div>
   </section>
@@ -431,44 +443,167 @@ write it? yes</pre>
 
 <footer>
   <div class="wrap">
-    <span>samepage v1.1.0. MIT license. Built by Rajaraman Arumugam.</span>
-    <nav aria-label="Footer">
-      <a href="https://github.com/rx4u/samepage">GitHub</a>
-      <a href="https://github.com/rx4u/samepage/blob/main/SPEC.md">Store format</a>
-      <a href="https://github.com/rx4u/samepage/tree/main/docs/architecture">Architecture</a>
-      <a href="https://github.com/rx4u/samepage/releases">Releases</a>
-    </nav>
+    <span>samepage · v1.1.0 · MIT · built in public by Rajaraman Arumugam</span>
+    <nav aria-label="Footer"><a href="https://github.com/rx4u/samepage">github</a><a href="https://github.com/rx4u/samepage/blob/main/SPEC.md">SPEC.md</a><a href="https://github.com/rx4u/samepage/tree/main/docs/architecture">architecture</a><a href="https://github.com/rx4u/samepage/releases">releases</a></nav>
   </div>
 </footer>
 
+<script src="/vendor/gsap/gsap.min.js"></script>
+<script src="/vendor/gsap/ScrollTrigger.min.js"></script>
+<script src="/vendor/gsap/SplitText.min.js"></script>
+<script src="/vendor/gsap/MotionPathPlugin.min.js"></script>
 <script>
 (function () {
-  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
-  function select(tab) {
-    tabs.forEach(function (t) {
-      var on = t === tab;
-      t.setAttribute('aria-selected', on ? 'true' : 'false');
-      t.tabIndex = on ? 0 : -1;
-      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+  var tabs = [].slice.call(document.querySelectorAll('[role="tab"]'));
+  function sel(t) {
+    tabs.forEach(function (x) {
+      var on = x === t;
+      x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1;
+      document.getElementById(x.getAttribute('aria-controls')).hidden = !on;
     });
   }
-  tabs.forEach(function (tab, i) {
-    tab.addEventListener('click', function () { select(tab); });
-    tab.addEventListener('keydown', function (e) {
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { sel(t); });
+    t.addEventListener('keydown', function (e) {
       var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-      if (!d) return;
-      var next = tabs[(i + d + tabs.length) % tabs.length];
-      select(next); next.focus(); e.preventDefault();
+      if (!d) return; var n = tabs[(i + d + tabs.length) % tabs.length]; sel(n); n.focus(); e.preventDefault();
     });
   });
-  document.querySelectorAll('.copy').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var text = btn.previousElementSibling.textContent;
-      function done() { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy'; }, 1600); }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done, function () {});
-      }
+  var copy = document.getElementById('copy');
+  copy.addEventListener('click', function () {
+    var pane = document.querySelector('pre.code:not([hidden])');
+    var text = pane.innerText.split('\n').filter(function (l) { return /^[$>] /.test(l); })
+      .map(function (l) { return l.replace(/^[$>] /, '').replace(/\s+#.*$/, ''); }).join('\n');
+    if (navigator.clipboard && text) navigator.clipboard.writeText(text).then(function () {
+      copy.textContent = 'copied'; setTimeout(function () { copy.textContent = 'copy'; }, 1500);
+    }, function () {});
+  });
+
+  var ts = document.querySelector('.topo-scroll');
+  if (ts && ts.scrollWidth > ts.clientWidth) ts.scrollLeft = (ts.scrollWidth - ts.clientWidth) / 2;
+
+  if (!window.gsap || !window.ScrollTrigger || !window.SplitText || !window.MotionPathPlugin) {
+    document.documentElement.classList.remove('js'); return;
+  }
+  gsap.registerPlugin(ScrollTrigger, SplitText, MotionPathPlugin);
+  var mm = gsap.matchMedia();
+
+  mm.add('(prefers-reduced-motion: reduce)', function () {
+    gsap.set('.reveal', { opacity: 1 });
+    document.querySelectorAll('.statement').forEach(function (s) { s.style.color = 'var(--fg)'; });
+  });
+
+  mm.add('(prefers-reduced-motion: no-preference)', function () {
+    /* hero entrance */
+    var split = SplitText.create('#h1', { type: 'words,chars', mask: 'words' });
+    gsap.set('.hero .pill', { y: 10 });
+    gsap.timeline({ defaults: { ease: 'expo.out' } })
+      .from(split.chars, { yPercent: 110, duration: 1.1, stagger: 0.016 }, 0.1)
+      .to('.hero .pill', { opacity: 1, y: 0, duration: 0.9 }, 0)
+      .fromTo('.hero .lede, .hero .ctas, .hero .under', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 1, stagger: 0.08 }, 0.5)
+      .fromTo('#topo', { opacity: 0, y: 48, scale: 0.985 }, { opacity: 1, y: 0, scale: 1, duration: 1.4 }, 0.7)
+      .from('.node', { opacity: 0, x: function (i) { return i < 3 ? -16 : 16; }, duration: 0.8, stagger: 0.05 }, 1.0);
+
+    /* topology loop */
+    var flows = [
+      { path: 0, dir: 1, label: 'decision.md', file: 'decisions', msg: 'chat assistant wrote decisions/api/2026-11-04-8d95bb8f.md' },
+      { path: 3, dir: -1, label: 'boot/code.md', file: 'index', msg: 'coding agent booted from index/boot/code.md · 1 file' },
+      { path: 3, dir: 1, label: 'ship.md', file: 'events', msg: 'coding agent wrote events/2026/2026-11-04-api-c6f8d3d9.md' },
+      { path: 1, dir: -1, label: 'boot/chat.md', file: 'index', msg: 'desktop app booted from index/boot/chat.md · ship in context' },
+      { path: 0, dir: 1, label: 'handoff.md', file: 'handoffs', msg: 'chat assistant wrote handoffs/7a1c90e2.md · to code' },
+      { path: 4, dir: -1, label: 'handoff 7a1c90e2', file: 'handoffs', msg: 'IDE agent picked up handoff 7a1c90e2 · from chat' },
+      { path: 5, dir: 1, label: 'rule.md', file: 'rules', msg: 'terminal wrote rules/run-tests-first.md · scope all' },
+      { path: 2, dir: -1, label: 'boot/code.md', file: 'index', msg: 'any MCP client booted · rules applied' }
+    ];
+    var log = document.getElementById('log'), clock = 9 * 3600 + 12 * 60 + 4;
+    function stamp() {
+      clock += 17 + Math.floor(Math.random() * 40);
+      return [Math.floor(clock / 3600) % 24, Math.floor(clock / 60) % 60, clock % 60]
+        .map(function (n) { return (n < 10 ? '0' : '') + n; }).join(':');
+    }
+    function push(msg) {
+      var row = document.createElement('div'), t = document.createElement('span'), m = document.createElement('span');
+      t.className = 't'; m.className = 'm'; t.textContent = stamp(); m.textContent = msg;
+      row.appendChild(t); row.appendChild(m);
+      log.insertBefore(row, log.firstChild);
+      gsap.from(row, { height: 0, paddingTop: 0, paddingBottom: 0, opacity: 0, duration: 0.5, ease: 'power3.out' });
+      while (log.children.length > 3) log.removeChild(log.lastElementChild);
+    }
+    var edges = document.querySelectorAll('.edge'), nodes = document.querySelectorAll('.node rect');
+    var pktText = document.getElementById('pktText');
+    var loop = gsap.timeline({ repeat: -1, paused: true });
+    flows.forEach(function (f) {
+      var t = loop.duration();
+      var fileEl = document.querySelector('.f[data-f="' + f.file + '"]');
+      var into = f.dir > 0;
+      loop.call(function () { pktText.textContent = f.label; }, null, t)
+        .to([edges[f.path], nodes[f.path]], { attr: { stroke: '#f5f5f6' }, duration: 0.3 }, t)
+        .set('#pkt', { opacity: 1 }, t + 0.1)
+        .to('#pkt', { duration: 1.1, ease: 'power2.inOut', motionPath: { path: '#p' + f.path, start: into ? 0 : 1, end: into ? 1 : 0 } }, t + 0.1)
+        .to('#pkt', { opacity: 0, duration: 0.2 }, t + 1.15)
+        .to(fileEl, { attr: { fill: '#f5f5f6' }, duration: 0.2 }, into ? t + 1.1 : t)
+        .to('#storeBox', { attr: { 'stroke-width': 2.6 }, duration: 0.15, yoyo: true, repeat: 1 }, into ? t + 1.1 : t)
+        .call(push, [f.msg], t + 1.2)
+        .to(fileEl, { attr: { fill: f.file === 'index' ? '#f5f5f6' : '#8b8b94' }, duration: 0.6 }, t + 1.6)
+        .to([edges[f.path], nodes[f.path]], { attr: { stroke: '#2a2a31' }, duration: 0.6 }, t + 1.4)
+        .to({}, { duration: 0.7 }, t + 1.6);
     });
+    gsap.delayedCall(2.2, function () {
+      ScrollTrigger.create({ trigger: '#topo', start: 'top bottom', end: 'bottom top',
+        onToggle: function (s) { if (s.isActive) loop.play(); else loop.pause(); } });
+      if (ScrollTrigger.isInViewport(document.getElementById('topo'))) loop.play();
+    });
+
+    /* reveals */
+    gsap.utils.toArray('.reveal').forEach(function (el) {
+      if (el.closest('.hero')) return;
+      gsap.fromTo(el, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 1.1, ease: 'expo.out',
+        scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
+    });
+    gsap.utils.toArray('.sec h2, .final h2').forEach(function (h) {
+      var s = SplitText.create(h, { type: 'lines', mask: 'lines' });
+      gsap.from(s.lines, { yPercent: 105, duration: 1.1, stagger: 0.08, ease: 'expo.out', scrollTrigger: { trigger: h, start: 'top 90%', once: true } });
+    });
+
+    /* statement lights up word by word */
+    var st = SplitText.create('#statement', { type: 'words', wordsClass: 'w' });
+    ScrollTrigger.create({ trigger: '#statement', start: 'top 80%', end: 'bottom 40%', scrub: true,
+      onUpdate: function (self) {
+        var n = Math.round(self.progress * st.words.length);
+        st.words.forEach(function (w, i) { w.classList.toggle('on', i < n); });
+      } });
+
+    /* counters */
+    gsap.utils.toArray('.num b').forEach(function (b) {
+      var o = { v: 0 }, to = +b.dataset.to;
+      b.textContent = '0';
+      gsap.to(o, { v: to, duration: 1.6, ease: 'power3.out', scrollTrigger: { trigger: '#nums', start: 'top 85%', once: true },
+        onUpdate: function () { var v = Math.round(o.v); b.textContent = b.dataset.fmt ? v.toLocaleString('en-US') : String(v); } });
+    });
+
+    /* the mark assembles */
+    gsap.timeline({ scrollTrigger: { trigger: '.final', start: 'top 75%', once: true } })
+      .from('#mTop', { x: -40, opacity: 0, duration: 1, ease: 'expo.out' })
+      .from('#mBot', { x: 40, opacity: 0, duration: 1, ease: 'expo.out' }, 0.1)
+      .from('#mCur', { scale: 0, transformOrigin: '50% 50%', duration: 0.7, ease: 'back.out(2)' }, 0.5)
+      .to('#mCur', { opacity: 0, duration: 0.01, repeat: -1, yoyo: true, repeatDelay: 0.55 }, 1.4);
+  });
+
+  /* pinned story on desktop */
+  mm.add('(min-width: 901px) and (prefers-reduced-motion: no-preference)', function () {
+    var steps = document.querySelectorAll('.step'), panes = document.querySelectorAll('.pane');
+    var titles = ['mcp · tools/call boot', 'mcp · tools/call log_ship', 'cli · sp handoff new'];
+    var cur = 0;
+    function show(i) {
+      if (i === cur) return;
+      steps.forEach(function (s, k) { s.classList.toggle('on', k === i); });
+      gsap.to(panes[cur], { opacity: 0, y: -10, duration: 0.35, overwrite: true });
+      gsap.fromTo(panes[i], { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', overwrite: true });
+      document.getElementById('paneTitle').textContent = titles[i];
+      cur = i;
+    }
+    ScrollTrigger.create({ trigger: '#how', start: 'top top', end: '+=1500', pin: '#how',
+      onUpdate: function (self) { show(Math.min(2, Math.floor(self.progress * 3))); } });
   });
 })();
 </script>
