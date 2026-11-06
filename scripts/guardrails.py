@@ -9,6 +9,8 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUNTIME_DIRS = ("sp", "hooks", "commands", "skills")
 WALK_ALLOW = {"sp/check.py", "sp/index.py"}
+# Read folders that are not a store (ADR-0015): docs, generated fixtures, a Notion export.
+NON_STORE_READERS = {"sp/schema.py", "sp/fixtures.py", "sp/export.py"}
 EXAMPLE_HOSTS = re.compile(r"^https?://([a-z0-9%-]+\.)*example\.(com|org|net)(/|$)")
 SKIP = {".git", "fixtures", "__pycache__", "index.tmp"}
 
@@ -42,9 +44,9 @@ def main():
             name = match.group(1)
             if name not in stdlib:
                 fail("stdlib only (ADR-0012)", rel, "imports %s" % name)
-        if rel.startswith("sp/") and rel not in WALK_ALLOW and re.search(r"\bos\.walk\(|\bglob\.|\bos\.listdir\(", text):
-            if rel != "sp/fixtures.py" and rel != "sp/schema.py":
-                fail("no raw folder walks", rel, "only sp/check.py and sp/index.py may walk the store")
+        if (rel.startswith("sp/") and rel not in WALK_ALLOW | NON_STORE_READERS
+                and re.search(r"\bos\.(walk|listdir|scandir)\(|\bglob\.|\.iterdir\(|\.rglob\(", text)):
+            fail("no raw folder walks", rel, "only sp/check.py and sp/index.py may walk the store")
         if rel.startswith(("sp/", "hooks/", "commands/", "skills/")):
             if re.search(r"\b(offset|skip)\s*=", text):
                 fail("no offset paging", rel, "offset or skip assignment")

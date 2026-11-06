@@ -16,6 +16,7 @@
 | [0012](0012-choose-python-stdlib-cli.md) | Choose a Python standard library CLI | accepted | 2026-11-06 |
 | [0013](0013-choose-repo-owner-account.md) | Choose where the public repo lives | accepted | 2026-11-06 |
 | [0014](0014-package-one-skill-with-modes.md) | Package one skill with modes | accepted | 2026-11-06 |
+| [0015](0015-allow-non-store-folder-readers.md) | Allow non-store folder readers | accepted | 2026-11-06 |
 
 Statuses: proposed, accepted, rejected, deprecated, superseded.
 A superseded ADR links to its replacement and the replacement links back. History is never rewritten;

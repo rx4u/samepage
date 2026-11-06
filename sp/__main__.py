@@ -40,7 +40,17 @@ def main(argv=None):
     for _module in (_log, _handoff, _proof, _rules, _brief):
         _module.register(sub)
     # ----- end stream B
+    # export (stream D, WP-10): Notion "Markdown & CSV" export to a GitHub store
+    export = sub.add_parser("export", help="convert a Notion CSV export into a GitHub store")
+    export.add_argument("--from-notion-csv", required=True, metavar="DIR",
+                        help="unzipped Notion Markdown & CSV export of the samepage page")
+    export.add_argument("--out", required=True, metavar="STORE", help="new store folder (must not exist)")
+    export.add_argument("--utc-offset", default="+00:00",
+                        help="zone of dates without one in the CSV, like +05:30 (default +00:00)")
     args = parser.parse_args(argv)
+    if args.command == "export":
+        from .export import run as run_export
+        return run_export(args.from_notion_csv, args.out, utc_offset=args.utc_offset)
     # ----- stream B dispatch
     if getattr(args, "func", None) is not None:
         return args.func(args)
