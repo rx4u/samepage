@@ -1,11 +1,13 @@
 #!/bin/sh
-# samepage installer for coding tools other than Claude Code (ADR-0020).
+# samepage installer (ADR-0020, ADR-0024). The landing page serves this exact file at /install, so the
+# one line in README.md (curl the file, pipe it to sh) sets up everything.
 #
-#   git clone https://github.com/rx4u/samepage && sh samepage/install.sh
-#
-# Puts samepage in $SAMEPAGE_HOME/tool (default ~/.samepage/tool) and a shim at ~/.local/bin/sp.
+# Puts samepage in $SAMEPAGE_HOME/tool (default ~/.samepage/tool) and a shim at ~/.local/bin/sp, then
+# runs `sp start`: makes or connects your store and connects every AI tool it finds. No questions.
 # Needs git and python3 3.9+. No sudo, no package manager, no shell profile edits, no tokens.
 # SAMEPAGE_REF picks a branch, tag or commit (default: the newest v* release tag, else main; B36).
+# SAMEPAGE_NO_START=1 installs the command only. The whole script runs from main() on the last
+# line, so a cut-off download runs nothing.
 set -eu
 
 SAMEPAGE_HOME="${SAMEPAGE_HOME:-$HOME/.samepage}"
@@ -21,6 +23,7 @@ fail() {
   exit 1
 }
 
+main() {
 command -v git >/dev/null 2>&1 || fail "git not found. Install git, then run this again."
 command -v python3 >/dev/null 2>&1 || fail "python3 not found. Install Python 3.9 or newer, then run this again."
 python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)' \
@@ -60,5 +63,11 @@ case ":$PATH:" in
   *":$BIN_DIR:"*) ;;
   *) echo "samepage: $BIN_DIR is not on your PATH. Add this line to your shell profile: export PATH=\"$BIN_DIR:\$PATH\"" ;;
 esac
-echo "samepage: next, if you have no store yet: sp init"
-echo "samepage: then connect a tool from inside a project: sp setup codex (or copilot, gemini, cursor, windsurf, claude-desktop)"
+if [ "${SAMEPAGE_NO_START:-}" = "1" ]; then
+  echo "samepage: next: sp start (sets up your store and connects your tools)"
+  return 0
+fi
+"$SHIM" start </dev/null
+}
+
+main "$@"

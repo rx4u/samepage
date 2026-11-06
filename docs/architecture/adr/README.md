@@ -25,6 +25,7 @@
 | [0021](0021-host-landing-page-as-static-files-on-vercel.md) | Host the landing page as static files on Vercel | accepted | 2026-11-06 |
 | [0022](0022-generate-landing-page-release-data.md) | Generate the landing page's release data from the repo | accepted | 2026-11-06 |
 | [0023](0023-link-two-stores-for-rules-and-decisions.md) | Link two stores and share rules and decisions both ways | accepted | 2026-11-06 |
+| [0024](0024-one-line-install-with-sp-start.md) | One-line install with `sp start` | accepted | 2026-11-06 |
 
 Statuses: proposed, accepted, rejected, deprecated, superseded.
 A superseded ADR links to its replacement and the replacement links back. History is never rewritten;

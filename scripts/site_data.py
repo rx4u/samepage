@@ -6,7 +6,8 @@ Every value comes from a file already in the repo, so the page cannot drift from
 - adapters: the "Works with" table in README.md (its status follows the tool ledger)
 - tools: sp/mcp.py tool_specs()
 
-Run `python3 scripts/site_data.py` after a release bump; `--check` exits 1 when site/data.json is stale.
+Run `python3 scripts/site_data.py` after a release bump; `--check` exits 1 when site/data.json is stale or site/install
+differs from install.sh (ADR-0024).
 """
 import argparse
 import json
@@ -18,6 +19,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 OUT = os.path.join(ROOT, "site", "data.json")
+INSTALL = os.path.join(ROOT, "site", "install")  # served as the one-line installer (ADR-0024)
 REPO = "https://github.com/rx4u/samepage"
 KIND_DEFAULT = {"plugin": "/plugin install samepage@samepage", "skill": "GitHub connector", "tokens": "design/tokens.json"}
 
@@ -104,12 +106,24 @@ def main(argv=None):
         have = read("site", "data.json")
     except OSError:
         have = ""
+    script = read("install.sh")
+    try:
+        served = read("site", "install")
+    except OSError:
+        served = ""
     if args.check:
         if have != want:
             print("site_data: site/data.json is stale; run python3 scripts/site_data.py", file=sys.stderr)
             return 1
-        print("site_data: site/data.json is current")
+        if served != script:
+            print("site_data: site/install differs from install.sh; run python3 scripts/site_data.py", file=sys.stderr)
+            return 1
+        print("site_data: site/data.json and site/install are current")
         return 0
+    if served != script:
+        with open(INSTALL, "w", encoding="utf-8") as handle:
+            handle.write(script)
+        print("site_data: wrote site/install (ADR-0024)")
     if have != want:
         with open(OUT, "w", encoding="utf-8") as handle:
             handle.write(want)

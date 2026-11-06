@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://samepage-rajaraman.vercel.app">
+  <a href="https://samepage-sigma.vercel.app">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="docs/readme/hero-dark.svg">
       <img src="docs/readme/hero-light.svg" width="100%" alt="Every AI tool. On the same page. Ten AI tools connected to one private store.">
@@ -8,8 +8,8 @@
 </p>
 
 <p align="center">
-  <a href="https://samepage-rajaraman.vercel.app"><b>Website</b></a> &nbsp;·&nbsp;
-  <a href="#set-up"><b>Set up</b></a> &nbsp;·&nbsp;
+  <a href="https://samepage-sigma.vercel.app"><b>Website</b></a> &nbsp;·&nbsp;
+  <a href="#set-up"><b>Set up in one line</b></a> &nbsp;·&nbsp;
   <a href="https://github.com/rx4u/samepage/releases/latest"><b>Latest release</b></a> &nbsp;·&nbsp;
   <a href="SPEC.md"><b>Store format</b></a>
 </p>
@@ -22,16 +22,31 @@ No server. No API keys. No account to create.</p>
 
 ## Set up
 
-Pick the tool you use most. Every path ends at the same private store, so you can add the others later.
+One line, in a terminal on Mac or Linux. It asks nothing.
+
+```bash
+curl -fsSL https://samepage-sigma.vercel.app/install | sh
+```
+
+It installs the `sp` command in `~/.samepage` (no sudo), makes your private store, and connects every AI tool it finds on the machine: Claude Code (the plugin), Codex, Gemini CLI, Copilot, Cursor, Windsurf and Claude Desktop (a local MCP server). Then open any of them and ask "what am I working on?".
+
+- **Store:** if the GitHub CLI is signed in, your store is a private `samepage-store` repo (an existing one is connected, never overwritten). If not, the store stays on this machine, and running the line again after `gh auth login` puts it on GitHub.
+- **Profile:** your name comes from GitHub or git, with the headline "Building with AI tools". Edit `profile.md` in your store to change either.
+- **Safe to run again:** it reuses your store and updates the plugin. Every config file it edits keeps a `.samepage-backup` copy.
+- **Read it first:** the script is [install.sh](install.sh). To see every step without writing anything, run `curl -fsSL https://samepage-sigma.vercel.app/install | SAMEPAGE_NO_START=1 sh`, then `sp start --dry-run`.
+
+claude.ai chat and Cowork can't be set up from a terminal. See [claude.ai chat or Cowork](#claudeai-chat-or-cowork) below.
+
+## Or set up one tool by hand
 
 | Your tool | Path | Time |
 |---|---|---|
-| Claude Code | [Plugin](#claude-code-recommended) | 2 min |
+| Claude Code | [Plugin](#claude-code) | 2 min |
 | claude.ai chat, Cowork | [Skill, nothing to install](#claudeai-chat-or-cowork) | 5 min |
 | Codex, Gemini CLI, Copilot, Cursor, Windsurf, Claude Desktop | [Local MCP server](#codex-gemini-cli-copilot-cursor-windsurf-or-claude-desktop) | 3 min |
 | Claude Design | [Reads your tokens](#claude-design) | 1 min |
 
-### Claude Code (recommended)
+### Claude Code
 
 Run these in the Claude Code terminal, one at a time.
 

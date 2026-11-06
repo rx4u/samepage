@@ -15,6 +15,7 @@
 | Tool field and roles (schema 1.1, ADR-0017) | US-16, US-17 | 4 | S | ship_event, decision, design_asset, handoff, tool |
 | Portable skill, `sp context` instruction blocks, `sp mcp` local server (ADR-0018) | US-16, US-17, US-19 | 5 | M | all read models |
 | `install.sh` and `sp setup` for codex, cursor, copilot, gemini, windsurf, claude-desktop (ADR-0020) | US-18 | 4 | M | none |
+| One-line install: the site's `/install` piped to `sh` runs `sp start`, no questions (ADR-0024) | US-18 | 4 | S | none |
 | `sp link` and `sp sync`: rules and decisions shared both ways between two local GitHub stores (ADR-0023) | US-15 | 4 | S | none |
 
 ## Cut from v1

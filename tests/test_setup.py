@@ -209,13 +209,13 @@ class Installer(unittest.TestCase):
             home = os.path.join(tmp, "home")
             os.makedirs(home)
             env = dict(os.environ, HOME=home, SAMEPAGE_HOME=os.path.join(home, ".samepage"),
-                       SAMEPAGE_REPO=ROOT, SAMEPAGE_REF="HEAD")
+                       SAMEPAGE_REPO=ROOT, SAMEPAGE_REF="HEAD", SAMEPAGE_NO_START="1")
             done = subprocess.run(["sh", os.path.join(ROOT, "install.sh")], env=env, capture_output=True, text=True,
                                   timeout=120)
             self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
             shim = os.path.join(home, ".local", "bin", "sp")
             self.assertTrue(os.access(shim, os.X_OK))
-            self.assertIn("sp setup", done.stdout)
+            self.assertIn("sp start", done.stdout)
             ran = subprocess.run([shim, "--help"], env=env, capture_output=True, text=True, timeout=30)
             self.assertEqual(ran.returncode, 0, ran.stderr)
             self.assertIn("samepage store tools", ran.stdout)
@@ -244,7 +244,7 @@ class Installer(unittest.TestCase):
             home = os.path.join(tmp, "home")
             os.makedirs(home)
             env = {k: v for k, v in os.environ.items() if k != "SAMEPAGE_REF"}
-            env.update(HOME=home, SAMEPAGE_HOME=os.path.join(home, ".samepage"), SAMEPAGE_REPO=src)
+            env.update(HOME=home, SAMEPAGE_HOME=os.path.join(home, ".samepage"), SAMEPAGE_REPO=src, SAMEPAGE_NO_START="1")
             done = subprocess.run(["sh", os.path.join(ROOT, "install.sh")], env=env, capture_output=True, text=True,
                                   timeout=120)
             self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
