@@ -38,7 +38,7 @@ Content moderation of what users choose to log.
 - Follow-up tasks: WP-02 (check rules), WP-07 (skill rules), WP-06 (data block).
 
 ## Implementation plan
-- Affected paths: sp/check.py, skills/samepage/SKILL.md, plugin/hooks/session-start.sh
+- Affected paths: sp/check.py, skills/samepage/SKILL.md, hooks/session-start.sh
 - Pattern to follow: rules first in SKILL.md, short imperatives.
 - Pattern to avoid: write paths without a confirmation step.
 - Config and env changes: none.

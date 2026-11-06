@@ -7,7 +7,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RUNTIME_DIRS = ("sp", "plugin", "skills")
+RUNTIME_DIRS = ("sp", "hooks", "commands", "skills")
 WALK_ALLOW = {"sp/check.py", "sp/index.py"}
 EXAMPLE_HOSTS = re.compile(r"^https?://([a-z0-9%-]+\.)*example\.(com|org|net)(/|$)")
 SKIP = {".git", "fixtures", "__pycache__", "index.tmp"}
@@ -45,16 +45,19 @@ def main():
         if rel.startswith("sp/") and rel not in WALK_ALLOW and re.search(r"\bos\.walk\(|\bglob\.|\bos\.listdir\(", text):
             if rel != "sp/fixtures.py" and rel != "sp/schema.py":
                 fail("no raw folder walks", rel, "only sp/check.py and sp/index.py may walk the store")
-        if rel.startswith(("sp/", "plugin/", "skills/")):
+        if rel.startswith(("sp/", "hooks/", "commands/", "skills/")):
             if re.search(r"\b(offset|skip)\s*=", text):
                 fail("no offset paging", rel, "offset or skip assignment")
             if re.search(r"\b(token|secret|password|api_key)\s*=", text, re.I) or re.search(
                     r"environ[^\n]*(TOKEN|SECRET|PASSWORD|API_KEY)", text):
                 fail("no credential handling (ADR-0006)", rel, "credential variable")
-            for url in re.findall(r"https?://[^\s\"')>]+", text):
+            for url in re.findall(r"https?://[^\s\"')>,]+", text):
+                host = re.match(r"https?://([^/]*)", url).group(1)
+                if "." not in host or re.search(r"[%{}<]", host):
+                    continue  # a template like https://%s/%s or https://host/owner, not an endpoint
                 if not EXAMPLE_HOSTS.match(url):
                     fail("no maintainer-hosted endpoints", rel, url)
-    for rel, path in files(("sp", "plugin", "skills", "tests", "scripts", "docs", "fixtures", ".github"),
+    for rel, path in files(("sp", "hooks", "commands", "skills", "tests", "scripts", "docs", "fixtures", ".github"),
                            (".py", ".md", ".json", ".yml", ".yaml", ".sh")):
         if "\u2014" in read(path):
             fail("no em dashes", rel, "contains U+2014")

@@ -180,7 +180,7 @@ Depends on: WP-08, WP-09, WP-11
 Wave: 4
 Depends on: WP-10, WP-12, WP-13, WP-14
 - Why: stars come from the first impression.
-- Do: apply the final name (ADR-0010) and owner (ADR-0013); README requirements section that states chat and Cowork writes need the claude.ai GitHub connector's app installed on the store owner's account, with the exact install path verified at release time (A2); README with a 60-second demo gif (ship in Code, proposal in chat cites it); "Works with native memory" section; release workflow building the plugin and `samepage.skill`; 5 timed setup tests.
+- Do: apply the final name (ADR-0010) and owner (ADR-0013); README requirements section that states chat and Cowork writes need the claude.ai GitHub connector's app installed on the store owner's account, with the exact install path verified at release time (A2); README with a 60-second demo gif (ship in Code, proposal in chat cites it); "Works with native memory" section; release workflow building the plugin and `samepage.skill`, bumping `.claude-plugin/plugin.json` version on every release (Claude Code keeps a cached plugin until the version changes, seen in WP-06); a square PNG icon at `.claude-plugin/icon.png` (plugin directory check); 5 timed setup tests.
 - Read model: none
 - Targets: Time to first working boot
 - Columns touched: none
@@ -201,7 +201,7 @@ Depends on: WP-10
 - Done when: maintainer store passes `sp check` and boots on all surfaces.
 
 ## Parallel work
-Safe pairs in wave 1: WP-01 with WP-02; WP-03, WP-04 and WP-05 after WP-02 (separate folders: sp/index.py, sp/fixtures.py, .github/). Safe in wave 3: WP-09, WP-10, WP-11 and WP-12 in parallel (separate skill reference files and sp modules); WP-08 and WP-13 both touch plugin/commands/sp.md, so run them in sequence.
+Safe pairs in wave 1: WP-01 with WP-02; WP-03, WP-04 and WP-05 after WP-02 (separate folders: sp/index.py, sp/fixtures.py, .github/). Safe in wave 3: WP-09, WP-10, WP-11 and WP-12 in parallel (separate skill reference files and sp modules); WP-08 and WP-13 both touch commands/sp.md, so run them in sequence.
 
 ## Definition of done (every change)
 - Meets the targets it touches, with before and after numbers in the PR

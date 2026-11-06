@@ -31,7 +31,7 @@ Does not decide where the public repo lives (ADR-0013) or its name (ADR-0010).
 - Follow-up tasks: WP-11 store Action, WP-15 release packaging.
 
 ## Implementation plan
-- Affected paths: plugin/, skills/, store-template/, dist/
+- Affected paths: .claude-plugin/, hooks/, commands/, skills/, store-template/, dist/
 - Pattern to follow: every runtime piece runs on the user's machine, in the user's GitHub Actions, or inside Claude through connectors.
 - Pattern to avoid: any network call to a maintainer-owned endpoint.
 - Config and env changes: none.

@@ -31,7 +31,7 @@ Generating or editing design tokens.
 - Follow-up tasks: WP-01 spike, WP-13 design modes.
 
 ## Implementation plan
-- Affected paths: skills/samepage/references/design.md, plugin/commands/sp.md
+- Affected paths: skills/samepage/references/design.md, commands/sp.md
 - Pattern to follow: design_asset rows point to files; they never copy token values.
 - Pattern to avoid: claiming Design reads the store.
 - Config and env changes: none.

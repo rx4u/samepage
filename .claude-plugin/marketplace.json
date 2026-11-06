@@ -1,0 +1,14 @@
+{
+  "name": "samepage",
+  "description": "samepage: one shared working context for every Claude surface.",
+  "owner": {
+    "name": "Rajaraman Arumugam"
+  },
+  "plugins": [
+    {
+      "name": "samepage",
+      "source": "./",
+      "description": "Keep every Claude on the same page. One shared working context for Claude Code, claude.ai chat, Cowork and Claude Design."
+    }
+  ]
+}

@@ -9,7 +9,7 @@
 | Only Python standard library imports | CI import scan | Merge | None |
 | No new dependency without ADR | CI diff check on workflows and plugin manifests | Merge | adr/ references |
 | No maintainer-hosted endpoints | CI grep for http URLs outside docs and the repo's own URL | Merge | docs/, README.md |
-| No token or credential handling | CI grep for token, secret, password variables in sp/ and plugin/ | Merge | None |
+| No token or credential handling | CI grep for token, secret, password variables in sp/, hooks/ and commands/ | Merge | None |
 | SKILL.md under 500 lines, description under 1,024 characters, no XML brackets in frontmatter | CI script | Merge | None |
 | No em dashes in skill, docs and README (house style) | CI grep for U+2014 | Merge | None |
 | Store Action never commits when `sp check` fails | workflow step order | Store push (user's repo) | None |

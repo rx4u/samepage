@@ -1,0 +1,9 @@
+{
+  "name": "samepage",
+  "version": "0.1.0",
+  "description": "Keep every Claude on the same page: boots your shared working context (profile, rules, projects, ships, decisions, handoffs) into every Claude Code session from a store you own.",
+  "author": { "name": "Rajaraman Arumugam" },
+  "repository": "https://github.com/rx4u/samepage",
+  "license": "MIT",
+  "keywords": ["context", "memory", "handoff", "claude-code", "claude-design"]
+}

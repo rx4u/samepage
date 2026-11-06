@@ -62,14 +62,16 @@ Approved list:
 Anything not listed needs an ADR before it is added.
 
 ## Public repo layout
+Agent call (B21): the repo root is the Claude Code plugin, so the installed plugin carries `sp/` and its hooks can run it with `python3 -m sp` from `${CLAUDE_PLUGIN_ROOT}`. A separate `plugin/` folder could not reach `sp/` without copying it at release.
+
 ```
 README.md                     pitch, 60-second demo, install
 SPEC.md               the store spec (entities, files, rules), versioned
 schema/                       lookups.json, fields.json (the logical contract as data)
 sp/                          Python package: init, boot, log, index, check, proof, export, migrate
-plugin/.claude-plugin/        plugin.json, marketplace.json
-plugin/hooks/                 hooks.json, session-start.sh, stop-nudge.sh
-plugin/commands/              sp.md (log, handoff, proof, check)
+.claude-plugin/               plugin.json, marketplace.json (the repo root is the plugin, B21)
+hooks/                        hooks.json, session-start.sh, stop-nudge.sh
+commands/                     sp.md (init, boot, check, log, handoff, proof)
 skills/samepage/            SKILL.md, references/ (github-backend.md, notion-backend.md, setup.md, entry-schema.md, design.md)
 store-template/               files for a new GitHub store, including .github/workflows/index.yml
 notion-template/              setup instructions and property definitions for the eight databases

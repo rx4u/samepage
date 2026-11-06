@@ -21,6 +21,7 @@ Run: 2026-11-06, reader: cold read (deliberate, documents only; no subagent beca
 | B18 | data-architecture: "YAML frontmatter holds every column". How are `_id` foreign keys named and valued in a file? | Agent call | Agent call: key naming rule added to data-architecture.md (B18), found while starting WP-02. |
 | B19 | read-models Chat recall: "Same sections as Session boot" vs its column list, which has no ship_event columns | Agent call | Agent call: chat and cowork boot files follow the column list, no recent ships; proof lookup serves shipped work. |
 | B20 | read-models Session boot: "repo match via project_repo", but no serve file holds that index and readers may not walk raw folders | Agent call | Agent call: `index/repos.md` added to the serve files. |
+| B21 | system-design: plugin under `plugin/`, CLI under `sp/`, but an installed plugin only carries its own folder | Agent call | Agent call: the repo root is the plugin (B21 in system-design.md). |
 | B15 | prd Open questions: "Final public name" | User call | User: samepage, CLI `sp` (ADR-0010 accepted 2026-11-06). |
 | B16 | ADR-0013: repo owner account | User call | User: personal account rx4u (ADR-0013 accepted 2026-11-06). |
 | B17 | WP-16: migrate the maintainer's existing Notion registry or start fresh | User call | User: migrate, keep the old database read-only for 2 weeks (WP-16 updated). |
