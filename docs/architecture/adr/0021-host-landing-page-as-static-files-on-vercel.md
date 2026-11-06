@@ -45,6 +45,9 @@ A custom domain (Raja's call, added in Vercel when bought), a docs site, analyti
 - [x] No console errors once hosted
 - [x] guardrails pass with site/ scanned
 
+## More information
+- 2026-11-06, landing page v3: the hero renders the Chunky Cursor mark in 3D with Three.js r149 (MIT), vendored as `site/vendor/three/three.min.js` with its licence header; only GSAP core and ScrollTrigger are loaded now. At Raja's request the page uses a hologram accent (sky blue, periwinkle, violet, pink and lilac only, never amber, gold, orange, yellow or teal) on the black and white brand; the brand files themselves stay black and white. Light and dark themes follow the visitor's system setting and a toggle. Release values come from `site/data.json` (ADR-0022).
+
 ## Revisit when
 The page needs more than one screen of docs, or a custom domain is bought.
 

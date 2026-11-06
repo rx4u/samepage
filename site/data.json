@@ -1,0 +1,86 @@
+{
+  "version": "1.1.0",
+  "release_url": "https://github.com/rx4u/samepage/releases/tag/v1.1.0",
+  "headline": "Now over MCP",
+  "boot_cap_chars": 8000,
+  "tools": {
+    "read": [
+      "boot",
+      "project",
+      "proof",
+      "handoffs",
+      "handoff_show",
+      "rules"
+    ],
+    "write": [
+      "log_ship",
+      "log_decision",
+      "handoff_new",
+      "handoff_status",
+      "rule_add"
+    ],
+    "total": 11
+  },
+  "adapters": [
+    {
+      "name": "Claude Code",
+      "kind": "plugin",
+      "how": "/plugin install samepage",
+      "tested": true
+    },
+    {
+      "name": "claude.ai chat",
+      "kind": "skill",
+      "how": "GitHub connector",
+      "tested": false
+    },
+    {
+      "name": "Cowork",
+      "kind": "skill",
+      "how": "GitHub connector",
+      "tested": false
+    },
+    {
+      "name": "Claude Desktop",
+      "kind": "mcp",
+      "how": "sp setup claude-desktop",
+      "tested": false
+    },
+    {
+      "name": "Claude Design",
+      "kind": "tokens",
+      "how": "design/tokens.json",
+      "tested": false
+    },
+    {
+      "name": "Gemini CLI",
+      "kind": "mcp",
+      "how": "sp setup gemini",
+      "tested": false
+    },
+    {
+      "name": "Codex",
+      "kind": "mcp",
+      "how": "sp setup codex",
+      "tested": false
+    },
+    {
+      "name": "GitHub Copilot",
+      "kind": "mcp",
+      "how": "sp setup copilot",
+      "tested": false
+    },
+    {
+      "name": "Cursor",
+      "kind": "mcp",
+      "how": "sp setup cursor",
+      "tested": false
+    },
+    {
+      "name": "Windsurf",
+      "kind": "mcp",
+      "how": "sp setup windsurf",
+      "tested": false
+    }
+  ]
+}

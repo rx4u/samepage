@@ -27,6 +27,7 @@ jobs:
           if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then TAG="v${{ inputs.version }}"; else TAG="$GITHUB_REF_NAME"; fi
           test "v$VERSION" = "$TAG" || { echo "tag $TAG does not match plugin.json version $VERSION"; exit 1; }
           echo "TAG=$TAG" >> "$GITHUB_ENV"
+          python3 scripts/site_data.py --check
       - name: Tests and guardrails
         run: |
           python -m unittest discover -s tests

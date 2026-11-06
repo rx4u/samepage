@@ -3,608 +3,1295 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>samepage: the shared context layer for your AI tools</title>
-<meta name="description" content="Every AI tool keeps its own context. samepage gives them one: projects, decisions, shipped work and handoffs as typed Markdown in a git repo you own, readable over MCP, a CLI or a skill.">
-<meta property="og:title" content="samepage: the shared context layer for your AI tools">
-<meta property="og:description" content="Typed Markdown in a git repo you own. Any AI tool boots from it over MCP, a CLI or a skill.">
+<title>samepage: one shared context for every AI tool</title>
+<meta name="description" content="samepage is the shared context layer for your AI tools. Decisions, handoffs and rules live as Markdown in a private git repo you own, and every tool boots from the same page.">
+<meta property="og:title" content="samepage: every AI tool, on the same page">
+<meta property="og:description" content="One shared context for all your AI tools. Plain Markdown, in a git repo you own.">
+<meta property="og:image" content="og.png">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://samepage-rajaraman.vercel.app/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#08080a">
-<link rel="icon" href="/samepage-tile.svg" type="image/svg+xml">
-<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="samepage-tile.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
 <style>
-:root{
-  --bg:#08080a; --bg-1:#0e0e11; --bg-2:#141418;
-  --line:#1d1d22; --line-2:#2a2a31; --line-3:#3a3a42;
-  --fg:#f5f5f6; --fg-2:#b4b4bb; --fg-3:#8b8b94; --fg-4:#5c5c64;
-  --sans:"Geist",ui-sans-serif,system-ui,-apple-system,sans-serif;
-  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --ease:cubic-bezier(.2,.7,.1,1);
+html{background:#060608}
+body{margin:0}
+.sp-dark{--bg:#060608;--bg2:#0c0c10;--bg3:#121218;--line:#1d1d24;--line2:#2c2c35;--fg:#f4f4f6;--fg2:#a9a9b3;--fg3:#8a8a94;--inv:#f4f4f6;--invfg:#060608;
+--h1:#7cc4ff;--h2:#7c83ff;--h3:#c77dff;--h4:#ff7ad9;--h5:#f0a8ff}
+.sp-light{--bg:#f6f6f8;--bg2:#ffffff;--bg3:#efeff3;--line:#e3e3e9;--line2:#cfcfd8;--fg:#0a0a0c;--fg2:#474751;--fg3:#62626c;--inv:#0a0a0c;--invfg:#ffffff;
+--h1:#2563eb;--h2:#4f46e5;--h3:#9333ea;--h4:#db2777;--h5:#c026d3}
+.sp-root{font-family:"Geist",system-ui,sans-serif;background:var(--bg);color:var(--fg);min-height:100%;transition:background .4s,color .4s}
+.sp-root a{color:var(--fg)}
+.sp-root a:hover{color:var(--fg2)}
+.sp-mono{font-family:"Geist Mono",ui-monospace,monospace}
+.sp-wrap{max-width:1200px;margin:0 auto;padding:0 40px}
+.sp-eyebrow{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;letter-spacing:.08em;color:var(--fg3);text-transform:uppercase}
+.sp-h1{font-size:clamp(52px,7.4vw,112px);line-height:.95;letter-spacing:-.055em;font-weight:600;margin:0}
+.sp-h2{font-size:clamp(38px,4.6vw,68px);line-height:1;letter-spacing:-.045em;font-weight:600;margin:16px 0 0}
+.sp-lead{font-size:19px;line-height:1.55;color:var(--fg2);letter-spacing:-.01em;margin:22px 0 0;max-width:620px}
+.sp-holo{background:linear-gradient(90deg,var(--h1) 0%,var(--h2) 22%,var(--h3) 42%,var(--h4) 62%,var(--h5) 82%,var(--h1) 100%);background-size:200% 100%;animation:spHolo 9s linear infinite}
+.sp-holofill{background-image:linear-gradient(90deg,#a8d4ff,#a9adff,#d9a8ff,#ffaee6,#f3c2ff,#a8d4ff) !important;background-color:#c9c4ff;background-size:200% 100% !important;animation:spHolo 9s linear infinite;color:#060608 !important;border-color:transparent !important}
+.sp-holotext{-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes spHolo{to{background-position:-200% 0}}
+.sp-btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;border-radius:999px;text-decoration:none;font-size:16px;font-weight:500;box-sizing:border-box}
+.sp-root a.sp-btn-p{background:var(--inv);color:var(--invfg)}
+.sp-root a.sp-btn-s{border:1px solid var(--line2);color:var(--fg)}
+.sp-hero{position:relative;height:1180px;overflow:hidden;padding-top:72px;box-sizing:border-box}
+.sp-gl{position:absolute;inset:0}
+.sp-top{position:relative;z-index:2;pointer-events:none}
+.sp-top a,.sp-top button{pointer-events:auto}
+.sp-sec{padding:140px 0;border-top:1px solid var(--line)}
+.sp-card{background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:32px;box-sizing:border-box;transition:border-color .3s,transform .3s}
+.sp-card:hover{border-color:var(--line2)}
+.sp-term{background:var(--bg3);border:1px solid var(--line);border-radius:12px;padding:16px;font-family:"Geist Mono",ui-monospace,monospace;font-size:12.5px;line-height:1.7;color:var(--fg2);white-space:pre;overflow-x:auto}
+.sp-g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.sp-bento{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.sp-wide{grid-column:span 2}
+.sp-g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sp-split{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:64px;align-items:center}
+.sp-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;border:1px solid var(--line);border-radius:14px;background:var(--bg2)}
+.sp-tab{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:var(--fg2);font:500 14px "Geist",system-ui,sans-serif;cursor:pointer}
+.sp-tab-on{background:var(--inv);color:var(--invfg);border-color:var(--inv)}
+.sp-icon{width:44px;height:44px;border-radius:999px;border:1px solid var(--line2);background:transparent;color:var(--fg);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.sp-mask{display:block;overflow:hidden;padding-bottom:.1em;margin-bottom:-.1em}
+.sp-line{display:block;will-change:transform}
+.sp-header{position:fixed;top:0;left:0;right:0;z-index:50;background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.sp-navwrap{position:relative;display:flex;gap:6px;font-size:14px}
+.sp-navwrap a{position:relative;z-index:1;display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border-radius:999px;text-decoration:none;color:var(--fg2)}
+.sp-pill{position:absolute;left:0;top:0;height:40px;width:0;border-radius:999px;background:var(--bg3);border:1px solid var(--line2);box-sizing:border-box;opacity:0;pointer-events:none}
+.sp-curtain{position:fixed;inset:0;z-index:100;background:var(--inv);color:var(--invfg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:28px}
+.sp-progress{position:fixed;left:0;top:0;height:2px;width:100%;z-index:60;transform-origin:0 50%;transform:scaleX(0)}
+.sp-word{display:inline}
+.sp-head{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:48px;align-items:end;margin-bottom:64px}
+.sp-head .sp-lead{margin:0;max-width:none}
+.sp-idx{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 8px;margin-right:10px;border:1px solid var(--line2);border-radius:6px;color:var(--fg)}
+.sp-g12{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.sp-s4{grid-column:span 4}.sp-s5{grid-column:span 5}.sp-s7{grid-column:span 7}.sp-s12{grid-column:span 12}
+.sp-panel{padding:0;display:flex;flex-direction:column;overflow:hidden}
+.sp-vp{-webkit-user-select:none;user-select:none;position:relative;border-bottom:1px solid var(--line);background-color:var(--bg3);background-image:radial-gradient(var(--line2) 1px,transparent 1.3px);background-size:18px 18px;overflow:hidden;box-sizing:border-box}
+.sp-vp-pad{padding:28px}
+.sp-cap{padding:22px 28px 28px;flex:1}
+.sp-capidx{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 6px;border-radius:6px;border:1px solid var(--line2);font-size:11px;color:var(--fg2);box-sizing:border-box}
+.sp-cap-t{margin:14px 0 0;font-size:22px;letter-spacing:-.03em;font-weight:600}
+.sp-cap-p{margin:8px 0 0;font-size:15px;line-height:1.55;color:var(--fg2)}
+.sp-gl1{display:block;height:6px;border-radius:3px;background:var(--line);margin-top:8px}
+.sp-mwin{position:absolute;top:50%;width:38%;transform:translateY(-50%);border:1px solid var(--line2);border-radius:12px;background:var(--bg2);overflow:hidden}
+.sp-pr-a{left:7%}.sp-pr-b{right:7%}
+.sp-mwin-bar{display:flex;align-items:center;gap:5px;padding:8px 10px;border-bottom:1px solid var(--line)}
+.sp-mwin-bar span{width:7px;height:7px;border-radius:50%;border:1px solid var(--line2)}
+.sp-mwin-bar b{font-weight:500;font-size:10px;color:var(--fg3);margin-left:4px}
+.sp-mwin-body{padding:6px 12px 14px}
+.sp-pr-link{position:absolute;left:45%;right:45%;top:50%;border-top:1.5px dashed var(--line2)}
+.sp-pr-x{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:var(--bg2);border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--fg)}
+.sp-acct{position:absolute;top:50%;transform:translateY(-50%);width:34%;display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--fg2)}
+.sp-acct-av{width:36px;height:36px;border-radius:10px;border:1px solid var(--line2);background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--fg);margin-bottom:8px}
+.sp-pr-wall{position:absolute;left:50%;top:16%;bottom:16%;width:6px;margin-left:-3px;border-radius:3px;background:var(--fg);transform-origin:50% 50%}
+.sp-sess{position:absolute;left:50%;top:50%;width:62%;padding:12px 14px;box-sizing:border-box;border:1px solid var(--line2);border-radius:12px;background:var(--bg2);font-size:10px;color:var(--fg3);transform:translate(calc(-50% + (var(--i) - 1) * 22px),calc(-50% + (var(--i) - 1) * 26px))}
+.sp-sess-cold{color:var(--fg)}
+.sp-steps-rail{position:relative;height:18px;margin:0 0 18px}
+.sp-steps-track{position:absolute;left:16.66%;right:16.66%;top:8px;height:2px;background:var(--line)}
+.sp-steps-fill{position:absolute;inset:0;transform-origin:0 50%;transform:scaleX(0)}
+.sp-steps-dot{position:absolute;top:2px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--bg);border:2px solid var(--fg);box-sizing:border-box}
+.sp-st-store{position:absolute;left:8%;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 12px;border:1px solid var(--line2);border-radius:14px;background:var(--bg2);font-size:10px;color:var(--fg3)}
+.sp-st-beam{position:absolute;left:30%;right:48%;top:50%;height:0;border-top:1.5px dashed var(--line2)}
+.sp-st-file{position:absolute;z-index:2;left:31%;top:calc(50% - 13px);height:26px;padding:0 10px;display:flex;align-items:center;border-radius:8px;font-size:10px;font-weight:500;white-space:nowrap}
+.sp-st-win{position:absolute;right:7%;top:50%;transform:translateY(-50%);width:44%;border:1px solid var(--line2);border-radius:12px;background:var(--bg2);overflow:hidden}
+.sp-st-bar{display:flex;align-items:center;gap:5px;padding:8px 10px;border-bottom:1px solid var(--line)}
+.sp-st-bar span{width:7px;height:7px;border-radius:50%;border:1px solid var(--line2)}
+.sp-st-bar b{font-weight:500;font-size:10px;color:var(--fg3);margin-left:4px}
+.sp-st-rows{display:flex;flex-direction:column;gap:6px;padding:12px}
+.sp-boot-chip{font-size:10px;padding:5px 8px;border-radius:6px;border:1px solid var(--line);color:var(--fg)}
+.sp-st-dlg{position:absolute;left:50%;top:50%;width:72%;transform:translate(-50%,-50%);border:1px solid var(--line2);border-radius:14px;background:var(--bg2);padding:16px;box-sizing:border-box}
+.sp-ghost{height:7px;border-radius:4px;background:var(--line);margin-top:8px}
+.sp-st-stamp{position:absolute;right:-10px;top:-12px;height:28px;padding:0 10px;display:flex;align-items:center;border-radius:8px;font-size:10px;font-weight:500;transform:rotate(-6deg)}
+.sp-st-cursor{position:absolute;left:70%;top:78%}
+.sp-st-svg{position:absolute;inset:0;width:100%;height:100%}
+.sp-st-node{position:absolute;transform:translate(-50%,-50%);height:30px;padding:0 12px;display:flex;align-items:center;border-radius:999px;border:1px solid var(--line2);background:var(--bg2);font-size:11px;color:var(--fg)}
+.sp-st-node-to{border-color:transparent;color:#060608}
+.sp-st-hcard{position:absolute;right:6%;bottom:12%;padding:10px 12px;border:1px solid var(--line2);border-radius:10px;background:var(--bg2)}
+.sp-file{border:1px solid var(--line2);border-radius:14px;background:var(--bg2);overflow:hidden}
+.sp-filebar{display:flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-bottom:1px solid var(--line);background:var(--bg3)}
+.sp-fdot{width:9px;height:9px;border-radius:50%;border:1px solid var(--line2);flex:none}
+.sp-fpath{margin-left:10px;font-size:11.5px;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.sp-flang{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3);border:1px solid var(--line2);border-radius:5px;padding:2px 6px;flex:none}
+.sp-code{padding:14px 0;font-size:13px;line-height:1.95;color:var(--fg2)}
+.sp-ln{display:block;padding:0 18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-ln i{display:inline-block;font-style:normal;color:var(--fg3);width:16px;margin-right:16px;text-align:right;opacity:.6}
+.sp-k{color:var(--h2);font-weight:500}
+.sp-dim{color:var(--fg3)}
+.sp-blink{display:inline-block;width:8px;height:15px;background:var(--fg);margin-left:4px;vertical-align:-2px;animation:spBlink 1.1s steps(1) infinite}
+@keyframes spBlink{50%{opacity:0}}
+.sp-meter{height:14px;border-radius:999px;border:1px solid var(--line2);padding:2px;box-sizing:border-box;background:var(--bg2)}
+.sp-meter-fill{height:100%;width:74%;border-radius:999px;transform-origin:0 50%}
+.sp-split3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px;font-size:11px;color:var(--fg3)}
+.sp-split3 b{display:block;font-weight:500;font-size:15px;color:var(--fg);margin-bottom:4px}
+.sp-dialog{position:absolute;left:50%;top:50%;width:74%;transform:translate(-50%,-50%);border:1px solid var(--line2);border-radius:14px;padding:16px;background:var(--bg2);box-sizing:border-box}
+.sp-mini{display:inline-flex;align-items:center;height:28px;padding:0 12px;border-radius:999px;border:1px solid var(--line2);font-size:10px;color:var(--fg2)}
+.sp-mini-on{background:var(--inv);color:var(--invfg);border-color:var(--inv)}
+.sp-commits{position:relative;display:flex;flex-direction:column;gap:18px;padding-left:28px}
+.sp-rail{position:absolute;left:7px;top:8px;bottom:8px;width:2px;background:var(--line2)}
+.sp-rail-fill{position:absolute;inset:0;transform-origin:50% 0}
+.sp-commit{position:relative;display:flex;align-items:center;gap:12px;min-width:0;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg2)}
+.sp-node{position:absolute;left:-28px;width:16px;height:16px;border-radius:50%;background:var(--bg2);border:2px solid var(--fg);box-sizing:border-box}
+.sp-hash{font-size:11px;color:var(--fg3);flex:none}
+.sp-msg{font-size:13px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-tlabel{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3);margin-bottom:10px}
+.sp-tools{display:flex;flex-wrap:wrap;gap:6px}
+.sp-tool{display:inline-flex;align-items:center;height:30px;padding:0 11px;border-radius:9px;border:1px solid var(--line2);background:var(--bg2);font-size:11.5px;color:var(--fg)}
+.sp-tool.sp-holofill{border-color:transparent;color:#060608}
+.sp-zero{display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;padding:28px}
+.sp-zero .sp-cap-t{margin-top:14px}
+.sp-zlist{display:flex;flex-wrap:wrap;gap:10px}
+.sp-z{position:relative;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:999px;font:500 14px "Geist Mono",monospace}
+.sp-z-no{border:1px solid var(--line2);color:var(--fg3)}
+.sp-strike{position:absolute;left:12px;right:12px;top:50%;height:1.5px;background:var(--fg2);transform-origin:0 50%}
+.sp-z-yes{color:#060608}
+.sp-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.sp-tile{display:flex;flex-direction:column;gap:6px;padding:22px;min-height:148px}
+.sp-kind{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3);border:1px solid var(--line2);border-radius:6px;padding:3px 7px}
+.sp-tile-n{margin-top:auto;font-size:19px;font-weight:600;letter-spacing:-.02em}
+.sp-tile-c{font-size:11px;color:var(--fg3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-dot{display:inline-block;width:10px;height:10px;border-radius:50%;border:1.5px solid var(--fg3);box-sizing:border-box}
+.sp-dot-on{border:0;background:linear-gradient(135deg,#a8d4ff,#d9a8ff,#ffaee6)}
+.sp-legend{display:flex;gap:24px;margin-top:20px;font-size:12px;color:var(--fg3)}
+.sp-legend span{display:inline-flex;align-items:center;gap:8px}
+.sp-ins{-webkit-user-select:text;user-select:text;padding:28px;font-size:14px;line-height:1.9;color:var(--fg);overflow-x:auto}
+.sp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.sp-chip-b{min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);background:var(--bg2);color:var(--fg2);font:500 12px "Geist Mono",monospace;cursor:pointer}
+.sp-chip-b-on{background:var(--inv);color:var(--invfg);border-color:var(--inv)}
+.sp-insl{white-space:pre;min-height:1.9em}
+.sp-insbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--line)}
+.sp-maker{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+.sp-maker-vp{min-height:360px;border-bottom:0;border-right:1px solid var(--line)}
+.sp-maker-av{position:absolute;left:50%;top:50%;width:132px;height:132px;margin:-66px 0 0 -66px;border-radius:34px;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:600;letter-spacing:-.04em}
+.sp-maker-ring{position:absolute;left:50%;top:50%;width:230px;height:230px;margin:-115px 0 0 -115px;border:1px solid var(--line2);border-radius:50%}
+.sp-maker-ring2{width:320px;height:320px;margin:-160px 0 0 -160px;border-style:dashed}
+.sp-maker-body{padding:48px;display:flex;flex-direction:column;justify-content:center}
+.sp-maker-q{margin:22px 0 0;font-size:clamp(22px,2.3vw,32px);line-height:1.3;letter-spacing:-.03em;font-weight:500}
+.sp-maker-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;margin-top:36px;padding-top:24px;border-top:1px solid var(--line)}
+@media (max-width:1100px){.sp-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:960px){
+.sp-head{grid-template-columns:minmax(0,1fr);gap:20px;margin-bottom:40px}
+.sp-g12{grid-template-columns:minmax(0,1fr)}.sp-s4,.sp-s5,.sp-s7,.sp-s12{grid-column:auto}
+.sp-steps-rail{display:none}
+.sp-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sp-maker{grid-template-columns:minmax(0,1fr)}.sp-maker-vp{min-height:260px;border-right:0;border-bottom:1px solid var(--line)}.sp-maker-body{padding:28px}
 }
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--fg);font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-a{color:inherit}
-::selection{background:var(--fg);color:var(--bg)}
-.wrap{max-width:1200px;margin:0 auto;padding:0 32px}
-@media (max-width:640px){.wrap{padding:0 16px}}
-.mono{font-family:var(--mono)}
-.js .reveal{opacity:0}
-
-/* nav */
-.nav{position:fixed;top:16px;left:0;right:0;z-index:50;display:flex;justify-content:center;padding:0 16px;pointer-events:none}
-.nav-in{pointer-events:auto;display:flex;align-items:center;gap:4px;padding:6px 6px 6px 16px;border:1px solid var(--line-2);border-radius:999px;background:rgba(14,14,17,.72);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%)}
-.brand{display:flex;align-items:center;gap:9px;font:600 15px/1 var(--sans);text-decoration:none;margin-right:14px;letter-spacing:-.01em}
-.brand svg{width:20px;height:20px}
-.nav a.l{font-size:14px;color:var(--fg-2);text-decoration:none;padding:8px 12px;border-radius:999px;transition:color .2s}
-.nav a.l:hover{color:var(--fg)}
-.nav a.cta{font-size:14px;font-weight:500;text-decoration:none;background:var(--fg);color:var(--bg);padding:9px 15px;border-radius:999px;margin-left:4px}
-@media (max-width:720px){.nav a.l.h{display:none}}
-
-/* hero */
-.hero{position:relative;padding:168px 0 40px;text-align:center}
-.grid-bg{position:absolute;inset:0;z-index:-1;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;-webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 30%,#000 30%,transparent 75%);mask-image:radial-gradient(ellipse 70% 60% at 50% 30%,#000 30%,transparent 75%);opacity:.7}
-.pill{display:inline-flex;align-items:center;gap:10px;padding:5px 14px 5px 5px;border:1px solid var(--line-2);border-radius:999px;font-size:13px;color:var(--fg-2);text-decoration:none;background:var(--bg-1);max-width:100%}
-.pill b{font:500 11px/1 var(--mono);letter-spacing:.04em;background:var(--fg);color:var(--bg);padding:5px 9px;border-radius:999px;flex:none}
-.pill:hover{border-color:var(--line-3)}
-h1{margin:28px auto 0;font:600 clamp(44px,8vw,104px)/.94 var(--sans);letter-spacing:-.055em;max-width:12ch}
-h1 .dim{color:var(--fg-4)}
-.cursor{display:inline-block;width:.38em;height:.74em;background:var(--fg);border-radius:.06em;margin-left:.06em;vertical-align:-.03em;animation:blink 1.1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-.lede{margin:28px auto 0;max-width:620px;font-size:clamp(17px,1.6vw,19px);line-height:1.6;color:var(--fg-2)}
-.ctas{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:36px}
-.btn{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 22px;border-radius:999px;font:500 15px/1 var(--sans);text-decoration:none;transition:transform .25s var(--ease),background .2s,border-color .2s}
-.btn:hover{transform:translateY(-1px)}
-.btn.p{background:var(--fg);color:var(--bg)}
-.btn.g{border:1px solid var(--line-2);color:var(--fg);background:var(--bg-1)}
-.btn.g:hover{border-color:var(--line-3)}
-.btn .k{font:400 12px/1 var(--mono);color:var(--fg-4)}
-.under{margin-top:18px;font:400 12px/1.6 var(--mono);color:var(--fg-4);letter-spacing:.03em}
-
-/* topology */
-.topo-wrap{margin-top:72px;border:1px solid var(--line-2);border-radius:20px;background:var(--bg-1);overflow:hidden}
-.topo-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--line);font:400 12px/1 var(--mono);color:var(--fg-3)}
-.topo-bar .live{display:flex;align-items:center;gap:8px;color:var(--fg-2)}
-.topo-bar .live i{width:6px;height:6px;border-radius:1px;background:var(--fg);display:block;animation:blink 1.6s steps(1) infinite}
-.topo-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.topo{display:block;width:100%;min-width:780px;height:auto;background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:20px 20px}
-.topo text{font-family:var(--mono)}
-.log{border-top:1px solid var(--line);text-align:left;font:400 13px/1 var(--mono)}
-.log div{display:flex;gap:16px;padding:12px 18px;border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden}
-.log div:last-child{border-bottom:0}
-.log .t{color:var(--fg-4);flex:none}
-.log .m{color:var(--fg-3);overflow:hidden;text-overflow:ellipsis}
-.log div:first-child .m{color:var(--fg)}
-
-/* sections */
-section{position:relative}
-.sec{padding:160px 0 0}
-@media (max-width:640px){.sec{padding:112px 0 0}}
-.eyebrow{font:400 12px/1 var(--mono);letter-spacing:.06em;color:var(--fg-3);display:flex;align-items:center;gap:10px}
-.eyebrow::before{content:"";width:6px;height:6px;border-radius:1px;background:var(--fg)}
-h2{margin:20px 0 0;font:600 clamp(36px,5.2vw,68px)/.98 var(--sans);letter-spacing:-.048em;max-width:15ch}
-h2 .dim{color:var(--fg-4)}
-.sub{margin:22px 0 0;max-width:560px;color:var(--fg-2);font-size:18px}
-
-/* silos */
-.silos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:64px;border-top:1px solid var(--line-2)}
-.silo{padding:36px 32px 40px 0;border-right:1px solid var(--line)}
-.silo+.silo{padding-left:32px}
-.silo:last-child{border-right:0}
-.silo .n{font:400 12px/1 var(--mono);color:var(--fg-4)}
-.silo p{margin:22px 0 0;font:500 24px/1.25 var(--sans);letter-spacing:-.02em}
-.silo small{display:block;margin-top:14px;font:400 13px/1.5 var(--mono);color:var(--fg-3)}
-@media (max-width:860px){.silos{grid-template-columns:1fr}.silo,.silo+.silo{padding:28px 0;border-right:0;border-bottom:1px solid var(--line)}}
-
-/* statement */
-.statement{font:500 clamp(28px,4vw,52px)/1.14 var(--sans);letter-spacing:-.035em;max-width:22ch;margin:0}
-.statement .w{color:var(--fg-4);transition:color .3s}
-.statement .w.on{color:var(--fg)}
-
-/* story */
-.story{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:64px;margin-top:64px;align-items:center}
-.steps{display:flex;flex-direction:column}
-.step{padding:28px 0;border-top:1px solid var(--line);opacity:.32;transition:opacity .35s}
-.step:last-child{border-bottom:1px solid var(--line)}
-.step.on{opacity:1}
-.step .n{font:400 12px/1 var(--mono);color:var(--fg-3)}
-.step h3{margin:12px 0 0;font:600 26px/1.15 var(--sans);letter-spacing:-.025em}
-.step p{margin:10px 0 0;color:var(--fg-2);font-size:16px;max-width:420px}
-.term{border:1px solid var(--line-2);border-radius:16px;background:var(--bg-1);overflow:hidden}
-.term-bar{display:flex;align-items:center;gap:7px;padding:12px 14px;border-bottom:1px solid var(--line)}
-.term-bar i{width:10px;height:10px;border-radius:50%;background:var(--line-2);display:block}
-.term-bar span{margin-left:auto;font:400 12px/1 var(--mono);color:var(--fg-4)}
-.panes{position:relative;height:360px}
-.pane{position:absolute;inset:0;margin:0;padding:22px 24px;font:400 13.5px/1.8 var(--mono);color:var(--fg-2);white-space:pre;overflow:hidden;opacity:0}
-.pane.on{opacity:1}
-.pane .c{color:var(--fg-4)}
-.pane .b{color:var(--fg)}
-.pane .hl{background:var(--fg);color:var(--bg);padding:0 4px;border-radius:3px}
-@media (max-width:900px){.story{grid-template-columns:1fr;gap:32px}.step{opacity:1}.panes{height:auto}.pane{position:relative;opacity:1;overflow-x:auto;border-bottom:1px solid var(--line)}}
-
-/* spec */
-.spec{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-top:64px}
-.card{border:1px solid var(--line-2);border-radius:18px;background:var(--bg-1);padding:28px;display:flex;flex-direction:column;gap:20px;transition:border-color .3s,transform .4s var(--ease)}
-.card:hover{border-color:var(--line-3);transform:translateY(-2px)}
-.card h3{margin:0;font:600 21px/1.2 var(--sans);letter-spacing:-.02em}
-.card p{margin:0;color:var(--fg-2);font-size:15px}
-.card pre{margin:auto 0 0;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font:400 12.5px/1.75 var(--mono);color:var(--fg-2);overflow-x:auto}
-.card pre .k{color:var(--fg-4)}
-.card pre .v{color:var(--fg)}
-.s2{grid-column:span 2}.s4{grid-column:span 4}
-@media (max-width:960px){.s2,.s4{grid-column:span 6}}
-
-/* numbers */
-.nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)}
-.num{padding:36px 28px;border-right:1px solid var(--line)}
-.num:last-child{border-right:0}
-.num b{display:block;font:600 clamp(44px,5.4vw,72px)/1 var(--sans);letter-spacing:-.05em;font-variant-numeric:tabular-nums}
-.num span{display:block;margin-top:14px;font:400 12px/1.5 var(--mono);color:var(--fg-3)}
-@media (max-width:860px){.nums{grid-template-columns:repeat(2,minmax(0,1fr))}.num:nth-child(2){border-right:0}.num:nth-child(-n+2){border-bottom:1px solid var(--line)}.num{padding:28px 16px}}
-
-/* adapters */
-.adapters{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-top:56px;border-top:1px solid var(--line);border-left:1px solid var(--line)}
-.ad{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:20px 22px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font:400 14px/1.2 var(--mono);transition:background .25s}
-.ad:hover{background:var(--bg-1)}
-.ad em{font-style:normal;font-size:12px;color:var(--fg-3)}
-.ad .ok{display:inline-flex;align-items:center;gap:7px;color:var(--fg)}
-.ad .ok::before{content:"";width:6px;height:6px;border-radius:1px;background:var(--fg)}
-.ad.any{color:var(--fg-3)}
-.note{margin-top:16px;font:400 12px/1.6 var(--mono);color:var(--fg-3)}
-.note a{color:var(--fg-2)}
-
-/* install */
-.install{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:56px;align-items:center}
-.tabs{display:flex;gap:4px;padding:4px;border:1px solid var(--line-2);border-radius:18px;width:fit-content;max-width:100%;margin-top:32px;flex-wrap:wrap}
-.tabs button{appearance:none;border:0;background:transparent;color:var(--fg-3);font:500 13px/1 var(--sans);padding:9px 14px;border-radius:999px;cursor:pointer}
-.tabs button[aria-selected="true"]{background:var(--fg);color:var(--bg)}
-.tabs button:focus-visible,.copy:focus-visible,.btn:focus-visible,a:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
-.term pre.code{margin:0;padding:22px 24px;font:400 13.5px/1.9 var(--mono);color:var(--fg-2);white-space:pre;overflow-x:auto;min-height:220px}
-.term pre.code .c{color:var(--fg-4)}
-.term pre.code .o{color:var(--fg-3)}
-.copy{margin-left:auto;appearance:none;border:1px solid var(--line-2);background:transparent;color:var(--fg-2);font:400 12px/1 var(--mono);padding:6px 10px;border-radius:6px;cursor:pointer}
-.copy:hover{color:var(--fg);border-color:var(--line-3)}
-@media (max-width:900px){.install{grid-template-columns:1fr;gap:32px}}
-
-/* final */
-.final{padding:200px 0 160px;text-align:center}
-.final svg{width:120px;height:120px;display:block;margin:0 auto}
-.final h2{margin:40px auto 0;max-width:none}
-.final .ctas{margin-top:40px}
-footer{border-top:1px solid var(--line);padding:32px 0 48px;font:400 12px/1.6 var(--mono);color:var(--fg-4)}
-footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px}
-footer nav{display:flex;gap:22px;flex-wrap:wrap}
-footer a{text-decoration:none;color:var(--fg-3)}
-footer a:hover{color:var(--fg)}
-
-@media (prefers-reduced-motion:reduce){.cursor,.topo-bar .live i{animation:none}.js .reveal{opacity:1}}
+.sp-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.sp-gl{z-index:1}
+.sp-dots{position:absolute;inset:-40px;background-image:radial-gradient(var(--line2) 1px,transparent 1.3px);background-size:26px 26px;-webkit-mask-image:radial-gradient(ellipse 62% 52% at 50% 64%,#000 25%,transparent 78%);mask-image:radial-gradient(ellipse 62% 52% at 50% 64%,#000 25%,transparent 78%)}
+.sp-spokes{position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 50% 850px,var(--line) 0deg .22deg,transparent .22deg 15deg);-webkit-mask-image:radial-gradient(circle at 50% 850px,transparent 200px,#000 260px,transparent 760px);mask-image:radial-gradient(circle at 50% 850px,transparent 200px,#000 260px,transparent 760px)}
+.sp-floor{position:absolute;left:-40%;right:-40%;top:850px;height:520px;background-image:linear-gradient(var(--line2) 1px,transparent 1px),linear-gradient(90deg,var(--line2) 1px,transparent 1px);background-size:72px 72px;transform:perspective(600px) rotateX(70deg);transform-origin:50% 0;-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 25%,transparent 85%);mask-image:linear-gradient(to bottom,transparent 0%,#000 25%,transparent 85%)}
+.sp-ring{position:absolute;left:50%;top:850px;border:1px solid var(--line2);border-radius:50%;box-sizing:border-box}
+.sp-guide{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+.sp-hline{position:absolute;left:0;right:0;height:1px;background:var(--line)}
+.sp-cross{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;display:flex;align-items:center;justify-content:center;font:400 16px/1 "Geist Mono",monospace;color:var(--fg3)}
+.sp-ruler{position:absolute;left:calc(50% - 600px);top:120px;bottom:0;width:10px;background:repeating-linear-gradient(to bottom,var(--line2) 0 1px,transparent 1px 12px);margin-left:-10px}
+.sp-tag{position:absolute;font:400 11px/1 "Geist Mono",monospace;letter-spacing:.04em;color:var(--fg3);white-space:nowrap}
+@media (max-width:860px){.sp-bgd{display:none}.sp-ring{top:210px}.sp-dots{-webkit-mask-image:none;mask-image:none;opacity:.5}}
+.sp-btn{white-space:nowrap}
+@media (max-width:560px){.sp-ghlink{display:none !important}.sp-header .sp-btn{padding:0 14px}}
+@media (max-width:960px){
+.sp-g3,.sp-bento,.sp-g2,.sp-split{grid-template-columns:minmax(0,1fr)}
+.sp-wide{grid-column:auto}
+.sp-split{gap:36px}
+}
+@media (max-width:860px){
+.sp-wrap{padding:0 16px}
+.sp-hero{padding-top:72px}
+.sp-hero{height:auto;display:flex;flex-direction:column}
+.sp-gl{position:relative;order:2;height:420px}
+.sp-navlinks{display:none}
+.sp-sec{padding:96px 0}
+}
+@media (prefers-reduced-motion:reduce){.sp-holo,.sp-holofill{animation:none}}
+.sp-dark .sp-ico-moon{display:none}.sp-light .sp-ico-sun{display:none}
+.sp-ico-sun,.sp-ico-moon{display:inline-flex}
+[hidden]{display:none !important}
 </style>
 </head>
 <body>
-<script>document.documentElement.classList.add('js');</script>
+<div class="sp-root sp-dark">
+<div class="sp-progress sp-holofill" aria-hidden="true"></div>
+<div class="sp-curtain" aria-hidden="true">
+<svg class="sp-curtain-mark" width="56" height="56" viewBox="26 26 48 48" style="fill:var(--invfg)"><path d="M36 26 H64 A10 10 0 0 1 64 46 H36 A10 10 0 0 1 36 26 Z"></path><path d="M36 54 H40 A10 10 0 0 1 40 74 H36 A10 10 0 0 1 36 54 Z"></path><rect x="58" y="54" width="16" height="20" rx="3"></rect></svg>
+<span class="sp-mask"><span class="sp-line sp-curtain-label sp-mono" style="font-size:13px;letter-spacing:.12em;text-transform:uppercase">samepage</span></span>
+<span class="sp-mono sp-curtain-count" style="position:absolute;right:40px;bottom:32px;font-size:clamp(48px,8vw,120px);font-weight:500;letter-spacing:-.04em">0</span>
+</div>
 
-<header class="nav">
-  <div class="nav-in">
-    <a class="brand" href="#top" aria-label="samepage home"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M36 26 H64 A10 10 0 0 1 64 46 H36 A10 10 0 0 1 36 26 Z" fill="currentColor"/><path d="M36 54 H40 A10 10 0 0 1 40 74 H36 A10 10 0 0 1 36 54 Z" fill="currentColor"/><rect x="58" y="54" width="16" height="20" rx="3" fill="currentColor"/></svg>samepage</a>
-    <a class="l h" href="#how">How it works</a>
-    <a class="l h" href="#spec">Spec</a>
-    <a class="l h" href="#adapters">Adapters</a>
-    <a class="l" href="https://github.com/rx4u/samepage">GitHub</a>
-    <a class="cta" href="#install">Install</a>
-  </div>
-</header>
+<section class="sp-hero" id="top">
+<div class="sp-bg" aria-hidden="true">
+<div class="sp-dots"></div>
+<div class="sp-spokes sp-bgd"></div>
+<div class="sp-floor sp-bgd"></div>
+<div class="sp-ring" style="width:420px;height:420px;margin:-210px 0 0 -210px"></div>
+<div class="sp-ring sp-ring-dash" style="width:660px;height:660px;margin:-330px 0 0 -330px;border-style:dashed"></div>
+<div class="sp-ring sp-bgd" style="width:960px;height:960px;margin:-480px 0 0 -480px"></div>
+<div class="sp-ring sp-bgd" style="width:1320px;height:1320px;margin:-660px 0 0 -660px;opacity:.6"></div>
+<div class="sp-guide sp-bgd" style="left:calc(50% - 600px)"></div>
+<div class="sp-guide sp-bgd" style="left:calc(50% + 600px)"></div>
+<div class="sp-hline sp-bgd" style="top:850px"></div>
+<span class="sp-cross sp-bgd" style="left:calc(50% - 600px);top:850px">+</span>
+<span class="sp-cross sp-bgd" style="left:calc(50% + 600px);top:850px">+</span>
+<span class="sp-cross sp-bgd" style="left:50%;top:850px">+</span>
+<div class="sp-ruler sp-bgd"></div>
+<span class="sp-tag sp-bgd" data-depth="0.6" style="left:calc(50% - 560px);top:560px">[ boot ] index/boot/*.md</span>
+<span class="sp-tag sp-bgd" data-depth="0.9" style="right:calc(50% - 560px);top:600px">schema 1.1 · flat frontmatter</span>
+<span class="sp-tag sp-bgd" data-depth="1.2" style="left:calc(50% - 520px);top:1010px">x -0.30  y 0.12  z 0.00</span>
+<span class="sp-tag sp-bgd" data-depth="0.8" style="right:calc(50% - 540px);top:1040px">stdio · 11 tools · 0 servers</span>
+<span class="sp-tag sp-bgd" data-depth="0.4" style="left:calc(50% + 214px);top:836px">r 210</span>
+<span class="sp-tag sp-bgd" data-depth="0.5" style="left:calc(50% + 334px);top:836px">r 330</span>
+<span class="sp-tag sp-bgd sp-holo sp-holotext" data-depth="1" style="left:calc(50% - 46px);top:1100px">same page</span>
+</div>
+<div class="sp-gl" data-sp-gl="1">
+<canvas role="img" aria-label="The samepage mark, an iridescent three-piece cursor, assembles from scattered fragments while AI tool names orbit it and pass context through it" style="width:100%;height:100%;display:block"></canvas>
+</div>
 
-<main id="top">
-  <section class="hero">
-    <div class="grid-bg" aria-hidden="true"></div>
-    <div class="wrap">
-      <a class="pill reveal" href="https://github.com/rx4u/samepage/releases/tag/v1.1.0"><b>v1.1.0</b>Now over MCP: Codex, Gemini CLI, Copilot, Cursor</a>
-      <h1 id="h1">The shared context layer for <span class="dim">your AI tools.</span><span class="cursor" aria-hidden="true"></span></h1>
-      <p class="lede reveal">Every AI tool keeps its own context: per app, per account, per session. samepage gives them one. Projects, decisions, shipped work and handoffs, as typed Markdown in a git repo you own.</p>
-      <div class="ctas reveal">
-        <a class="btn p" href="#install">Get started</a>
-        <a class="btn g" href="https://github.com/rx4u/samepage/blob/main/SPEC.md">Read the spec <span class="k">SPEC.md</span></a>
-      </div>
-      <div class="under reveal">open source · MIT · no server · no API keys · stdlib only</div>
+<div class="sp-top">
+<header class="sp-header"><div class="sp-wrap" style="padding-top:14px;padding-bottom:14px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px">
+<a href="#top" data-go="top" aria-label="samepage home" style="justify-self:start;display:flex;align-items:center;gap:10px;text-decoration:none">
+<svg width="24" height="24" viewBox="26 26 48 48" aria-hidden="true" style="fill:var(--fg)"><path d="M36 26 H64 A10 10 0 0 1 64 46 H36 A10 10 0 0 1 36 26 Z"></path><path d="M36 54 H40 A10 10 0 0 1 40 74 H36 A10 10 0 0 1 36 54 Z"></path><rect x="58" y="54" width="16" height="20" rx="3"></rect></svg>
+<span style="font-size:18px;font-weight:600;letter-spacing:-.03em">samepage</span>
+</a>
+<nav class="sp-navlinks sp-navwrap" aria-label="Main">
+<span class="sp-pill" aria-hidden="true"></span>
+<a href="#how" data-nav="how" data-go="how">How it works</a>
+<a href="#store" data-nav="store" data-go="store">The store</a>
+<a href="#adapters" data-nav="adapters" data-go="adapters">Adapters</a>
+<a href="#install" data-nav="install" data-go="install">Install</a>
+</nav>
+<div style="justify-self:end;display:flex;align-items:center;gap:10px">
+<button type="button" class="sp-icon" data-theme-toggle aria-label="Switch to light mode">
+<span class="sp-ico-sun">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"></path></svg>
+</span>
+<span class="sp-ico-moon">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"></path></svg>
+</span>
+</button>
+<a href="https://github.com/rx4u/samepage" class="sp-ghlink" style="display:inline-flex;align-items:center;min-height:44px;padding:0 6px;text-decoration:none;font-size:14px;font-weight:500;color:var(--fg2)">GitHub</a>
+<a href="#install" data-go="install" class="sp-btn sp-btn-p sp-mag" style="min-height:44px;padding:0 20px;font-size:14px">Get started</a>
+</div>
+</div></header>
 
-      <div class="topo-wrap reveal" id="topo">
-        <div class="topo-bar"><span>fig.01 / context flow</span><span class="live"><i></i>live</span></div>
-        <div class="topo-scroll"><svg class="topo" viewBox="0 0 1136 470" role="img" aria-label="Diagram: a chat assistant, a desktop app and any MCP client on the left, a coding agent, an IDE agent and a terminal on the right, all reading and writing one git store in the middle.">
-          <defs>
-            <path id="p0" d="M206 95 C 380 95, 420 235, 486 235"/>
-            <path id="p1" d="M206 235 L 486 235"/>
-            <path id="p2" d="M206 375 C 380 375, 420 235, 486 235"/>
-            <path id="p3" d="M930 95 C 756 95, 716 235, 650 235"/>
-            <path id="p4" d="M930 235 L 650 235"/>
-            <path id="p5" d="M930 375 C 756 375, 716 235, 650 235"/>
-          </defs>
-          <g fill="none" stroke-width="1">
-            <use href="#p0" class="edge" stroke="#2a2a31"/><use href="#p1" class="edge" stroke="#2a2a31"/><use href="#p2" class="edge" stroke="#2a2a31"/>
-            <use href="#p3" class="edge" stroke="#2a2a31"/><use href="#p4" class="edge" stroke="#2a2a31"/><use href="#p5" class="edge" stroke="#2a2a31"/>
-          </g>
-          <g class="nodes">
-            <g class="node" transform="translate(30 70)"><rect width="176" height="50" rx="10" fill="#0e0e11" stroke="#2a2a31"/><text x="16" y="22" fill="#f5f5f6" font-size="13">chat assistant</text><text x="16" y="38" fill="#5c5c64" font-size="11">skill</text></g>
-            <g class="node" transform="translate(30 210)"><rect width="176" height="50" rx="10" fill="#0e0e11" stroke="#2a2a31"/><text x="16" y="22" fill="#f5f5f6" font-size="13">desktop app</text><text x="16" y="38" fill="#5c5c64" font-size="11">mcp</text></g>
-            <g class="node" transform="translate(30 350)"><rect width="176" height="50" rx="10" fill="#0e0e11" stroke="#2a2a31" stroke-dasharray="4 4"/><text x="16" y="22" fill="#f5f5f6" font-size="13">any MCP client</text><text x="16" y="38" fill="#5c5c64" font-size="11">stdio</text></g>
-            <g class="node" transform="translate(930 70)"><rect width="176" height="50" rx="10" fill="#0e0e11" stroke="#2a2a31"/><text x="16" y="22" fill="#f5f5f6" font-size="13">coding agent</text><text x="16" y="38" fill="#5c5c64" font-size="11">plugin · mcp</text></g>
-            <g class="node" transform="translate(930 210)"><rect width="176" height="50" rx="10" fill="#0e0e11" stroke="#2a2a31"/><text x="16" y="22" fill="#f5f5f6" font-size="13">IDE agent</text><text x="16" y="38" fill="#5c5c64" font-size="11">mcp · rule</text></g>
-            <g class="node" transform="translate(930 350)"><rect width="176" height="50" rx="10" fill="#0e0e11" stroke="#2a2a31"/><text x="16" y="22" fill="#f5f5f6" font-size="13">terminal</text><text x="16" y="38" fill="#5c5c64" font-size="11">sp cli</text></g>
-          </g>
-          <g id="store" transform="translate(486 120)">
-            <rect id="storeBox" width="164" height="230" rx="14" fill="#08080a" stroke="#f5f5f6" stroke-width="1.2"/>
-            <g transform="translate(14 14) scale(.36)"><path d="M36 26 H64 A10 10 0 0 1 64 46 H36 A10 10 0 0 1 36 26 Z" fill="#f5f5f6"/><path d="M36 54 H40 A10 10 0 0 1 40 74 H36 A10 10 0 0 1 36 54 Z" fill="#f5f5f6"/><rect x="58" y="54" width="16" height="20" rx="3" fill="#f5f5f6"/></g>
-            <text x="56" y="38" fill="#f5f5f6" font-size="13">store</text>
-            <text x="56" y="52" fill="#5c5c64" font-size="10">git · private</text>
-            <line x1="0" y1="66" x2="164" y2="66" stroke="#2a2a31"/>
-            <g font-size="11.5">
-              <text x="18" y="92" class="f" data-f="projects" fill="#8b8b94">projects/</text>
-              <text x="18" y="114" class="f" data-f="decisions" fill="#8b8b94">decisions/</text>
-              <text x="18" y="136" class="f" data-f="events" fill="#8b8b94">events/</text>
-              <text x="18" y="158" class="f" data-f="handoffs" fill="#8b8b94">handoffs/</text>
-              <text x="18" y="180" class="f" data-f="rules" fill="#8b8b94">rules/</text>
-              <text x="18" y="202" class="f" data-f="index" fill="#f5f5f6">index/boot/</text>
-            </g>
-          </g>
-          <g id="pkt" opacity="0">
-            <rect x="-64" y="-13" width="128" height="26" rx="7" fill="#f5f5f6"/>
-            <text id="pktText" x="0" y="4.5" fill="#08080a" font-size="11.5" text-anchor="middle">decision.md</text>
-          </g>
-        </svg></div>
-        <div class="log" id="log">
-          <div><span class="t">09:12:04</span><span class="m">chat assistant wrote decisions/api/2026-11-04-8d95bb8f.md</span></div>
-          <div><span class="t">09:11:40</span><span class="m">store indexed · boot files rebuilt</span></div>
-          <div><span class="t">09:11:02</span><span class="m">coding agent booted from index/boot/code.md · 1 file</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
+<div class="sp-hero-copy" style="max-width:1000px;margin:0 auto;padding:72px 24px 0;display:flex;flex-direction:column;align-items:center;text-align:center">
+<a href="https://github.com/rx4u/samepage/releases/tag/v1.1.0" data-sp="release-link" class="sp-fade sp-mono" style="display:inline-flex;align-items:center;gap:10px;min-height:32px;padding:0 14px 0 4px;border:1px solid var(--line2);border-radius:999px;font-size:12px;color:var(--fg2);text-decoration:none;background:var(--bg2)">
+<span class="sp-holofill" data-sp="version" style="border-radius:999px;padding:4px 9px;font-weight:500">v1.1.0</span>
+<span data-sp="headline">Now over MCP</span>
+</a>
+<h1 class="sp-h1" style="margin-top:32px">
+<span class="sp-mask"><span class="sp-line">Every AI tool.</span></span>
+<span class="sp-mask"><span class="sp-line"><span class="sp-holo sp-holotext">On the same page.</span></span></span>
+</h1>
+<p class="sp-fade" style="margin:28px 0 0;max-width:520px;font-size:19px;line-height:1.5;color:var(--fg2);letter-spacing:-.01em">One shared context for all your AI tools. Plain Markdown, in a git repo you own.</p>
+<div class="sp-fade" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:36px">
+<a href="#install" data-go="install" class="sp-btn sp-btn-p sp-mag">Get started</a>
+<a href="https://github.com/rx4u/samepage/blob/main/SPEC.md" class="sp-btn sp-btn-s sp-mag">Read the spec</a>
+</div>
+</div>
+</div>
+</section>
 
-  <section class="sec">
-    <div class="wrap">
-      <div class="eyebrow reveal">the problem</div>
-      <h2 class="reveal">Context is stuck where you <span class="dim">left it.</span></h2>
-      <div class="silos">
-        <div class="silo reveal"><div class="n">[01] per tool</div><p>Your chat app doesn't know what your coding agent shipped.</p><small>"what did I ship this week?" gets a guess</small></div>
-        <div class="silo reveal"><div class="n">[02] per account</div><p>Your work account doesn't know your personal one exists.</p><small>two logins, two blank slates</small></div>
-        <div class="silo reveal"><div class="n">[03] per session</div><p>Every new session reopens a decision you already made.</p><small>Mongo again, after you picked Postgres</small></div>
-      </div>
-    </div>
-  </section>
+<section class="sp-sec" id="problem">
+<div class="sp-wrap">
+<div class="sp-head">
+<div><div class="sp-eyebrow"><span class="sp-idx">01</span>The problem</div>
+<h2 class="sp-h2"><span class="sp-mask"><span class="sp-line">Every AI tool starts from zero.</span></span></h2></div>
+<p class="sp-lead">You decide something in chat and your coding agent never hears about it. Switch accounts and it is gone. Open a new session and you explain it all again.</p>
+</div>
+<div class="sp-g12">
+<div class="sp-card sp-panel sp-s4">
+<div class="sp-vp" style="height:240px" aria-hidden="true">
+<div class="sp-mwin sp-pr-a"><div class="sp-mwin-bar"><span></span><span></span><b class="sp-mono">chat</b></div><div class="sp-mwin-body"><i class="sp-gl1" style="width:86%"></i><i class="sp-gl1" style="width:62%"></i><i class="sp-gl1" style="width:74%"></i></div></div><div class="sp-mwin sp-pr-b"><div class="sp-mwin-bar"><span></span><span></span><b class="sp-mono">IDE agent</b></div><div class="sp-mwin-body"><i class="sp-gl1" style="width:86%"></i><i class="sp-gl1" style="width:62%"></i><i class="sp-gl1" style="width:74%"></i></div></div>
+<div class="sp-pr-link"></div><span class="sp-pr-x sp-mono">×</span>
+</div>
+<div class="sp-cap"><span class="sp-mono sp-capidx">A</span><h3 class="sp-cap-t">Stuck in one tool</h3><p class="sp-cap-p">Chat knows the plan. The IDE agent knows the code. Neither knows the other.</p></div>
+</div>
+<div class="sp-card sp-panel sp-s4">
+<div class="sp-vp" style="height:240px" aria-hidden="true">
+<div class="sp-acct" style="left:9%"><span class="sp-acct-av sp-mono">W</span><span class="sp-mono">work</span><i class="sp-gl1" style="width:86%"></i><i class="sp-gl1" style="width:62%"></i><i class="sp-gl1" style="width:74%"></i></div>
+<div class="sp-pr-wall"></div>
+<div class="sp-acct" style="right:9%"><span class="sp-acct-av sp-mono">P</span><span class="sp-mono">personal</span><i class="sp-gl1" style="width:86%"></i><i class="sp-gl1" style="width:62%"></i><i class="sp-gl1" style="width:74%"></i></div>
+</div>
+<div class="sp-cap"><span class="sp-mono sp-capidx">B</span><h3 class="sp-cap-t">Stuck in one account</h3><p class="sp-cap-p">Work and personal accounts never meet. Context stays wherever it was typed.</p></div>
+</div>
+<div class="sp-card sp-panel sp-s4">
+<div class="sp-vp" style="height:240px" aria-hidden="true">
+<div class="sp-sess" style="--i:0"><span class="sp-mono">session 1</span><i class="sp-gl1" style="width:86%"></i><i class="sp-gl1" style="width:62%"></i><i class="sp-gl1" style="width:74%"></i></div>
+<div class="sp-sess" style="--i:1"><span class="sp-mono">session 2</span><i class="sp-gl1" style="width:86%"></i><i class="sp-gl1" style="width:62%"></i><i class="sp-gl1" style="width:74%"></i></div>
+<div class="sp-sess sp-sess-cold" style="--i:2"><span class="sp-mono">session 3 · starting cold</span><i class="sp-gl1" style="width:30%"></i></div>
+</div>
+<div class="sp-cap"><span class="sp-mono sp-capidx">C</span><h3 class="sp-cap-t">Gone every session</h3><p class="sp-cap-p">Each new session starts cold, and you paste the same background again.</p></div>
+</div>
+</div>
+</div>
+</section>
 
-  <section class="sec">
-    <div class="wrap">
-      <p class="statement" id="statement">Memory products learn who you are inside one app. samepage moves what you're doing from one tool to the next.</p>
-    </div>
-  </section>
+<section class="sp-sec" style="padding:160px 0">
+<div class="sp-wrap">
+<p class="sp-statement" style="margin:0 auto;max-width:1000px;text-align:center;font-size:clamp(30px,3.8vw,54px);line-height:1.15;letter-spacing:-.04em;font-weight:500"><span class="sp-word" style="color:var(--fg3)">Memory </span><span class="sp-word" style="color:var(--fg3)">products </span><span class="sp-word" style="color:var(--fg3)">learn </span><span class="sp-word" style="color:var(--fg3)">who </span><span class="sp-word" style="color:var(--fg3)">you </span><span class="sp-word" style="color:var(--fg3)">are </span><span class="sp-word" style="color:var(--fg3)">inside </span><span class="sp-word" style="color:var(--fg3)">one </span><span class="sp-word" style="color:var(--fg3)">app. </span><span class="sp-word" style="color:var(--fg)">samepage </span><span class="sp-word" style="color:var(--fg)">moves </span><span class="sp-word" style="color:var(--fg)">what </span><span class="sp-word" style="color:var(--fg)">you're </span><span class="sp-word" style="color:var(--fg)">working </span><span class="sp-word" style="color:var(--fg)">on </span><span class="sp-word" style="color:var(--fg)">from </span><span class="sp-word" style="color:var(--fg)">one </span><span class="sp-word" style="color:var(--fg)">tool </span><span class="sp-word" style="color:var(--fg)">to </span><span class="sp-word" style="color:var(--fg)">the </span><span class="sp-word" style="color:var(--fg)">next. </span></p>
+</div>
+</section>
 
-  <section class="sec" id="how">
-    <div class="wrap">
-      <div class="eyebrow reveal">how it works</div>
-      <h2 class="reveal">Boot. Write. <span class="dim">Hand off.</span></h2>
-      <div class="story" id="story">
-        <div class="steps">
-          <div class="step on"><div class="n">01 / boot</div><h3>One read per session</h3><p>Each tool reads one prebuilt boot file for its role and the repo you're in. Capped at 8,000 characters, at any store size.</p></div>
-          <div class="step"><div class="n">02 / write</div><h3>Preview, then confirm</h3><p>Every write is a dry run first. The confirm token pins a hash of the preview; anything different is refused.</p></div>
-          <div class="step"><div class="n">03 / hand off</div><h3>Leave work for the next tool</h3><p>A brief written in one tool opens the next session in another, stamped with where it came from.</p></div>
-        </div>
-        <div class="term">
-          <div class="term-bar"><i></i><i></i><i></i><span id="paneTitle">mcp · tools/call boot</span></div>
-          <div class="panes">
-<pre class="pane on"><span class="c">→</span> <span class="b">tools/call</span> boot {"project_dir": "~/api"}
-<span class="c">←</span> &lt;samepage data&gt;
-  surface: code
+<section class="sp-sec" id="how">
+<div class="sp-wrap">
+<div class="sp-head">
+<div><div class="sp-eyebrow"><span class="sp-idx">02</span>How it works</div>
+<h2 class="sp-h2"><span class="sp-mask"><span class="sp-line">Boot. Write. Hand off.</span></span></h2></div>
+<p class="sp-lead">Three moves, the same in every tool. One store underneath, and nothing writes without your yes.</p>
+</div>
+<div class="sp-steps-rail" aria-hidden="true">
+<div class="sp-steps-track"><div class="sp-steps-fill sp-holofill"></div></div>
+<span class="sp-steps-dot" style="left:16.66%"></span><span class="sp-steps-dot" style="left:50%"></span><span class="sp-steps-dot" style="left:83.33%"></span>
+</div>
+<div class="sp-g12">
+<div class="sp-card sp-panel sp-s4"><div class="sp-vp" style="height:260px" aria-hidden="true">
+<div class="sp-st-store"><svg width="22" height="22" viewBox="26 26 48 48" aria-hidden="true" style="fill:var(--fg)"><path d="M36 26 H64 A10 10 0 0 1 64 46 H36 A10 10 0 0 1 36 26 Z"></path><path d="M36 54 H40 A10 10 0 0 1 40 74 H36 A10 10 0 0 1 36 54 Z"></path><rect x="58" y="54" width="16" height="20" rx="3"></rect></svg><span class="sp-mono">your-store</span></div>
+<div class="sp-st-beam"></div>
+<div class="sp-st-file sp-mono sp-holofill">boot/codex.md</div>
+<div class="sp-st-win">
+<div class="sp-st-bar"><span></span><span></span><b class="sp-mono">codex</b></div>
+<div class="sp-st-rows">
+<span class="sp-mono sp-boot-chip">rules 4</span>
+<span class="sp-mono sp-boot-chip">projects 2</span>
+<span class="sp-mono sp-boot-chip">handoffs 1</span>
+</div>
+</div>
+</div><div class="sp-cap"><span class="sp-mono sp-capidx">01</span><h3 class="sp-cap-t">Boot</h3><p class="sp-cap-p">The tool reads one short boot file: rules, projects and open handoffs, under 8,000 characters.</p></div></div>
+<div class="sp-card sp-panel sp-s4"><div class="sp-vp" style="height:260px" aria-hidden="true">
+<div class="sp-st-dlg">
+<div class="sp-mono" style="font-size:10px;color:var(--fg3)">log_decision · preview</div>
+<div style="font-size:14px;font-weight:600;margin-top:8px;letter-spacing:-.01em">Postgres RLS for tenancy</div>
+<div class="sp-ghost" style="width:92%"></div><div class="sp-ghost" style="width:64%"></div>
+<div style="display:flex;gap:6px;margin-top:14px">
+<span class="sp-mono sp-mini">cancel</span>
+<span class="sp-mono sp-mini sp-mini-on sp-st-ok">confirm</span>
+</div>
+<span class="sp-st-stamp sp-mono sp-holofill">written · a41c9e2</span>
+</div>
+<svg class="sp-st-cursor" width="20" height="20" viewBox="0 0 24 24" style="fill:var(--fg);stroke:var(--bg2);stroke-width:1.5"><path d="M4 2l16 9-7 2-3 7z"></path></svg>
+</div><div class="sp-cap"><span class="sp-mono sp-capidx">02</span><h3 class="sp-cap-t">Write</h3><p class="sp-cap-p">Decisions and ships are typed entries. Each one shows a preview and waits for your yes.</p></div></div>
+<div class="sp-card sp-panel sp-s4"><div class="sp-vp" style="height:260px" aria-hidden="true">
+<svg class="sp-st-svg" viewBox="0 0 360 240" preserveAspectRatio="none">
+<path id="spHandPath" d="M70 176 C 150 176, 190 70, 290 70" style="fill:none;stroke:var(--line2);stroke-width:1.5;stroke-dasharray:4 6"></path>
+<circle r="5" style="fill:var(--fg)"><animateMotion dur="2.6s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines=".6 0 .4 1"><mpath href="#spHandPath"></mpath></animateMotion></circle>
+</svg>
+<span class="sp-st-node sp-mono" style="left:19.4%;top:73.3%">cursor</span>
+<span class="sp-st-node sp-st-node-to sp-mono sp-holofill" style="left:80.5%;top:29.2%">chat</span>
+<div class="sp-st-hcard">
+<div class="sp-mono" style="font-size:10px;color:var(--fg3)">handoff · open</div>
+<div style="font-size:13px;font-weight:600;margin-top:4px">migrate auth</div>
+</div>
+</div><div class="sp-cap"><span class="sp-mono sp-capidx">03</span><h3 class="sp-cap-t">Hand off</h3><p class="sp-cap-p">Leave work for another tool. It is waiting there the next time that tool boots.</p></div></div>
+</div>
+</div>
+</section>
 
-  <span class="b">## Rules</span>
-  - Run tests before every commit.
+<section class="sp-sec" id="store">
+<div class="sp-wrap">
+<div class="sp-head">
+<div><div class="sp-eyebrow"><span class="sp-idx">03</span>The store</div>
+<h2 class="sp-h2"><span class="sp-mask"><span class="sp-line">Plain files. Your repo. No server.</span></span></h2></div>
+<p class="sp-lead">Everything lives in a private git repo you own. No account to sign up for, no cloud copy, nothing to switch off later.</p>
+</div>
+<div class="sp-g12">
 
-  <span class="b">## Active projects (2 of 2)</span>
-  - api: Billing API (updated 2026-11-04)
+<div class="sp-card sp-panel sp-s7">
+<div class="sp-vp sp-vp-pad" style="height:340px" aria-hidden="true">
+<div class="sp-file">
+<div class="sp-filebar"><span class="sp-fdot"></span><span class="sp-fdot"></span><span class="sp-fdot"></span><span class="sp-mono sp-fpath"><span style="color:var(--fg3)">your-store / decisions /</span> 2026-11-06-postgres-rls.md</span><span class="sp-mono sp-flang">md</span></div>
+<div class="sp-mono sp-code">
+<div class="sp-ln"><i>1</i><span class="sp-dim">---</span></div>
+<div class="sp-ln"><i>2</i><span class="sp-k">type</span>: decision</div>
+<div class="sp-ln"><i>3</i><span class="sp-k">project</span>: app</div>
+<div class="sp-ln"><i>4</i><span class="sp-k">tool</span>: claude_ai</div>
+<div class="sp-ln"><i>5</i><span class="sp-k">date</span>: 2026-11-06</div>
+<div class="sp-ln"><i>6</i><span class="sp-dim">---</span></div>
+<div class="sp-ln"><i>7</i><span style="color:var(--fg)">## Postgres RLS for tenancy</span></div>
+<div class="sp-ln"><i>8</i>One schema, row level security per tenant.<span class="sp-blink"></span></div>
+</div>
+</div>
+</div>
+<div class="sp-cap"><span class="sp-mono sp-capidx">A</span><h3 class="sp-cap-t">Typed Markdown</h3><p class="sp-cap-p">Each entry is a file with flat frontmatter. You can read it, edit it, and git can diff it.</p></div>
+</div>
 
-  <span class="b">## Open handoffs to code (1)</span>
-  - de3122d7 api: Build the pricing page
-    (from chat via claude_ai)</pre>
-<pre class="pane"><span class="c">→</span> <span class="b">tools/call</span> log_ship {"project": "api", "dry_run": true}
-<span class="c">←</span> dry run, nothing written
+<div class="sp-card sp-panel sp-s5">
+<div class="sp-vp sp-vp-pad" style="height:340px;display:flex;flex-direction:column;justify-content:center" aria-hidden="true">
+<div class="sp-holo sp-holotext" style="font-size:84px;font-weight:600;letter-spacing:-.055em;line-height:1"><span class="sp-count" data-to="8000">8,000</span></div>
+<div class="sp-mono" style="font-size:11px;color:var(--fg3);margin-top:8px">characters per boot · one read per session</div>
+<div class="sp-meter" style="margin-top:28px"><div class="sp-meter-fill sp-holofill"></div></div>
+<div class="sp-mono sp-split3">
+<span><b>1,204</b>rules</span><span><b>2,880</b>projects</span><span><b>1,828</b>handoffs</span>
+</div>
+</div>
+<div class="sp-cap"><span class="sp-mono sp-capidx">B</span><h3 class="sp-cap-t">Boot budget</h3><p class="sp-cap-p">A hard cap keeps every tool fast to start and cheap to run.</p></div>
+</div>
 
-  == events/2026/2026-11-04-api-c6f8d3d9.md (new file)
-  kind: launched
-  summary: pricing page live, 3 tiers
-  tool: codex
+<div class="sp-card sp-panel sp-s4">
+<div class="sp-vp sp-vp-pad" style="height:260px" aria-hidden="true">
+<div class="sp-commits">
+<div class="sp-rail"><div class="sp-rail-fill sp-holofill"></div></div>
+<div class="sp-commit"><span class="sp-node"></span><span class="sp-mono sp-hash">a41c9e2</span><span class="sp-msg">decision: Postgres RLS</span></div>
+<div class="sp-commit"><span class="sp-node"></span><span class="sp-mono sp-hash">7d03b11</span><span class="sp-msg">handoff to chat</span></div>
+<div class="sp-commit"><span class="sp-node"></span><span class="sp-mono sp-hash">e5f2280</span><span class="sp-msg">ship: tenant settings</span></div>
+<div class="sp-commit"><span class="sp-node"></span><span class="sp-mono sp-hash">0b9a6c4</span><span class="sp-msg">rule: no new deps</span></div>
+</div>
+</div>
+<div class="sp-cap"><span class="sp-mono sp-capidx">C</span><h3 class="sp-cap-t">A git repo you own</h3><p class="sp-cap-p">Every write is a commit. Your history, your access, your delete button.</p></div>
+</div>
 
-  confirm: eyJoYXNoIjoiZjM3NzY3YmQ...
+<div class="sp-card sp-panel sp-s4">
+<div class="sp-vp sp-vp-pad" style="height:260px" aria-hidden="true">
+<div class="sp-mono sp-tlabel">read</div>
+<div class="sp-tools"><span class="sp-mono sp-tool">boot</span><span class="sp-mono sp-tool">project</span><span class="sp-mono sp-tool">proof</span><span class="sp-mono sp-tool">handoffs</span><span class="sp-mono sp-tool">handoff_show</span><span class="sp-mono sp-tool">rules</span></div>
+<div class="sp-mono sp-tlabel" style="margin-top:18px">write · confirmed</div>
+<div class="sp-tools"><span class="sp-mono sp-tool sp-holofill">log_ship</span><span class="sp-mono sp-tool sp-holofill">log_decision</span><span class="sp-mono sp-tool sp-holofill">handoff_new</span><span class="sp-mono sp-tool sp-holofill">handoff_status</span><span class="sp-mono sp-tool sp-holofill">rule_add</span></div>
+</div>
+<div class="sp-cap"><span class="sp-mono sp-capidx">D</span><h3 class="sp-cap-t"><span data-sp="tools-total">11</span> MCP tools</h3><p class="sp-cap-p">Six read and five write, over local stdio. Any MCP client can use them.</p></div>
+</div>
 
-  <span class="c">user:</span> <span class="hl">yes</span>
-<span class="c">→</span> <span class="b">tools/call</span> log_ship {"confirm": "eyJoYXNo..."}
-<span class="c">←</span> wrote events/2026/2026-11-04-api-c6f8d3d9.md</pre>
-<pre class="pane"><span class="c">$</span> <span class="b">sp handoff new</span> --project api --to code \
-    --title "Annual pricing toggle" --tool claude_ai
-  wrote handoffs/7a1c90e2.md
+<div class="sp-card sp-panel sp-s4">
+<div class="sp-vp" style="height:260px" aria-hidden="true">
+<div class="sp-dialog">
+<div class="sp-mono" style="font-size:10px;color:var(--fg3)">log_decision · preview</div>
+<div style="font-size:14px;margin-top:8px;font-weight:600">Postgres RLS for tenancy</div>
+<i class="sp-gl1" style="width:90%"></i><i class="sp-gl1" style="width:60%"></i>
+<div class="sp-mono" style="font-size:10px;color:var(--fg3);margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">confirm: eyJpZCI6ImRlYzE...</div>
+<div style="display:flex;gap:6px;margin-top:12px"><span class="sp-mono sp-mini">cancel</span><span class="sp-mono sp-mini sp-mini-on sp-confirm">confirm</span></div>
+</div>
+</div>
+<div class="sp-cap"><span class="sp-mono sp-capidx">E</span><h3 class="sp-cap-t">Confirmed writes</h3><p class="sp-cap-p">A dry run first, then a confirm token. Nothing lands without your yes.</p></div>
+</div>
 
-  <span class="c">next morning, in another tool:</span>
+<div class="sp-card sp-s12 sp-zero">
+<div><span class="sp-mono sp-capidx">F</span><h3 class="sp-cap-t">Zero infrastructure</h3><p class="sp-cap-p">Nothing to host, nothing to leak, nothing to pay for.</p></div>
+<div class="sp-zlist">
+<span class="sp-z sp-z-no"><span>hosted server</span><i class="sp-strike"></i></span>
+<span class="sp-z sp-z-no"><span>API keys</span><i class="sp-strike"></i></span>
+<span class="sp-z sp-z-no"><span>vector database</span><i class="sp-strike"></i></span>
+<span class="sp-z sp-z-no"><span>new account</span><i class="sp-strike"></i></span>
+<span class="sp-z sp-z-yes sp-holofill">python3 stdlib</span>
+<span class="sp-z sp-z-yes sp-holofill">git</span>
+</div>
+</div>
 
-  <span class="b">## Open handoffs to code (1)</span>
-  - 7a1c90e2 api: Annual pricing toggle
-    (from chat via claude_ai)
+</div>
+</div>
+</section>
 
-  <span class="c">&gt;</span> <span class="hl">pick it up</span></pre>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+<section class="sp-sec" id="adapters">
+<div class="sp-wrap">
+<div class="sp-head">
+<div><div class="sp-eyebrow"><span class="sp-idx">04</span>Adapters</div>
+<h2 class="sp-h2"><span class="sp-mask"><span class="sp-line">Works where you already work.</span></span></h2></div>
+<p class="sp-lead">A plugin, a skill or a local MCP server. Tested means a full run passed and is recorded in the tool ledger.</p>
+</div>
+<div class="sp-tiles" data-sp="adapters">
+<template id="sp-tile-tpl"><div class="sp-card sp-tile">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span class="sp-mono sp-kind">{{kind}}</span>
+<span class="{{dot}}" aria-label="{{status}}" role="img"></span>
+</div>
+<div class="sp-tile-n">{{name}}</div>
+<div class="sp-mono sp-tile-c">{{how}}</div>
+</div></template>
+<div class="sp-card sp-tile">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span class="sp-mono sp-kind">plugin</span>
+<span class="sp-dot sp-dot-on" aria-label="Tested" role="img"></span>
+</div>
+<div class="sp-tile-n">Claude Code</div>
+<div class="sp-mono sp-tile-c">/plugin install samepage</div>
+</div>
+<div class="sp-card sp-tile">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span class="sp-mono sp-kind">skill</span>
+<span class="sp-dot" aria-label="Community-tested" role="img"></span>
+</div>
+<div class="sp-tile-n">claude.ai chat</div>
+<div class="sp-mono sp-tile-c">GitHub connector</div>
+</div>
+<div class="sp-card sp-tile">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span class="sp-mono sp-kind">skill</span>
+<span class="sp-dot" aria-label="Community-tested" role="img"></span>
+</div>
+<div class="sp-tile-n">Cowork</div>
+<div class="sp-mono sp-tile-c">GitHub connector</div>
+</div>
+<div class="sp-card sp-tile">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span class="sp-mono sp-kind">mcp</span>
+<span class="sp-dot" aria-label="Community-tested" role="img"></span>
+</div>
+<div class="sp-tile-n">Claude Desktop</div>
+<div class="sp-mono sp-tile-c">sp setup claude-desktop</div>
+</div>
+<div class="sp-card sp-tile">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span class="sp-mono sp-kind">tokens</span>
+<span class="sp-dot" aria-label="Community-tested" role="img"></span>
+</div>
+<div class="sp-tile-n">Claude Design</div>
+<div class="sp-mono sp-tile-c">design/tokens.json</div>
+</div>
+<div class="sp-card sp-tile">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span class="sp-mono sp-kind">mcp</span>
+<span class="sp-dot" aria-label="Community-tested" role="img"></span>
+</div>
+<div class="sp-tile-n">Gemini CLI</div>
+<div class="sp-mono sp-tile-c">sp setup gemini</div>
+</div>
+<div class="sp-card sp-tile">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span class="sp-mono sp-kind">mcp</span>
+<span class="sp-dot" aria-label="Community-tested" role="img"></span>
+</div>
+<div class="sp-tile-n">Codex</div>
+<div class="sp-mono sp-tile-c">sp setup codex</div>
+</div>
+<div class="sp-card sp-tile">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span class="sp-mono sp-kind">mcp</span>
+<span class="sp-dot" aria-label="Community-tested" role="img"></span>
+</div>
+<div class="sp-tile-n">GitHub Copilot</div>
+<div class="sp-mono sp-tile-c">sp setup copilot</div>
+</div>
+<div class="sp-card sp-tile">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span class="sp-mono sp-kind">mcp</span>
+<span class="sp-dot" aria-label="Community-tested" role="img"></span>
+</div>
+<div class="sp-tile-n">Cursor</div>
+<div class="sp-mono sp-tile-c">sp setup cursor</div>
+</div>
+<div class="sp-card sp-tile">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span class="sp-mono sp-kind">mcp</span>
+<span class="sp-dot" aria-label="Community-tested" role="img"></span>
+</div>
+<div class="sp-tile-n">Windsurf</div>
+<div class="sp-mono sp-tile-c">sp setup windsurf</div>
+</div>
+</div>
+<div class="sp-mono sp-legend"><span><i class="sp-dot sp-dot-on"></i>tested</span><span><i class="sp-dot"></i>community-tested</span></div>
+</div>
+</section>
 
-  <section class="sec" id="spec">
-    <div class="wrap">
-      <div class="eyebrow reveal">the spec</div>
-      <h2 class="reveal">Plain files. <span class="dim">Typed, diffable, yours.</span></h2>
-      <p class="sub reveal">Flat frontmatter, one entry per file, checked by <span class="mono">sp check</span> on every write. Read it in any editor. Review it like code.</p>
-      <div class="spec">
-        <div class="card s4 reveal"><h3>Decisions stay decided</h3><p>The choice and the reason. Superseded, never deleted, so every tool knows what still holds.</p>
-<pre><span class="k">decisions/api/2026-11-04-8d95bb8f.md</span>
-<span class="k">title:</span> <span class="v">Postgres over Mongo</span>
-<span class="k">reason:</span> <span class="v">row-level security per tenant</span>
-<span class="k">status:</span> <span class="v">accepted</span>
-<span class="k">tool:</span> <span class="v">claude_ai</span></pre></div>
-        <div class="card s2 reveal"><h3>Ships are proof</h3><p>What shipped, when, with a link and a metric.</p>
-<pre><span class="k">kind:</span> <span class="v">launched</span>
-<span class="k">proof_url:</span> <span class="v">github.com/…/pull/42</span>
-<span class="k">metric:</span> <span class="v">p95 120 ms</span></pre></div>
-        <div class="card s2 reveal"><h3>Handoffs carry origin</h3><p>Where it came from, where it goes, and its state.</p>
-<pre><span class="k">from_tool:</span> <span class="v">claude_ai</span>
-<span class="k">to_surface:</span> <span class="v">code</span>
-<span class="k">status:</span> <span class="v">open → done</span></pre></div>
-        <div class="card s2 reveal"><h3>Rules apply everywhere</h3><p>Say it once. Scope it to every tool or to one role.</p>
-<pre><span class="k">text:</span> <span class="v">Run tests first.</span>
-<span class="k">scope:</span> <span class="v">all</span></pre></div>
-        <div class="card s2 reveal"><h3>Secrets never land</h3><p>Keys, tokens, private keys and card numbers are blocked before a write.</p>
-<pre><span class="k">$ sp check</span>
-<span class="v">blocked: secret in summary</span></pre></div>
-      </div>
-    </div>
-  </section>
+<section class="sp-sec" id="install">
+<div class="sp-wrap">
+<div class="sp-head">
+<div><div class="sp-eyebrow"><span class="sp-idx">05</span>Install</div>
+<h2 class="sp-h2"><span class="sp-mask"><span class="sp-line">Two minutes to the same page.</span></span></h2></div>
+<p class="sp-lead">Pick the way in for the tool you use. Every path ends at the same private store.</p>
+</div>
+<div class="sp-card sp-panel">
+<div class="sp-insbar">
+<div role="tablist" aria-label="Install paths" style="display:flex;flex-wrap:wrap;gap:6px">
+<button type="button" role="tab" data-tab="0" aria-selected="true" class="sp-tab sp-tab-on">MCP tools</button><button type="button" role="tab" data-tab="1" aria-selected="false" class="sp-tab">Claude Code</button><button type="button" role="tab" data-tab="2" aria-selected="false" class="sp-tab">claude.ai · Cowork</button><button type="button" role="tab" data-tab="3" aria-selected="false" class="sp-tab">Claude Design</button>
+</div>
+<span class="sp-mono" data-sp="tab-title" style="font-size:12px;color:var(--fg3)">terminal</span>
+</div>
+<div class="sp-vp">
+<div data-panel="0">
+<div class="sp-mono sp-ins" role="tabpanel">
+<div class="sp-chips" role="group" aria-label="Pick your tool">
+<button type="button" data-mcp="0" aria-pressed="true" class="sp-chip-b sp-chip-b-on">Codex</button><button type="button" data-mcp="1" aria-pressed="false" class="sp-chip-b">Gemini CLI</button><button type="button" data-mcp="2" aria-pressed="false" class="sp-chip-b">Copilot</button><button type="button" data-mcp="3" aria-pressed="false" class="sp-chip-b">Cursor</button><button type="button" data-mcp="4" aria-pressed="false" class="sp-chip-b">Windsurf</button><button type="button" data-mcp="5" aria-pressed="false" class="sp-chip-b">Claude Desktop</button>
+</div>
+<div class="sp-insl"><span style="color:var(--fg3)">$</span> git clone https://github.com/rx4u/samepage ~/.samepage/tool</div>
+<div class="sp-insl"><span style="color:var(--fg3)">$</span> sh ~/.samepage/tool/install.sh</div>
+<div class="sp-insl"><span style="color:var(--fg3)">samepage: installed <span data-sp="version-plain">v1.1.0</span></span></div>
+<div class="sp-insl"><span style="color:var(--fg3)">$</span> sp init</div>
+<div class="sp-insl"><span style="color:var(--fg3)">$</span> sp setup <span class="sp-holo sp-holotext"><span data-sp="mcp-code">codex</span></span></div>
+<div class="sp-insl"><span style="color:var(--fg3)"># <span data-sp="mcp-note">adds the MCP entry and AGENTS.md</span></span></div>
+<div class="sp-insl"><span style="color:var(--fg3)"># restart it and ask: what am I working on?</span></div>
+</div>
+</div>
+<div data-panel="1" hidden>
+<div class="sp-mono sp-ins" role="tabpanel">
+<div class="sp-insl"><span style="color:var(--fg3)">&gt;</span> /plugin install samepage --marketplace rx4u/samepage</div>
+<div class="sp-insl"><span style="color:var(--fg3)">&gt;</span> /sp init</div>
+<div class="sp-insl"><span style="color:var(--fg3)"># new session: your context loads on its own</span></div>
+</div>
+</div>
+<div data-panel="2" hidden>
+<div class="sp-mono sp-ins" role="tabpanel">
+<div class="sp-insl"><span style="color:var(--fg3)">1</span>  create your store from the template repo</div>
+<div class="sp-insl"><span style="color:var(--fg3)">2</span>  upload samepage.skill: Customize, Skills, Upload a skill</div>
+<div class="sp-insl"><span style="color:var(--fg3)">3</span>  turn on code execution and the GitHub connector</div>
+<div class="sp-insl"><span style="color:var(--fg3)">4</span>  say <span class="sp-holo sp-holotext">"set up samepage"</span></div>
+<div class="sp-insl"><span style="color:var(--fg3)"># same steps in claude.ai and Cowork</span></div>
+</div>
+</div>
+<div data-panel="3" hidden>
+<div class="sp-mono sp-ins" role="tabpanel">
+<div class="sp-insl"><span style="color:var(--fg3)">1</span>  link your product repo when you start a design</div>
+<div class="sp-insl"><span style="color:var(--fg3)">2</span>  keep your tokens in design/tokens.json (W3C format)</div>
+<div class="sp-insl"><span style="color:var(--fg3)">3</span>  say <span class="sp-holo sp-holotext">"log the design system for my-app"</span></div>
+<div class="sp-insl"><span style="color:var(--fg3)"># no install: every surface now knows where it lives</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
 
-  <section class="sec">
-    <div class="wrap">
-      <div class="nums" id="nums">
-        <div class="num"><b data-to="1">1</b><span>file read per session</span></div>
-        <div class="num"><b data-to="8000" data-fmt="1">8,000</b><span>character cap per boot file</span></div>
-        <div class="num"><b data-to="0">0</b><span>servers, keys or dependencies</span></div>
-        <div class="num"><b data-to="11">11</b><span>MCP tools: 6 read, 5 write</span></div>
-      </div>
-    </div>
-  </section>
+<section class="sp-sec" id="maker">
+<div class="sp-wrap">
+<div class="sp-card sp-panel sp-maker">
+<div class="sp-vp sp-maker-vp" aria-hidden="true">
+<div class="sp-maker-ring"></div><div class="sp-maker-ring sp-maker-ring2"></div>
+<div class="sp-holofill sp-maker-av">RA</div>
+</div>
+<div class="sp-maker-body">
+<div class="sp-eyebrow"><span class="sp-idx">06</span>The maker</div>
+<p class="sp-maker-q">"I plan in chat, build with a coding agent, and move between a work and a personal account every day. samepage is the page they all share."</p>
+<div class="sp-maker-foot">
+<div>
+<div style="font-size:18px;font-weight:600;letter-spacing:-.02em">Rajaraman Arumugam</div>
+<div class="sp-mono" style="font-size:12px;color:var(--fg3);margin-top:6px;letter-spacing:.06em">DESIGN. AI. PRODUCT. LEADERSHIP.</div>
+</div>
+<a href="https://github.com/rx4u" class="sp-btn sp-btn-s sp-mag" style="min-height:44px;font-size:14px">GitHub @rx4u</a>
+</div>
+</div>
+</div>
+</div>
+</section>
 
-  <section class="sec" id="adapters">
-    <div class="wrap">
-      <div class="eyebrow reveal">adapters</div>
-      <h2 class="reveal">Works where you <span class="dim">already work.</span></h2>
-      <div class="adapters reveal">
-        <div class="ad"><span>Claude Code</span><span class="ok">tested</span></div>
-        <div class="ad"><span>claude.ai · Cowork</span><em>skill</em></div>
-        <div class="ad"><span>Claude Desktop</span><em>mcp</em></div>
-        <div class="ad"><span>Codex</span><em>mcp · AGENTS.md</em></div>
-        <div class="ad"><span>Gemini CLI</span><em>mcp · GEMINI.md</em></div>
-        <div class="ad"><span>GitHub Copilot</span><em>mcp</em></div>
-        <div class="ad"><span>Cursor</span><em>mcp · rule</em></div>
-        <div class="ad"><span>Windsurf</span><em>mcp · rule</em></div>
-        <div class="ad any"><span>your tool</span><em>any MCP client</em></div>
-      </div>
-      <p class="note">tested = a full run passed and is recorded in the <a href="https://github.com/rx4u/samepage/blob/main/docs/build/tool-ledger.md">tool ledger</a>. The rest are built and covered by tests, not yet run end to end by a maintainer.</p>
-    </div>
-  </section>
+<section class="sp-sec" style="padding:180px 0 160px">
+<div class="sp-wrap" style="display:flex;flex-direction:column;align-items:center;text-align:center">
+<svg class="sp-final-mark" width="96" height="96" viewBox="26 26 48 48" aria-hidden="true" style="fill:var(--fg)"><path d="M36 26 H64 A10 10 0 0 1 64 46 H36 A10 10 0 0 1 36 26 Z"></path><path d="M36 54 H40 A10 10 0 0 1 40 74 H36 A10 10 0 0 1 36 54 Z"></path><rect x="58" y="54" width="16" height="20" rx="3"></rect></svg>
+<h2 class="sp-h1" style="margin-top:40px"><span class="sp-mask"><span class="sp-line">One page.</span></span><span class="sp-mask"><span class="sp-line"><span class="sp-holo sp-holotext">Every tool.</span></span></span></h2>
+<div class="sp-reveal" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:44px">
+<a href="#install" data-go="install" class="sp-btn sp-btn-p sp-mag">Get started</a>
+<a href="https://github.com/rx4u/samepage" class="sp-btn sp-btn-s sp-mag">Star on GitHub</a>
+</div>
+<p class="sp-mono sp-reveal" style="margin:28px 0 0;font-size:12px;color:var(--fg3)">open source · MIT · no server · no API keys · stdlib only</p>
+</div>
+</section>
 
-  <section class="sec" id="install">
-    <div class="wrap install">
-      <div>
-        <div class="eyebrow reveal">install</div>
-        <h2 class="reveal">Your AI tools forget. <span class="dim">samepage doesn't.</span></h2>
-        <div class="tabs reveal" role="tablist" aria-label="Install paths">
-          <button role="tab" id="t0" aria-controls="c0" aria-selected="true">Any MCP tool</button>
-          <button role="tab" id="t1" aria-controls="c1" aria-selected="false" tabindex="-1">Claude Code</button>
-          <button role="tab" id="t2" aria-controls="c2" aria-selected="false" tabindex="-1">Chat skill</button>
-        </div>
-      </div>
-      <div class="term reveal">
-        <div class="term-bar"><i></i><i></i><i></i><button class="copy" type="button" id="copy">copy</button></div>
-<pre class="code" id="c0" role="tabpanel" aria-labelledby="t0"><span class="c">$</span> git clone https://github.com/rx4u/samepage ~/.samepage/tool
-<span class="c">$</span> sh ~/.samepage/tool/install.sh
-<span class="o">samepage: installed v1.1.0</span>
-<span class="c">$</span> sp init
-<span class="c">$</span> sp setup codex  <span class="c"># or gemini, copilot, cursor, windsurf</span>
-<span class="o">samepage: wrote the samepage entry in ~/.codex/config.toml</span></pre>
-<pre class="code" id="c1" role="tabpanel" aria-labelledby="t1" hidden><span class="c">&gt;</span> /plugin install samepage --marketplace rx4u/samepage
-<span class="c">&gt;</span> /sp init
-
-<span class="c"># new session: your context loads on its own</span></pre>
-<pre class="code" id="c2" role="tabpanel" aria-labelledby="t2" hidden><span class="c">1</span> create your store from the template repo
-<span class="c">2</span> upload samepage.skill from the v1.1.0 release
-<span class="c">3</span> connect GitHub, then say:
-  <span class="o">"set up samepage"</span></pre>
-      </div>
-    </div>
-  </section>
-
-  <section class="final">
-    <div class="wrap">
-      <svg id="mark" viewBox="0 0 100 100" aria-hidden="true"><path id="mTop" d="M36 26 H64 A10 10 0 0 1 64 46 H36 A10 10 0 0 1 36 26 Z" fill="#f5f5f6"/><path id="mBot" d="M36 54 H40 A10 10 0 0 1 40 74 H36 A10 10 0 0 1 36 54 Z" fill="#f5f5f6"/><rect id="mCur" x="58" y="54" width="16" height="20" rx="3" fill="#f5f5f6"/></svg>
-      <h2 class="reveal">One page. <span class="dim">Every tool.</span></h2>
-      <div class="ctas reveal">
-        <a class="btn p" href="#install">Install samepage</a>
-        <a class="btn g" href="https://github.com/rx4u/samepage">Star on GitHub</a>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer>
-  <div class="wrap">
-    <span>samepage · v1.1.0 · MIT · built in public by Rajaraman Arumugam</span>
-    <nav aria-label="Footer"><a href="https://github.com/rx4u/samepage">github</a><a href="https://github.com/rx4u/samepage/blob/main/SPEC.md">SPEC.md</a><a href="https://github.com/rx4u/samepage/tree/main/docs/architecture">architecture</a><a href="https://github.com/rx4u/samepage/releases">releases</a></nav>
-  </div>
+<footer style="border-top:1px solid var(--line)">
+<div class="sp-wrap" style="padding-top:32px;padding-bottom:40px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px">
+<div style="display:flex;align-items:center;gap:10px">
+<svg width="20" height="20" viewBox="26 26 48 48" aria-hidden="true" style="fill:var(--fg)"><path d="M36 26 H64 A10 10 0 0 1 64 46 H36 A10 10 0 0 1 36 26 Z"></path><path d="M36 54 H40 A10 10 0 0 1 40 74 H36 A10 10 0 0 1 36 54 Z"></path><rect x="58" y="54" width="16" height="20" rx="3"></rect></svg>
+<span style="font-weight:600;letter-spacing:-.03em">samepage</span>
+<span class="sp-mono" style="font-size:12px;color:var(--fg3);margin-left:8px">MIT licence</span>
+</div>
+<nav aria-label="Footer" style="display:flex;flex-wrap:wrap;gap:24px;font-size:14px">
+<a href="https://github.com/rx4u/samepage/blob/main/SPEC.md" style="text-decoration:none;color:var(--fg2)">Spec</a>
+<a href="https://github.com/rx4u/samepage/tree/main/docs/architecture" style="text-decoration:none;color:var(--fg2)">Architecture</a>
+<a href="https://github.com/rx4u/samepage/blob/main/docs/build/tool-ledger.md" style="text-decoration:none;color:var(--fg2)">Tool ledger</a>
+<a href="https://github.com/rx4u/samepage/releases" style="text-decoration:none;color:var(--fg2)">Changelog</a>
+<a href="https://github.com/rx4u/samepage" style="text-decoration:none;color:var(--fg2)">GitHub</a>
+</nav>
+</div>
 </footer>
 
-<script src="/vendor/gsap/gsap.min.js"></script>
-<script src="/vendor/gsap/ScrollTrigger.min.js"></script>
-<script src="/vendor/gsap/SplitText.min.js"></script>
-<script src="/vendor/gsap/MotionPathPlugin.min.js"></script>
+</div>
+<script src="vendor/three/three.min.js"></script>
+<script src="vendor/gsap/gsap.min.js"></script>
+<script src="vendor/gsap/ScrollTrigger.min.js"></script>
 <script>
-(function () {
-  var tabs = [].slice.call(document.querySelectorAll('[role="tab"]'));
-  function sel(t) {
-    tabs.forEach(function (x) {
-      var on = x === t;
-      x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1;
-      document.getElementById(x.getAttribute('aria-controls')).hidden = !on;
-    });
+
+class DCLogic { constructor(props) { this.props = props || {}; } setState(o) { Object.assign(this.state, o); if (window.__spRender) window.__spRender(); } }
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    var light = false;
+    try { light = window.matchMedia('(prefers-color-scheme: light)').matches; } catch (e) {}
+    this.state = { theme: light ? 'light' : 'dark', tab: 0 };
   }
-  tabs.forEach(function (t, i) {
-    t.addEventListener('click', function () { sel(t); });
-    t.addEventListener('keydown', function (e) {
-      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-      if (!d) return; var n = tabs[(i + d + tabs.length) % tabs.length]; sel(n); n.focus(); e.preventDefault();
-    });
-  });
-  var copy = document.getElementById('copy');
-  copy.addEventListener('click', function () {
-    var pane = document.querySelector('pre.code:not([hidden])');
-    var text = pane.innerText.split('\n').filter(function (l) { return /^[$>] /.test(l); })
-      .map(function (l) { return l.replace(/^[$>] /, '').replace(/\s+#.*$/, ''); }).join('\n');
-    if (navigator.clipboard && text) navigator.clipboard.writeText(text).then(function () {
-      copy.textContent = 'copied'; setTimeout(function () { copy.textContent = 'copy'; }, 1500);
-    }, function () {});
-  });
-
-  var ts = document.querySelector('.topo-scroll');
-  if (ts && ts.scrollWidth > ts.clientWidth) ts.scrollLeft = (ts.scrollWidth - ts.clientWidth) / 2;
-
-  if (!window.gsap || !window.ScrollTrigger || !window.SplitText || !window.MotionPathPlugin) {
-    document.documentElement.classList.remove('js'); return;
+  componentDidMount() { this._tries = 0; this._mtries = 0; this.boot(); this.motion(); }
+  words() {
+    var dim = 'Memory products learn who you are inside one app.'.split(' ');
+    var lit = "samepage moves what you're working on from one tool to the next.".split(' ');
+    return dim.map(function (t) { return { t: t, style: 'color:var(--fg3)' }; })
+      .concat(lit.map(function (t) { return { t: t, style: 'color:var(--fg)' }; }));
   }
-  gsap.registerPlugin(ScrollTrigger, SplitText, MotionPathPlugin);
-  var mm = gsap.matchMedia();
+  go(e, id, label) {
+    if (e && e.preventDefault) e.preventDefault();
+    var g = window.gsap;
+    var target = id === 'top' ? null : document.getElementById(id);
+    var y = target ? target.getBoundingClientRect().top + window.scrollY - 64 : 0;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!g || reduce) { window.scrollTo(0, y); return; }
+    var self = this;
+    this.setState({ curtain: label });
+    var c = document.querySelector('.sp-curtain');
+    var count = document.querySelector('.sp-curtain-count');
+    if (count) count.style.display = 'none';
+    g.timeline()
+      .set(c, { display: 'flex', yPercent: 100 })
+      .to(c, { yPercent: 0, duration: 0.6, ease: 'expo.inOut' })
+      .fromTo('.sp-curtain-label', { yPercent: 110 }, { yPercent: 0, duration: 0.5, ease: 'expo.out' }, '-=0.15')
+      .fromTo('.sp-curtain-mark', { scale: 0.6, rotate: -20, opacity: 0 }, { scale: 1, rotate: 0, opacity: 1, duration: 0.5, ease: 'back.out(2)' }, '<')
+      .add(function () { window.scrollTo(0, y); if (window.ScrollTrigger) window.ScrollTrigger.update(); }, '+=0.15')
+      .to(c, { yPercent: -100, duration: 0.75, ease: 'expo.inOut' })
+      .set(c, { display: 'none' });
+  }
+  motion() {
+    var self = this;
+    if (this._dead) return;
+    var g = window.gsap, ST = window.ScrollTrigger;
+    var root = document.querySelector('.sp-root');
+    if (!g || !ST || !root) { if (this._mtries++ < 120) setTimeout(function () { self.motion(); }, 80); return; }
+    g.registerPlugin(ST);
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    this._ctx = g.context(function () {
+      var curtain = root.querySelector('.sp-curtain');
+      var count = root.querySelector('.sp-curtain-count');
+      var n = { v: 0 };
+      g.set('.sp-hero .sp-line', { yPercent: 110 });
+      g.set('.sp-hero .sp-fade', { y: 24, opacity: 0 });
+      g.timeline()
+        .set(curtain, { display: 'flex', yPercent: 0 })
+        .fromTo('.sp-curtain-mark', { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(2)' })
+        .to(n, { v: 100, duration: 1.1, ease: 'power2.inOut', onUpdate: function () { if (count) count.textContent = Math.round(n.v); } }, 0)
+        .to('.sp-curtain-mark', { scale: 0.8, opacity: 0, duration: 0.35, ease: 'power2.in' })
+        .to(curtain, { yPercent: -100, duration: 0.9, ease: 'expo.inOut' })
+        .add(function () { if (self._restart) self._restart(); }, '-=0.6')
+        .to('.sp-hero .sp-line', { yPercent: 0, duration: 1.1, stagger: 0.09, ease: 'expo.out' }, '-=0.45')
+        .to('.sp-hero .sp-fade', { y: 0, opacity: 1, duration: 0.8, stagger: 0.08, ease: 'power3.out' }, '-=0.8')
+        .set(curtain, { display: 'none' });
 
-  mm.add('(prefers-reduced-motion: reduce)', function () {
-    gsap.set('.reveal', { opacity: 1 });
-    document.querySelectorAll('.statement').forEach(function (s) { s.style.color = 'var(--fg)'; });
-  });
+      // hero layers: build in after the curtain, then live depth
+      g.from('.sp-ring', { scale: 0.6, opacity: 0, duration: 1.6, stagger: 0.12, ease: 'expo.out', delay: 2.2 });
+      g.from('.sp-dots, .sp-spokes, .sp-floor', { opacity: 0, duration: 1.8, stagger: 0.15, ease: 'power2.out', delay: 2.1 });
+      g.from('.sp-guide', { scaleY: 0, transformOrigin: '50% 0%', duration: 1.4, ease: 'expo.inOut', delay: 2.0 });
+      g.from('.sp-hline', { scaleX: 0, duration: 1.4, ease: 'expo.inOut', delay: 2.2 });
+      g.from('.sp-tag, .sp-cross', { opacity: 0, y: 10, duration: 0.8, stagger: 0.06, ease: 'power3.out', delay: 2.8 });
+      g.to('.sp-ring-dash', { rotation: 360, duration: 140, repeat: -1, ease: 'none' });
+      var depthEls = g.utils.toArray('[data-depth], .sp-ring, .sp-dots, .sp-spokes').map(function (el, i) {
+        var d = parseFloat(el.getAttribute('data-depth')) || (el.classList.contains('sp-dots') ? 0.15 : el.classList.contains('sp-spokes') ? 0.25 : 0.3 + (i % 4) * 0.12);
+        return { x: g.quickTo(el, 'x', { duration: 1.2, ease: 'power3' }), y: g.quickTo(el, 'y', { duration: 1.2, ease: 'power3' }), d: d };
+      });
+      function onHeroMove(e) {
+        var px = e.clientX / window.innerWidth - 0.5, py = e.clientY / window.innerHeight - 0.5;
+        depthEls.forEach(function (o) { o.x(px * 40 * o.d); o.y(py * 28 * o.d); });
+      }
+      window.addEventListener('pointermove', onHeroMove);
+      self._offHero = function () { window.removeEventListener('pointermove', onHeroMove); };
+      g.to('.sp-bg', { yPercent: 18, ease: 'none', scrollTrigger: { trigger: '.sp-hero', start: 'top top', end: 'bottom top', scrub: true } });
+      g.to('.sp-floor', { backgroundPosition: '0px 216px', ease: 'none', scrollTrigger: { trigger: '.sp-hero', start: 'top top', end: 'bottom top', scrub: true } });
 
-  mm.add('(prefers-reduced-motion: no-preference)', function () {
-    /* hero entrance */
-    var split = SplitText.create('#h1', { type: 'words,chars', mask: 'words' });
-    gsap.set('.hero .pill', { y: 10 });
-    gsap.timeline({ defaults: { ease: 'expo.out' } })
-      .from(split.chars, { yPercent: 110, duration: 1.1, stagger: 0.016 }, 0.1)
-      .to('.hero .pill', { opacity: 1, y: 0, duration: 0.9 }, 0)
-      .fromTo('.hero .lede, .hero .ctas, .hero .under', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 1, stagger: 0.08 }, 0.5)
-      .fromTo('#topo', { opacity: 0, y: 48, scale: 0.985 }, { opacity: 1, y: 0, scale: 1, duration: 1.4 }, 0.7)
-      .from('.node', { opacity: 0, x: function (i) { return i < 3 ? -16 : 16; }, duration: 0.8, stagger: 0.05 }, 1.0);
+      // problem scenes
+      g.from('.sp-pr-wall', { scaleY: 0, duration: 1.2, ease: 'expo.inOut', scrollTrigger: { trigger: '#problem .sp-g12', start: 'top 80%' } });
+      g.to('.sp-pr-x', { rotation: 14, duration: 0.12, repeat: -1, yoyo: true, repeatDelay: 1.6, ease: 'power1.inOut' });
+      g.from('.sp-sess', { y: 40, opacity: 0, duration: 0.9, stagger: 0.18, ease: 'expo.out', scrollTrigger: { trigger: '#problem .sp-g12', start: 'top 80%' } });
+      g.from('.sp-mwin', { y: 30, opacity: 0, duration: 0.9, stagger: 0.15, ease: 'expo.out', scrollTrigger: { trigger: '#problem .sp-g12', start: 'top 80%' } });
 
-    /* topology loop */
-    var flows = [
-      { path: 0, dir: 1, label: 'decision.md', file: 'decisions', msg: 'chat assistant wrote decisions/api/2026-11-04-8d95bb8f.md' },
-      { path: 3, dir: -1, label: 'boot/code.md', file: 'index', msg: 'coding agent booted from index/boot/code.md · 1 file' },
-      { path: 3, dir: 1, label: 'ship.md', file: 'events', msg: 'coding agent wrote events/2026/2026-11-04-api-c6f8d3d9.md' },
-      { path: 1, dir: -1, label: 'boot/chat.md', file: 'index', msg: 'desktop app booted from index/boot/chat.md · ship in context' },
-      { path: 0, dir: 1, label: 'handoff.md', file: 'handoffs', msg: 'chat assistant wrote handoffs/7a1c90e2.md · to code' },
-      { path: 4, dir: -1, label: 'handoff 7a1c90e2', file: 'handoffs', msg: 'IDE agent picked up handoff 7a1c90e2 · from chat' },
-      { path: 5, dir: 1, label: 'rule.md', file: 'rules', msg: 'terminal wrote rules/run-tests-first.md · scope all' },
-      { path: 2, dir: -1, label: 'boot/code.md', file: 'index', msg: 'any MCP client booted · rules applied' }
+      // how it works: rail fills, each scene loops
+      g.to('.sp-steps-fill', { scaleX: 1, ease: 'none', scrollTrigger: { trigger: '#how .sp-g12', start: 'top 80%', end: 'bottom 60%', scrub: true } });
+      g.from('.sp-steps-dot', { scale: 0, duration: 0.5, stagger: 0.25, ease: 'back.out(3)', scrollTrigger: { trigger: '.sp-steps-rail', start: 'top 90%' } });
+      var loopST = { trigger: '#how .sp-g12', start: 'top 85%', toggleActions: 'play pause resume pause' };
+      var tb = g.timeline({ repeat: -1, repeatDelay: 0.8, scrollTrigger: loopST });
+      tb.fromTo('.sp-st-file', { x: 0, opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(2)' })
+        .to('.sp-st-file', { x: 40, duration: 0.8, ease: 'expo.inOut' })
+        .to('.sp-st-file', { opacity: 0, scale: 0.6, duration: 0.25 })
+        .fromTo('.sp-boot-chip', { opacity: 0, x: 10 }, { opacity: 1, x: 0, duration: 0.4, stagger: 0.12, ease: 'power3.out' }, '-=0.1')
+        .to('.sp-boot-chip', { opacity: 0, duration: 0.3, delay: 1.4 });
+      var tw = g.timeline({ repeat: -1, repeatDelay: 0.6, scrollTrigger: { trigger: '#how .sp-g12', start: 'top 85%', toggleActions: 'play pause resume pause' } });
+      tw.set('.sp-st-stamp', { scale: 0, opacity: 0 })
+        .fromTo('.sp-st-cursor', { x: 60, y: 40, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.9, ease: 'power3.inOut' })
+        .to('.sp-st-ok', { scale: 0.9, duration: 0.1, yoyo: true, repeat: 1 })
+        .to('.sp-st-stamp', { scale: 1, opacity: 1, rotation: -6, duration: 0.5, ease: 'back.out(3)' })
+        .to('.sp-st-cursor', { x: 50, y: 30, opacity: 0, duration: 0.6, delay: 0.3 })
+        .to('.sp-st-stamp', { opacity: 0, duration: 0.3, delay: 1.2 });
+      g.fromTo('.sp-st-hcard', { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, repeat: -1, repeatDelay: 2.1, yoyo: true, ease: 'power3.out', delay: 1.3 });
+      g.to('.sp-st-node-to', { scale: 1.08, duration: 0.3, repeat: -1, repeatDelay: 2.3, yoyo: true, ease: 'power2.out', delay: 2.4 });
+
+      // store
+      g.from('#store .sp-ln', { opacity: 0, x: -12, duration: 0.5, stagger: 0.07, ease: 'power3.out', scrollTrigger: { trigger: '#store .sp-file', start: 'top 85%' } });
+      g.from('#store .sp-meter-fill', { scaleX: 0, duration: 1.8, ease: 'expo.inOut', scrollTrigger: { trigger: '#store .sp-meter', start: 'top 92%' } });
+      g.from('#store .sp-split3 span', { y: 14, opacity: 0, duration: 0.6, stagger: 0.1, ease: 'power3.out', delay: 0.6, scrollTrigger: { trigger: '#store .sp-meter', start: 'top 92%' } });
+      g.from('#store .sp-rail-fill', { scaleY: 0, duration: 1.6, ease: 'expo.inOut', scrollTrigger: { trigger: '#store .sp-commits', start: 'top 88%' } });
+      g.from('#store .sp-commit', { opacity: 0, x: 20, duration: 0.7, stagger: 0.16, ease: 'power3.out', scrollTrigger: { trigger: '#store .sp-commits', start: 'top 88%' } });
+      g.from('#store .sp-node', { scale: 0, duration: 0.5, stagger: 0.16, ease: 'back.out(3)', scrollTrigger: { trigger: '#store .sp-commits', start: 'top 88%' } });
+      g.from('#store .sp-tool', { scale: 0.6, opacity: 0, duration: 0.5, stagger: 0.04, ease: 'back.out(2.2)', scrollTrigger: { trigger: '#store .sp-tools', start: 'top 92%' } });
+      g.from('#store .sp-strike', { scaleX: 0, duration: 0.6, stagger: 0.15, ease: 'expo.out', delay: 0.3, scrollTrigger: { trigger: '#store .sp-zlist', start: 'top 94%' } });
+      g.from('#store .sp-z-yes', { scale: 0.7, opacity: 0, duration: 0.6, stagger: 0.12, ease: 'back.out(2.5)', delay: 0.9, scrollTrigger: { trigger: '#store .sp-zlist', start: 'top 94%' } });
+      g.to('#store .sp-confirm', { scale: 1.08, duration: 0.7, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+
+      // maker
+      g.to('.sp-maker-ring2', { rotation: 360, duration: 60, repeat: -1, ease: 'none' });
+      g.from('.sp-maker-av', { scale: 0.5, rotation: -12, opacity: 0, duration: 1.1, ease: 'back.out(1.8)', scrollTrigger: { trigger: '.sp-maker', start: 'top 80%' } });
+
+      // progress bar
+      g.to('.sp-progress', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0.3 } });
+
+      // hero copy drifts up and fades as you leave
+      g.to('.sp-hero-copy', { yPercent: -25, opacity: 0, ease: 'none', scrollTrigger: { trigger: '.sp-hero', start: 'top top', end: '60% top', scrub: true } });
+
+      // section headings rise out of their masks
+      g.utils.toArray('.sp-sec .sp-line').forEach(function (el) {
+        g.from(el, { yPercent: 110, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
+      });
+      g.utils.toArray('.sp-sec .sp-lead, .sp-sec .sp-eyebrow').forEach(function (el) {
+        g.from(el, { y: 24, opacity: 0, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
+      });
+
+      // cards and rows stagger in
+      g.set('.sp-card, .sp-row', { y: 60, opacity: 0 });
+      ST.batch('.sp-card, .sp-row', { start: 'top 92%', onEnter: function (b) { g.to(b, { y: 0, opacity: 1, duration: 1, stagger: 0.08, ease: 'expo.out', overwrite: true }); } });
+
+      // terminals wipe open
+      g.utils.toArray('.sp-term').forEach(function (el) {
+        g.from(el, { clipPath: 'inset(0 100% 0 0)', duration: 1.2, ease: 'expo.inOut', scrollTrigger: { trigger: el, start: 'top 90%' } });
+      });
+
+      // statement lights up word by word
+      g.fromTo('.sp-word', { opacity: 0.12 }, { opacity: 1, stagger: 0.06, ease: 'none',
+        scrollTrigger: { trigger: '.sp-statement', start: 'top 80%', end: 'bottom 45%', scrub: true } });
+
+      // counters
+      g.utils.toArray('.sp-count').forEach(function (el) {
+        var to = parseFloat(el.getAttribute('data-to')), o = { v: 0 };
+        ST.create({ trigger: el, start: 'top 92%', once: true, onEnter: function () {
+          g.to(o, { v: to, duration: 1.6, ease: 'power3.out', onUpdate: function () { el.textContent = Math.round(o.v).toLocaleString('en-US'); } });
+        } });
+      });
+
+      // final mark assembles
+      g.from('.sp-final-mark > *', { scale: 0, y: 30, transformOrigin: '50% 50%', duration: 0.9, stagger: 0.12, ease: 'back.out(1.8)',
+        scrollTrigger: { trigger: '.sp-final-mark', start: 'top 85%' } });
+
+      // nav pill follows the active section
+      var nav = root.querySelector('.sp-navwrap'), pill = root.querySelector('.sp-pill');
+      function movePill(link) {
+        if (!link) { g.to(pill, { opacity: 0, duration: 0.3 }); return; }
+        g.to(pill, { x: link.offsetLeft, width: link.offsetWidth, opacity: 1, duration: 0.55, ease: 'expo.out' });
+        g.utils.toArray('.sp-navwrap a').forEach(function (a) { a.style.color = a === link ? 'var(--fg)' : 'var(--fg2)'; });
+      }
+      ['how', 'store', 'adapters', 'install'].forEach(function (id) {
+        var sec = document.getElementById(id), link = nav && nav.querySelector('[data-nav="' + id + '"]');
+        if (!sec || !link) return;
+        ST.create({ trigger: sec, start: 'top 50%', end: 'bottom 50%', onToggle: function (st) { if (st.isActive) movePill(link); } });
+      });
+      ST.create({ trigger: '.sp-hero', start: 'top top', end: 'bottom 50%', onEnterBack: function () { movePill(null); } });
+      ST.create({ trigger: '#problem', start: 'top 50%', end: 'bottom 50%', onToggle: function (st) { if (st.isActive) movePill(null); } });
+
+      // magnetic buttons
+      g.utils.toArray('.sp-mag').forEach(function (b) {
+        var xTo = g.quickTo(b, 'x', { duration: 0.5, ease: 'power3' }), yTo = g.quickTo(b, 'y', { duration: 0.5, ease: 'power3' });
+        b.addEventListener('pointermove', function (e) { var r = b.getBoundingClientRect(); xTo((e.clientX - r.left - r.width / 2) * 0.25); yTo((e.clientY - r.top - r.height / 2) * 0.35); });
+        b.addEventListener('pointerleave', function () { xTo(0); yTo(0); });
+      });
+    }, root);
+  }
+  componentWillUnmount() { this._dead = true; if (this._cleanup) this._cleanup(); if (this._ctx) this._ctx.revert(); if (this._offHero) this._offHero(); }
+  renderVals() {
+    var self = this;
+    var dark = this.state.theme !== 'light';
+    var names = ['MCP tools', 'Claude Code', 'claude.ai · Cowork', 'Claude Design'];
+    var titles = ['terminal', 'claude code', 'chat', 'claude design'];
+    var mcp = [
+      ['Codex', 'codex', 'adds the MCP entry and AGENTS.md'],
+      ['Gemini CLI', 'gemini', 'adds the MCP entry and GEMINI.md; trust the folder'],
+      ['Copilot', 'copilot', 'adds the MCP entry and copilot-instructions.md'],
+      ['Cursor', 'cursor', 'prints the MCP snippet to paste and adds a project rule'],
+      ['Windsurf', 'windsurf', 'prints the MCP snippet to paste and adds a project rule'],
+      ['Claude Desktop', 'claude-desktop', 'adds the MCP entry to the Claude Desktop config']
     ];
-    var log = document.getElementById('log'), clock = 9 * 3600 + 12 * 60 + 4;
-    function stamp() {
-      clock += 17 + Math.floor(Math.random() * 40);
-      return [Math.floor(clock / 3600) % 24, Math.floor(clock / 60) % 60, clock % 60]
-        .map(function (n) { return (n < 10 ? '0' : '') + n; }).join(':');
+    var mi = this.state.mcp || 0;
+    var tab = this.state.tab;
+    return {
+      go: {
+        top: function (e) { self.go(e, 'top', 'samepage'); },
+        how: function (e) { self.go(e, 'how', '02 / How it works'); },
+        store: function (e) { self.go(e, 'store', '03 / The store'); },
+        adapters: function (e) { self.go(e, 'adapters', '04 / Adapters'); },
+        install: function (e) { self.go(e, 'install', '05 / Install'); }
+      },
+      curtainLabel: this.state.curtain || 'samepage',
+      words: this.words(),
+      themeClass: dark ? 'sp-dark' : 'sp-light',
+      isDark: dark,
+      isLight: !dark,
+      themeLabel: dark ? 'Switch to light mode' : 'Switch to dark mode',
+      toggleTheme: function () { self.setState({ theme: dark ? 'light' : 'dark' }); },
+      tabs: names.map(function (n, i) {
+        return { label: n, sel: i === tab ? 'true' : 'false', cls: i === tab ? 'sp-tab sp-tab-on' : 'sp-tab',
+          pick: function () { self.setState({ tab: i }); } };
+      }),
+      tab0: tab === 0, tab1: tab === 1, tab2: tab === 2, tab3: tab === 3,
+      mcpChips: mcp.map(function (m, i) {
+        return { label: m[0], on: i === mi ? 'true' : 'false', cls: i === mi ? 'sp-chip-b sp-chip-b-on' : 'sp-chip-b',
+          pick: function () { self.setState({ mcp: i }); } };
+      }),
+      mcpCode: mcp[mi][1],
+      mcpNote: mcp[mi][2],
+      tabTitle: titles[tab],
+      adapters: [
+        ['Claude Code', 'plugin', '/plugin install samepage', true],
+        ['claude.ai', 'skill', 'GitHub connector', false],
+        ['Cowork', 'skill', 'GitHub connector', false],
+        ['Claude Desktop', 'mcp', 'sp setup claude-desktop', false],
+        ['Claude Design', 'tokens', 'design/tokens.json', false],
+        ['Codex', 'mcp', 'sp setup codex', false],
+        ['Gemini CLI', 'mcp', 'sp setup gemini', false],
+        ['GitHub Copilot', 'mcp', 'sp setup copilot', false],
+        ['Cursor', 'mcp', 'sp setup cursor', false],
+        ['Windsurf', 'mcp', 'sp setup windsurf', false]
+      ].map(function (r) { return { name: r[0], kind: r[1], how: r[2], dot: r[3] ? 'sp-dot sp-dot-on' : 'sp-dot', status: r[3] ? 'Tested' : 'Community-tested' }; })
+    };
+  }
+  boot() {
+    var self = this;
+    if (this._dead) return;
+    var T = window.THREE;
+    var host = document.querySelector('[data-sp-gl]');
+    if (!T || !host) { if (this._tries++ < 120) setTimeout(function () { self.boot(); }, 80); return; }
+    var canvas = host.querySelector('canvas');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function isLight() { return self.state && self.state.theme === 'light'; }
+
+    var renderer = new T.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+    renderer.setClearColor(0x000000, 0);
+
+    var scene = new T.Scene();
+    var camera = new T.PerspectiveCamera(30, 1, 1, 2000);
+    var FOV = 30 * Math.PI / 180;
+
+    // holographic foil: hue follows the surface angle and drifts with time.
+    // palette is sky, periwinkle, violet, pink, lilac only (no warm hues).
+    var uni = { uTime: { value: 0 }, uLight: { value: 0 } };
+    var mat = new T.ShaderMaterial({
+      uniforms: uni,
+      vertexShader: [
+        'varying vec3 vN; varying vec3 vV; varying vec3 vW;',
+        'void main(){',
+        '  vec4 mv = modelViewMatrix * vec4(position,1.0);',
+        '  vN = normalize(normalMatrix * normal);',
+        '  vV = normalize(-mv.xyz);',
+        '  vW = (modelMatrix * vec4(position,1.0)).xyz;',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'),
+      fragmentShader: [
+        'uniform float uTime; uniform float uLight; varying vec3 vN; varying vec3 vV; varying vec3 vW;',
+        'vec3 pal(float t){',
+        '  t = fract(t) * 5.0;',
+        '  vec3 c0 = vec3(0.49,0.77,1.0); vec3 c1 = vec3(0.49,0.51,1.0); vec3 c2 = vec3(0.78,0.49,1.0);',
+        '  vec3 c3 = vec3(1.0,0.48,0.85); vec3 c4 = vec3(0.94,0.66,1.0);',
+        '  if (t < 1.0) return mix(c0,c1,smoothstep(0.0,1.0,t));',
+        '  if (t < 2.0) return mix(c1,c2,smoothstep(0.0,1.0,t-1.0));',
+        '  if (t < 3.0) return mix(c2,c3,smoothstep(0.0,1.0,t-2.0));',
+        '  if (t < 4.0) return mix(c3,c4,smoothstep(0.0,1.0,t-3.0));',
+        '  return mix(c4,c0,smoothstep(0.0,1.0,t-4.0));',
+        '}',
+        'void main(){',
+        '  vec3 n = normalize(vN); vec3 v = normalize(vV);',
+        '  float nv = clamp(dot(n,v),0.0,1.0);',
+        '  float t = nv*0.55 + n.x*0.32 + n.y*0.22 + vW.x*0.006 + vW.y*0.008 + uTime*0.045;',
+        '  vec3 col = mix(pal(t), pal(t*2.3 + 0.37), 0.28);',
+        '  float fres = pow(1.0 - nv, 2.2);',
+        '  col = mix(col*0.82, vec3(1.0), fres*0.5*(1.0-uLight*0.6));',
+        '  vec3 L = normalize(vec3(0.35,0.85,0.6));',
+        '  float spec = pow(max(dot(reflect(-L,n), v),0.0), 48.0);',
+        '  vec3 L2 = normalize(vec3(-0.7,-0.2,0.5));',
+        '  float spec2 = pow(max(dot(reflect(-L2,n), v),0.0), 22.0);',
+        '  col += vec3(1.0)*spec*0.85 + pal(t+0.5)*spec2*0.35;',
+        '  col *= 0.78 + 0.22*nv;',
+        '  col = mix(col, col*col*1.15, uLight*0.55);',
+        '  gl_FragColor = vec4(col,1.0);',
+        '}'
+      ].join('\n')
+    });
+
+    function rr(x0, y0, x1, y1, r) {
+      var s = new T.Shape();
+      var X0 = x0 - 50, X1 = x1 - 50, B = 50 - y1, U = 50 - y0;
+      s.moveTo(X0 + r, B);
+      s.lineTo(X1 - r, B); s.absarc(X1 - r, B + r, r, -Math.PI / 2, 0, false);
+      s.lineTo(X1, U - r); s.absarc(X1 - r, U - r, r, 0, Math.PI / 2, false);
+      s.lineTo(X0 + r, U); s.absarc(X0 + r, U - r, r, Math.PI / 2, Math.PI, false);
+      s.lineTo(X0, B + r); s.absarc(X0 + r, B + r, r, Math.PI, Math.PI * 1.5, false);
+      return s;
     }
-    function push(msg) {
-      var row = document.createElement('div'), t = document.createElement('span'), m = document.createElement('span');
-      t.className = 't'; m.className = 'm'; t.textContent = stamp(); m.textContent = msg;
-      row.appendChild(t); row.appendChild(m);
-      log.insertBefore(row, log.firstChild);
-      gsap.from(row, { height: 0, paddingTop: 0, paddingBottom: 0, opacity: 0, duration: 0.5, ease: 'power3.out' });
-      while (log.children.length > 3) log.removeChild(log.lastElementChild);
+    var ext = { depth: 7, bevelEnabled: true, bevelThickness: 2, bevelSize: 1.5, bevelSegments: 10, curveSegments: 48 };
+    var defs = [rr(26, 26, 74, 46, 10), rr(26, 54, 50, 74, 10), rr(58, 54, 74, 74, 3)];
+    var geos = [], homes = [];
+    defs.forEach(function (sh) {
+      var g = new T.ExtrudeGeometry(sh, ext);
+      g.computeBoundingBox();
+      var c = g.boundingBox.getCenter(new T.Vector3());
+      g.translate(-c.x, -c.y, -c.z);
+      g.computeVertexNormals();
+      geos.push(g); homes.push(new T.Vector3(c.x, c.y, 0));
+    });
+
+    var rig = new T.Group(); scene.add(rig);
+    var mark = new T.Group(); rig.add(mark);
+
+    var starts = [new T.Vector3(-26, 30, 46), new T.Vector3(-40, -30, -40), new T.Vector3(44, -26, 30)];
+    var spins = [new T.Vector3(0.9, -1.2, 0.5), new T.Vector3(-1.1, 0.8, -0.7), new T.Vector3(1.3, 1.0, 0.9)];
+    var pieces = geos.map(function (g, i) {
+      var m = new T.Mesh(g, mat); mark.add(m);
+      return { mesh: m, home: homes[i], from: homes[i].clone().add(starts[i]), spin: spins[i] };
+    });
+
+    function rnd(a, b) { return a + Math.random() * (b - a); }
+    var shards = [];
+    for (var i = 0; i < 60; i++) {
+      var gi = i % 3;
+      var m = new T.Mesh(geos[gi], mat); mark.add(m);
+      var dir = new T.Vector3(rnd(-1, 1), rnd(-0.3, 0.3), rnd(-0.8, 0.6)).normalize();
+      var start = dir.multiplyScalar(rnd(46, 96));
+      var target = homes[gi].clone().add(new T.Vector3(rnd(-6, 6), rnd(-3, 3), rnd(-2, 2)));
+      shards.push({ mesh: m, start: start, target: target, s: rnd(0.07, 0.2), delay: rnd(0.05, 0.9), dur: rnd(1.4, 2.1),
+        rot: new T.Vector3(rnd(0, 6), rnd(0, 6), rnd(0, 6)), spin: rnd(0.6, 1.6) });
     }
-    var edges = document.querySelectorAll('.edge'), nodes = document.querySelectorAll('.node rect');
-    var pktText = document.getElementById('pktText');
-    var loop = gsap.timeline({ repeat: -1, paused: true });
-    flows.forEach(function (f) {
-      var t = loop.duration();
-      var fileEl = document.querySelector('.f[data-f="' + f.file + '"]');
-      var into = f.dir > 0;
-      loop.call(function () { pktText.textContent = f.label; }, null, t)
-        .to([edges[f.path], nodes[f.path]], { attr: { stroke: '#f5f5f6' }, duration: 0.3 }, t)
-        .set('#pkt', { opacity: 1 }, t + 0.1)
-        .to('#pkt', { duration: 1.1, ease: 'power2.inOut', motionPath: { path: '#p' + f.path, start: into ? 0 : 1, end: into ? 1 : 0 } }, t + 0.1)
-        .to('#pkt', { opacity: 0, duration: 0.2 }, t + 1.15)
-        .to(fileEl, { attr: { fill: '#f5f5f6' }, duration: 0.2 }, into ? t + 1.1 : t)
-        .to('#storeBox', { attr: { 'stroke-width': 2.6 }, duration: 0.15, yoyo: true, repeat: 1 }, into ? t + 1.1 : t)
-        .call(push, [f.msg], t + 1.2)
-        .to(fileEl, { attr: { fill: f.file === 'index' ? '#f5f5f6' : '#8b8b94' }, duration: 0.6 }, t + 1.6)
-        .to([edges[f.path], nodes[f.path]], { attr: { stroke: '#2a2a31' }, duration: 0.6 }, t + 1.4)
-        .to({}, { duration: 0.7 }, t + 1.6);
-    });
-    gsap.delayedCall(2.2, function () {
-      ScrollTrigger.create({ trigger: '#topo', start: 'top bottom', end: 'bottom top',
-        onToggle: function (s) { if (s.isActive) loop.play(); else loop.pause(); } });
-      if (ScrollTrigger.isInViewport(document.getElementById('topo'))) loop.play();
-    });
 
-    /* reveals */
-    gsap.utils.toArray('.reveal').forEach(function (el) {
-      if (el.closest('.hero')) return;
-      gsap.fromTo(el, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 1.1, ease: 'expo.out',
-        scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
-    });
-    gsap.utils.toArray('.sec h2, .final h2').forEach(function (h) {
-      var s = SplitText.create(h, { type: 'lines', mask: 'lines' });
-      gsap.from(s.lines, { yPercent: 105, duration: 1.1, stagger: 0.08, ease: 'expo.out', scrollTrigger: { trigger: h, start: 'top 90%', once: true } });
-    });
+    var orbit = new T.Group(); rig.add(orbit);
+    orbit.rotation.set(0.26, 0, 0);
+    var R = 72;
+    var pts = [];
+    for (var k = 0; k <= 240; k++) { var a = k / 240 * Math.PI * 2; pts.push(new T.Vector3(Math.cos(a) * R, 0, Math.sin(a) * R)); }
+    var ringMat = new T.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
+    orbit.add(new T.Line(new T.BufferGeometry().setFromPoints(pts), ringMat));
+    var spin = new T.Group(); orbit.add(spin);
 
-    /* statement lights up word by word */
-    var st = SplitText.create('#statement', { type: 'words', wordsClass: 'w' });
-    ScrollTrigger.create({ trigger: '#statement', start: 'top 80%', end: 'bottom 40%', scrub: true,
-      onUpdate: function (self) {
-        var n = Math.round(self.progress * st.words.length);
-        st.words.forEach(function (w, i) { w.classList.toggle('on', i < n); });
-      } });
+    var names = ['Claude Code', 'claude.ai', 'Codex', 'Claude Design', 'Gemini CLI', 'Copilot', 'Cursor', 'any MCP client'];
+    var labels = [];
+    function makeTex(text, mode) {
+      var c = document.createElement('canvas'), ctx = c.getContext('2d');
+      var fs = 28, padX = 26, h = 62, font = '500 ' + fs + 'px "Geist Mono", ui-monospace, monospace';
+      ctx.font = font;
+      var w = Math.ceil(ctx.measureText(text).width) + padX * 2;
+      c.width = w; c.height = h; ctx.font = font;
+      var r = h / 2 - 2;
+      ctx.beginPath();
+      ctx.moveTo(2 + r, 2); ctx.lineTo(w - 2 - r, 2); ctx.arc(w - 2 - r, h / 2, r, -Math.PI / 2, Math.PI / 2);
+      ctx.lineTo(2 + r, h - 2); ctx.arc(2 + r, h / 2, r, Math.PI / 2, Math.PI * 1.5); ctx.closePath();
+      if (mode === 'hot') {
+        var gr = ctx.createLinearGradient(0, 0, w, 0);
+        gr.addColorStop(0, '#7cc4ff'); gr.addColorStop(0.3, '#7c83ff'); gr.addColorStop(0.55, '#c77dff');
+        gr.addColorStop(0.8, '#ff7ad9'); gr.addColorStop(1, '#f0a8ff');
+        ctx.fillStyle = gr; ctx.fill();
+        ctx.fillStyle = '#060608';
+      } else if (mode === 'light') {
+        ctx.fillStyle = 'rgba(255,255,255,0.95)'; ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(10,10,12,0.18)'; ctx.stroke();
+        ctx.fillStyle = '#1a1a20';
+      } else {
+        ctx.fillStyle = 'rgba(14,14,20,0.92)'; ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,0.22)'; ctx.stroke();
+        ctx.fillStyle = '#e8e8ee';
+      }
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, padX, h / 2 + 1);
+      var t = new T.CanvasTexture(c); t.anisotropy = 4;
+      return { tex: t, aspect: w / h };
+    }
+    function buildLabels() {
+      if (self._dead || labels.length) return;
+      names.forEach(function (n, i) {
+        var d = makeTex(n, 'dark'), l = makeTex(n, 'light'), hot = makeTex(n, 'hot');
+        var sm = new T.SpriteMaterial({ map: d.tex, transparent: true, depthWrite: false, opacity: 0 });
+        var sp = new T.Sprite(sm);
+        var ang = i / names.length * Math.PI * 2;
+        sp.position.set(Math.cos(ang) * R, 0, Math.sin(ang) * R);
+        spin.add(sp);
+        labels.push({ sprite: sp, dark: d.tex, light: l.tex, hot: hot.tex, aspect: d.aspect, hotUntil: 0 });
+      });
+      sizeLabels();
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(buildLabels); else buildLabels();
+    setTimeout(buildLabels, 1500);
 
-    /* counters */
-    gsap.utils.toArray('.num b').forEach(function (b) {
-      var o = { v: 0 }, to = +b.dataset.to;
-      b.textContent = '0';
-      gsap.to(o, { v: to, duration: 1.6, ease: 'power3.out', scrollTrigger: { trigger: '#nums', start: 'top 85%', once: true },
-        onUpdate: function () { var v = Math.round(o.v); b.textContent = b.dataset.fmt ? v.toLocaleString('en-US') : String(v); } });
-    });
+    var worldPerPx = 0.1, baseZ = 230;
+    function sizeLabels() {
+      labels.forEach(function (l) { var h = 26 * worldPerPx; l.sprite.scale.set(h * l.aspect, h, 1); });
+    }
+    function resize() {
+      var w = host.clientWidth, h = host.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      var phone = w < 860;
+      var fit = 186 / (2 * Math.tan(FOV / 2) * camera.aspect);
+      baseZ = phone ? Math.max(200, fit) : Math.max(226, fit);
+      camera.updateProjectionMatrix();
+      worldPerPx = (2 * baseZ * Math.tan(FOV / 2)) / h;
+      rig.position.y = phone ? 0 : -(850 - h / 2) * worldPerPx;
+      sizeLabels();
+      if (reduce) draw(99);
+    }
+    var ro = new ResizeObserver(resize); ro.observe(host);
 
-    /* the mark assembles */
-    gsap.timeline({ scrollTrigger: { trigger: '.final', start: 'top 75%', once: true } })
-      .from('#mTop', { x: -40, opacity: 0, duration: 1, ease: 'expo.out' })
-      .from('#mBot', { x: 40, opacity: 0, duration: 1, ease: 'expo.out' }, 0.1)
-      .from('#mCur', { scale: 0, transformOrigin: '50% 50%', duration: 0.7, ease: 'back.out(2)' }, 0.5)
-      .to('#mCur', { opacity: 0, duration: 0.01, repeat: -1, yoyo: true, repeatDelay: 0.55 }, 1.4);
+    var packets = [];
+    for (var p = 0; p < 4; p++) {
+      var pm = new T.Mesh(geos[2], mat); pm.visible = false; scene.add(pm);
+      packets.push({ mesh: pm, on: false });
+    }
+    var nextPacket = 4;
+    var v0 = new T.Vector3(), v1 = new T.Vector3(), v2 = new T.Vector3();
+
+    var pointer = { x: 0, y: 0 }, tilt = { x: 0, y: 0 };
+    function onMove(e) { pointer.x = e.clientX / window.innerWidth - 0.5; pointer.y = e.clientY / window.innerHeight - 0.5; }
+    window.addEventListener('pointermove', onMove);
+
+    function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+    function eio(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+    function eo(x) { return 1 - Math.pow(1 - x, 4); }
+
+    function draw(t) {
+      var light = isLight();
+      uni.uTime.value = t;
+      uni.uLight.value += ((light ? 1 : 0) - uni.uLight.value) * (reduce ? 1 : 0.08);
+      ringMat.color.set(light ? 0x0a0a0c : 0xffffff);
+      var a = eo(c01((t - 0.35) / 2.2));
+      pieces.forEach(function (pc) {
+        pc.mesh.position.lerpVectors(pc.from, pc.home, a);
+        var r = 1 - a;
+        pc.mesh.rotation.set(pc.spin.x * r * 2, pc.spin.y * r * 2, pc.spin.z * r * 2);
+      });
+      shards.forEach(function (s) {
+        var k = c01((t - s.delay) / s.dur), e = eio(k);
+        s.mesh.visible = k < 1;
+        s.mesh.position.lerpVectors(s.start, s.target, e);
+        var drift = 1 - e;
+        s.mesh.position.y += Math.sin(t * 1.3 + s.rot.x) * 2 * drift;
+        s.mesh.rotation.set(s.rot.x + t * s.spin * drift, s.rot.y + t * s.spin * drift, s.rot.z);
+        s.mesh.scale.setScalar(Math.max(s.s * (1 - Math.pow(e, 3)), 0.0001));
+      });
+      var idle = c01((t - 2.4) / 1.6);
+      mark.rotation.y = -0.3 * idle + Math.sin(t * 0.33) * 0.16 * idle;
+      mark.rotation.x = 0.12 * idle + Math.sin(t * 0.27) * 0.06 * idle;
+      mark.position.y = Math.sin(t * 0.6) * 1.0 * idle;
+      var lab = c01((t - 2.0) / 1.0);
+      ringMat.opacity = (light ? 0.14 : 0.16) * lab;
+      spin.rotation.y = -t * 0.09;
+      var sy = c01((window.scrollY || 0) / 700);
+      tilt.x += (pointer.y * 0.28 - tilt.x) * 0.05;
+      tilt.y += (pointer.x * 0.5 - tilt.y) * 0.05;
+      rig.rotation.x = tilt.x * 0.6 + sy * 0.4;
+      rig.rotation.y = tilt.y * 0.6 + sy * 0.5;
+      camera.position.set(0, 0, baseZ - sy * 50);
+      camera.lookAt(0, 0, 0);
+      scene.updateMatrixWorld();
+      labels.forEach(function (l) {
+        l.sprite.getWorldPosition(v0);
+        var front = c01((v0.z + R) / (2 * R));
+        l.sprite.material.opacity = lab * (0.28 + 0.72 * front);
+        l.sprite.material.map = l.hotUntil > t ? l.hot : (light ? l.light : l.dark);
+      });
+
+      if (!reduce && labels.length && t > nextPacket) {
+        var free = packets.filter(function (q) { return !q.on; })[0];
+        if (free) {
+          var i0 = Math.floor(Math.random() * labels.length), i1 = (i0 + 2 + Math.floor(Math.random() * (labels.length - 3))) % labels.length;
+          free.on = true; free.i0 = i0; free.i1 = i1; free.t0 = t; free.mesh.visible = true;
+          labels[i0].hotUntil = t + 0.7;
+        }
+        nextPacket = t + 1.5;
+      }
+      packets.forEach(function (q) {
+        if (!q.on) return;
+        var k = (t - q.t0) / 2.0;
+        if (k >= 1) { q.on = false; q.mesh.visible = false; labels[q.i1].hotUntil = t + 0.8; return; }
+        labels[q.i0].sprite.getWorldPosition(v0);
+        labels[q.i1].sprite.getWorldPosition(v2);
+        mark.getWorldPosition(v1);
+        if (k < 0.5) q.mesh.position.lerpVectors(v0, v1, eio(k * 2));
+        else q.mesh.position.lerpVectors(v1, v2, eio((k - 0.5) * 2));
+        var edge = Math.min(1, Math.min(k, 1 - k) * 6);
+        var mid = 1 - Math.max(0, 1 - Math.abs(k - 0.5) * 6);
+        q.mesh.scale.setScalar(0.04 + 0.13 * edge * mid);
+        q.mesh.rotation.set(t * 2, t * 1.4, 0);
+      });
+      renderer.render(scene, camera);
+    }
+
+    var t0 = performance.now(), raf = 0;
+    function frame() {
+      raf = requestAnimationFrame(frame);
+      var rect = host.getBoundingClientRect();
+      if (rect.bottom < 0) return;
+      draw((performance.now() - t0) / 1000);
+    }
+    this._restart = function () { t0 = performance.now(); nextPacket = 4; packets.forEach(function (q) { q.on = false; q.mesh.visible = false; }); };
+    resize();
+    if (reduce) draw(99); else frame();
+    this._redraw = function () { if (reduce) draw(99); };
+
+    this._cleanup = function () {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      window.removeEventListener('pointermove', onMove);
+      renderer.dispose();
+    };
+  }
+  componentDidUpdate() { if (this._redraw) this._redraw(); }
+}
+
+(function () {
+  var root = document.querySelector('.sp-root');
+  var c = new Component({});
+  try { var saved = localStorage.getItem('sp-theme'); if (saved === 'light' || saved === 'dark') c.state.theme = saved; } catch (e) {}
+  var MCP = [['codex', 'adds the MCP entry and AGENTS.md'], ['gemini', 'adds the MCP entry and GEMINI.md; trust the folder'],
+    ['copilot', 'adds the MCP entry and copilot-instructions.md'], ['cursor', 'prints the MCP snippet to paste and adds a project rule'],
+    ['windsurf', 'prints the MCP snippet to paste and adds a project rule'], ['claude-desktop', 'adds the MCP entry to the Claude Desktop config']];
+  var TITLES = ['terminal', 'claude code', 'chat', 'claude design'];
+  function $(sel) { return root.querySelector(sel); }
+  function all(sel) { return Array.prototype.slice.call(root.querySelectorAll(sel)); }
+  window.__spRender = function () {
+    var st = c.state, dark = st.theme !== 'light';
+    root.classList.toggle('sp-dark', dark); root.classList.toggle('sp-light', !dark);
+    document.documentElement.style.background = dark ? '#060608' : '#f6f6f8';
+    var tg = $('[data-theme-toggle]'); if (tg) tg.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    var tab = st.tab || 0;
+    all('[data-tab]').forEach(function (b) { var on = +b.getAttribute('data-tab') === tab; b.className = on ? 'sp-tab sp-tab-on' : 'sp-tab'; b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    all('[data-panel]').forEach(function (p) { p.hidden = +p.getAttribute('data-panel') !== tab; });
+    var tt = $('[data-sp="tab-title"]'); if (tt) tt.textContent = TITLES[tab];
+    var mi = st.mcp || 0;
+    all('[data-mcp]').forEach(function (b) { var on = +b.getAttribute('data-mcp') === mi; b.className = on ? 'sp-chip-b sp-chip-b-on' : 'sp-chip-b'; b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    var mc = $('[data-sp="mcp-code"]'); if (mc) mc.textContent = MCP[mi][0];
+    var mn = $('[data-sp="mcp-note"]'); if (mn) mn.textContent = MCP[mi][1];
+    var cl = $('.sp-curtain-label'); if (cl) cl.textContent = st.curtain || 'samepage';
+  };
+  root.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-go],[data-theme-toggle],[data-tab],[data-mcp]');
+    if (!t) return;
+    if (t.hasAttribute('data-go')) { c.renderVals().go[t.getAttribute('data-go')](e); return; }
+    if (t.hasAttribute('data-theme-toggle')) {
+      var next = c.state.theme === 'light' ? 'dark' : 'light';
+      try { localStorage.setItem('sp-theme', next); } catch (err) {}
+      c.setState({ theme: next }); return;
+    }
+    if (t.hasAttribute('data-tab')) { c.setState({ tab: +t.getAttribute('data-tab') }); return; }
+    if (t.hasAttribute('data-mcp')) { c.setState({ mcp: +t.getAttribute('data-mcp') }); }
   });
+  window.__spRender();
+  c.componentDidMount();
 
-  /* pinned story on desktop */
-  mm.add('(min-width: 901px) and (prefers-reduced-motion: no-preference)', function () {
-    var steps = document.querySelectorAll('.step'), panes = document.querySelectorAll('.pane');
-    var titles = ['mcp · tools/call boot', 'mcp · tools/call log_ship', 'cli · sp handoff new'];
-    var cur = 0;
-    function show(i) {
-      if (i === cur) return;
-      steps.forEach(function (s, k) { s.classList.toggle('on', k === i); });
-      gsap.to(panes[cur], { opacity: 0, y: -10, duration: 0.35, overwrite: true });
-      gsap.fromTo(panes[i], { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', overwrite: true });
-      document.getElementById('paneTitle').textContent = titles[i];
-      cur = i;
+  // release data (ADR-0022): the HTML carries the values at build time; data.json keeps them current
+  fetch('data.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+    if (!d) return;
+    var v = 'v' + d.version;
+    all('[data-sp="version"],[data-sp="version-plain"]').forEach(function (el) { el.textContent = v; });
+    var rl = $('[data-sp="release-link"]'); if (rl) rl.href = d.release_url;
+    var hl = $('[data-sp="headline"]'); if (hl && d.headline) hl.textContent = d.headline;
+    var tn = $('[data-sp="tools-total"]'); if (tn) tn.textContent = d.tools.total;
+    var grid = $('[data-sp="adapters"]'), tpl = document.getElementById('sp-tile-tpl');
+    if (grid && tpl && d.adapters && d.adapters.length) {
+      grid.querySelectorAll('.sp-tile').forEach(function (n) { n.remove(); });
+      d.adapters.forEach(function (a) {
+        var html = tpl.innerHTML.replace('{{kind}}', a.kind).replace('{{name}}', a.name).replace('{{how}}', a.how)
+          .replace('{{dot}}', a.tested ? 'sp-dot sp-dot-on' : 'sp-dot').replace('{{status}}', a.tested ? 'Tested' : 'Community-tested');
+        var box = document.createElement('div'); box.innerHTML = html.trim();
+        var node = box.firstChild; node.style.opacity = 1; node.style.transform = 'none'; grid.appendChild(node);
+      });
     }
-    ScrollTrigger.create({ trigger: '#how', start: 'top top', end: '+=1500', pin: '#how',
-      onUpdate: function (self) { show(Math.min(2, Math.floor(self.progress * 3))); } });
-  });
+  }).catch(function () {});
 })();
 </script>
 </body>
