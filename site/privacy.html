@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>samepage privacy policy</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400&amp;display=swap">
+<style>
+:root{--bg:#f6f6f8;--fg:#0a0a0c;--fg2:#474751;--line:#e3e3e9}
+@media (prefers-color-scheme:dark){:root{--bg:#060608;--fg:#f4f4f6;--fg2:#a9a9b3;--line:#1d1d24}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 "Geist",system-ui,sans-serif}
+main{max-width:680px;margin:0 auto;padding:64px 16px 96px}
+a{color:var(--fg)}h1{font-size:36px;letter-spacing:-.03em;margin:24px 0 8px}h2{font-size:19px;margin:36px 0 8px}
+p,li{color:var(--fg2)}code{font:14px "Geist Mono",ui-monospace,monospace}
+.top{font:13px "Geist Mono",ui-monospace,monospace;color:var(--fg2)}.top a{color:var(--fg2)}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--fg2)}
+</style>
+</head>
+<body><main>
+<div class="top"><a href="/">samepage</a></div>
+<h1>Privacy policy</h1>
+<p>samepage is an open-source tool by Rajaraman Arumugam. It has no server and no account, so there is nothing for us to collect. This page covers the Claude plugin, the <code>sp</code> command, the skill and this website.</p>
+<h2>What samepage stores</h2>
+<p>Your profile (name, headline, optional links) and your work notes (projects, decisions, shipped work, handoffs, rules), as Markdown files in a store you own: a private GitHub repo, a folder on your computer, or Notion if you choose it.</p>
+<h2>Where your data goes</h2>
+<ul>
+<li>Only to your own store: <code>git pull</code> and <code>git push</code> to your own repo, using your own git login, or your own Notion workspace.</li>
+<li><code>sp init</code> uses your signed-in GitHub command line (<code>gh</code>) to create that repo. samepage never reads, stores or sends your token.</li>
+<li>The AI tool you use (Claude, Codex, Gemini CLI and others) reads what samepage gives it. That tool's own privacy policy applies to it.</li>
+</ul>
+<h2>What we never do</h2>
+<ul>
+<li>No analytics, tracking or telemetry in the plugin, the skill or the <code>sp</code> command.</li>
+<li>No copy of your data on any server run by us. We never see your store.</li>
+<li>No selling or sharing of data, because we hold none.</li>
+</ul>
+<h2>This website</h2>
+<p>The site is static files hosted on Vercel, which keeps standard request logs. Fonts load from Google Fonts. The site sets no cookies; it remembers your light or dark choice in your own browser only.</p>
+<h2>Deleting your data</h2>
+<p>Delete your store repo or folder. Uninstalling samepage leaves your store untouched, so delete it yourself if you want it gone.</p>
+<h2>Children</h2>
+<p>samepage is not made for anyone under 18.</p>
+<footer>Last updated 6 November 2026. Questions: <a href="https://github.com/rx4u/samepage/issues">open an issue</a> or email rajaaraman@gmail.com.</footer>
+</main></body></html>
