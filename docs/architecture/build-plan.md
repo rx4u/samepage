@@ -285,11 +285,11 @@ Depends on: WP-20, WP-21, WP-22
 - Out of scope: fixing tool vendors' bugs.
 - Done when: every tool in the README table has a ledger row with date, version and result.
 
-### WP-24: Reposition and release v1.0.0
+### WP-24: Reposition and release v1.1.0
 Wave: 5
 Depends on: WP-23
 - Why: launch copy must match what was tested (ADR-0018, ADR-0019).
-- Do: README leads with Claude, adds a tool table (ticks only from the ledger, others "community-tested"), install section for other tools; new gif; landing page; release workflow run by Raja (`workflow_dispatch`, version 1.0.0).
+- Do: README leads with Claude, adds a tool table (ticks only from the ledger, others "community-tested"), install section for other tools; new gif; landing page; release workflow run by Raja (`workflow_dispatch`, version 1.1.0, B46).
 - Read model: none
 - Targets: Time to first working boot
 - Columns touched: none

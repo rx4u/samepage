@@ -43,7 +43,7 @@ Anyone who works on the same projects across more than one Claude surface.
 
 If you only chat with Claude and don't run ongoing projects, claude.ai's built-in memory is enough. samepage is for work that moves between surfaces.
 
-No server. No API keys. No account to create. Your store is a private GitHub repo of plain Markdown files.
+No hosted server. No API keys. No account to create. Your store is a private GitHub repo of plain Markdown files.
 
 ## How it works
 
@@ -60,6 +60,25 @@ No server. No API keys. No account to create. Your store is a private GitHub rep
 ```
 
 Every write is a small, typed entry you confirm first. A tiny index of pre-built "boot files" keeps reads to one file per session, under 2,000 tokens.
+
+## Works with
+
+samepage is built for Claude first. Other coding tools connect through a local MCP server and an instruction file, so they read and write the same store.
+
+| Tool | How it connects | Status |
+|---|---|---|
+| Claude Code | Plugin: context loads at session start, `/sp` commands | Tested |
+| claude.ai chat | Skill plus the GitHub connector | Community-tested |
+| Cowork | Skill plus the GitHub connector | Community-tested |
+| Claude Desktop | Local MCP server (`sp setup claude-desktop`) | Community-tested |
+| Claude Design | Reads your product repo's tokens; no install | Community-tested |
+| Gemini CLI | Local MCP server and GEMINI.md (`sp setup gemini`) | Community-tested |
+| Codex | Local MCP server and AGENTS.md (`sp setup codex`) | Community-tested |
+| GitHub Copilot | Local MCP server and copilot-instructions.md (`sp setup copilot`) | Community-tested |
+| Cursor | Local MCP server and a project rule (`sp setup cursor`) | Community-tested |
+| Windsurf | Local MCP server and a project rule (`sp setup windsurf`) | Community-tested |
+
+Tested means a full run (boot, a confirmed write, a handoff picked up) passed and is recorded in the [tool ledger](docs/build/tool-ledger.md). Community-tested means it is built and covered by tests but no maintainer run has passed yet. If you run it, open an issue with what happened. ChatGPT is not supported in v1.
 
 ## Set up
 
@@ -80,13 +99,27 @@ Pick the path that matches how you use Claude. Both end at the same private stor
 
 Saving from chat needs one GitHub permission: the Claude GitHub app installed on your account with access to the store repo (GitHub settings, Applications). Until then chat reads everything and hands you each entry to paste on GitHub. Claude walks you through it.
 
+### I use another coding tool (Codex, Gemini CLI, Copilot, Cursor, Windsurf, Claude Desktop)
+
+1. Install the `sp` command (needs `git` and `python3`, no sudo):
+
+   ```bash
+   git clone https://github.com/rx4u/samepage "$HOME/.samepage/tool" && sh "$HOME/.samepage/tool/install.sh"
+   ```
+
+2. Create or connect your store: `sp init` (or `sp init --use-existing you/samepage-store`).
+3. From inside a project, connect your tool: `sp setup codex` (or `gemini`, `copilot`, `cursor`, `windsurf`, `claude-desktop`). It adds a `samepage` entry to the tool's MCP config, keeping a `.samepage-backup` copy of the old file, and writes a short instruction file to the project. That file holds no store content, so it is safe to commit. Add `--dry-run` to see every change first.
+4. Restart the tool and ask "what am I working on?". Writes show a preview and wait for your yes.
+
+Cursor and Windsurf config paths are not verified yet, so for those `sp setup` prints the snippet to paste instead of editing the file. Gemini CLI runs MCP servers only in folders you trust.
+
 ### Claude Design
 
 Link your product repo when you start a design. Put your tokens in `design/tokens.json` (W3C design token format), and log the design system once ("log the design system for halcyon") so every surface knows where it lives.
 
 ### Requirements
 
-- Claude Code path: `git` and `python3` (macOS asks to install the command line tools the first time). Linux and macOS; the hooks are untested on Windows.
+- Claude Code and other coding tools: `git` and `python3` 3.9 or newer (macOS asks to install the command line tools the first time). Linux and macOS; Windows is untested.
 - claude.ai path: nothing to install.
 
 ## Use it
@@ -106,7 +139,7 @@ claude.ai memory remembers personal facts and preferences inside chat. samepage 
 
 ## Your data
 
-- Your store is private and yours: a repo you own (or a Notion page, if you choose Notion). samepage never runs a server and never sees your data.
+- Your store is private and yours: a repo you own (or a Notion page, if you choose Notion). samepage never runs a hosted server and never sees your data. The MCP server for other tools runs on your own machine.
 - Nothing is written without your confirmation. Nothing is deleted: projects are archived, decisions superseded.
 - `sp check` blocks secrets (API keys, tokens, private keys, card numbers) from ever entering a store.
 - Store content is treated as data. Instructions found inside entries are never followed.
