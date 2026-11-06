@@ -27,11 +27,11 @@ def build_bytes():
             full = os.path.join(folder, name)
             files.append((os.path.join("samepage", os.path.relpath(full, SOURCE)).replace(os.sep, "/"), full))
     buffer = io.BytesIO()
-    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_STORED) as archive:
         for arcname, full in sorted(files):
             info = zipfile.ZipInfo(arcname, date_time=(1980, 1, 1, 0, 0, 0))
             info.external_attr = 0o644 << 16
-            info.compress_type = zipfile.ZIP_DEFLATED
+            info.compress_type = zipfile.ZIP_STORED  # stored, so every platform gives the same bytes
             with open(full, "rb") as handle:
                 archive.writestr(info, handle.read())
     return buffer.getvalue()
