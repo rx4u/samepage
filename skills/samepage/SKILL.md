@@ -4,7 +4,7 @@ description: Reads and writes the user's samepage store, one shared working cont
 license: MIT
 metadata:
   author: Rajaraman Arumugam
-  version: 1.1.0
+  version: 1.2.0
 ---
 
 # samepage

@@ -40,9 +40,9 @@ def main(argv=None):
     for _module in (_log, _handoff, _proof, _rules, _brief):
         _module.register(sub)
     # ----- end stream B
-    # ----- wave 5 (ADR-0018, ADR-0020): sp context, sp setup, sp mcp. Each module registers its own parser.
-    from . import context as _context, mcp as _mcp, setup as _setup
-    for _module in (_context, _setup, _mcp):
+    # ----- wave 5 (ADR-0018, ADR-0020, ADR-0023): sp context, sp setup, sp mcp, sp link, sp sync. Each module registers its own parser.
+    from . import context as _context, mcp as _mcp, setup as _setup, sync as _sync
+    for _module in (_context, _setup, _mcp, _sync):
         _module.register(sub)
     # ----- end wave 5
     # export (stream D, WP-10): Notion "Markdown & CSV" export to a GitHub store

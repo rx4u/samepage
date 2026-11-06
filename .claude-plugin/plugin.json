@@ -1,6 +1,6 @@
 {
   "name": "samepage",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Your AI tools forget. samepage doesn't. Boots your shared working context (profile, rules, projects, ships, decisions, handoffs) into every Claude Code session from a store you own.",
   "author": { "name": "Rajaraman Arumugam" },
   "repository": "https://github.com/rx4u/samepage",

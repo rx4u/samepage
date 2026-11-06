@@ -133,6 +133,24 @@ Link your product repo when you start a design. Put your tokens in `design/token
 | "log decision: Supabase over Firebase because of RLS" | Recorded with its reason; superseded decisions are kept, not deleted |
 | `/sp brief halcyon` | A design brief to paste into Claude Design, naming your tokens file |
 
+## Two accounts? Link the stores
+
+Keep one store for your office account and one for your personal one, and share what should follow you. On a machine that has both store clones:
+
+```bash
+sp link add ~/code/my-personal-store --name personal
+```
+
+```bash
+sp sync --dry-run
+```
+
+```bash
+sp sync
+```
+
+Rules cross both ways, active or paused. Decisions cross for projects that exist in both stores, plus `general`. The newer edit wins, and you see the full list before anything is written. Projects, ships, handoffs and design pointers stay in their own store. Nothing goes through a server; each store gets one ordinary commit.
+
 ## Works with native memory
 
 claude.ai memory remembers personal facts and preferences inside chat. samepage holds working context that has to travel to every surface and stay structured: projects, shipped work with proof, decisions, design pointers and handoffs. Use both.
