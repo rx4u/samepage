@@ -30,6 +30,7 @@ Then run samepage's one-line install once (see the repo's Set up section). It in
 
 ## What it runs
 - Nothing of its own. The plugin is two skills in Markdown: `samepage` (Claude uses it when you ask about your work) and `sp` (the `/sp` command). Both call the `sp` command that samepage's one-line install puts in `~/.local/bin` (Python standard library only). Without it, the skills say how to install it and stop. The plugin never downloads or runs the installer.
+- What the one-line install does (it runs outside the plugin, only when you paste it): downloads install.sh from this repo, clones https://github.com/rx4u/samepage to `~/.samepage/tool`, writes the `sp` command to `~/.local/bin`, then runs `sp start`. That creates or connects your private store with your own GitHub CLI login, and connects the AI tools it finds (with a backup of each config file it edits). Read install.sh before you run it.
 - No hooks and no MCP servers. Ask "what am I working on?" or run `/sp boot` to load your context. The one-line install can also add a session-start entry to your own Claude Code settings.
 
 ## What it reads and writes
