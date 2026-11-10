@@ -14,6 +14,8 @@
   <a href="SPEC.md"><b>Store format</b></a>
 </p>
 
+<p align="center"><a href="https://m8ven.ai/mcp/rx4u-samepage-1o2njd?s=readme"><img src="https://m8ven.ai/badge/mcp/rx4u-samepage-1o2njd?v=6d1f2d26e509cd2c08da9e85d41243c7" alt="M8ven Score"></a></p>
+
 <p align="center"><b>Your AI tools forget. samepage doesn't.</b><br>
 One shared working context for Claude, Codex, Gemini CLI, Copilot, Cursor and Windsurf, in a private repo you own.<br>
 No server. No API keys. No account to create.</p>
